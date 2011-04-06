@@ -1,5 +1,12 @@
 clear Model fitPar dispPar Result;
 
+tic;
+
+addpath (genpath ('functions'));
+figure(1)
+figure(2)
+figure(3)
+
 Model.name   = 'color_plain';  % 7x7 LMS 
 
 % Model parameters
@@ -46,3 +53,6 @@ end
 %
 [Model, Results] = fitModel_color_plain(Model, FitParam, DisplayParam);
 
+% time reporting
+telapsed=toc;
+fprintf (['Total time: (',num2str(telapsed),')\n']);

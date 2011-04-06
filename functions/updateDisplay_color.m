@@ -51,7 +51,8 @@ if dispPar.plotflag
 %  figure(1);
 %  bfh = plotBFs(Model.A,dispPar.maxPlotVecs,'zeroc','l2ord');
 
-  figure(2);
+  set (0, 'CurrentFigure', 2);
+%   figure(2);
   subplot(221), plot(Result.updateIters, Result.bits, '+');
 
   if skipDC
@@ -65,8 +66,9 @@ if dispPar.plotflag
   ylabel('\beta');
   Result.avgSD = 0.5*std(Result.S') + 0.5*Result.avgSD;
   subplot(224), plotSvar(Result.S,pidx,Result.avgSD);
-
-  figure(3);
+  
+  set (0, 'CurrentFigure', 3);
+%   figure(3);
   nbins = N/10;
   plotShist2(Result.S, nbins, [3, 4]);
 
