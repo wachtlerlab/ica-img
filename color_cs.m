@@ -1,6 +1,6 @@
 clear Model fitPar dispPar Result;
 
-tic;
+tStart = tic;
 
 addpath (genpath ('functions'));
 figure(1)
@@ -46,8 +46,10 @@ DisplayParam.updateFreq     = 50;
 DisplayParam.maxPlotVecs    = M;
 
 % params related to generating the datasets, e.g. filtering
+%
 DataParam.doFilter = true;
-DataParam.filter = mexican_hat (3, 20, 1, 6);
+DataParam.filter   = mexican_hat (3, 20, 1, 6);
+DataParam.filterFn = 'filterIDManual';
 
 if FitParam.startIter <= 1
   Model.A = eye(size(Model.A));		% again, we assume A is square
@@ -58,5 +60,5 @@ end
 [Model, Results] = fitModel_color_plain(Model, FitParam, DisplayParam, DataParam);
 
 % time reporting
-telapsed=toc;
+telapsed = toc (tStart);
 fprintf (['Total time: (',num2str(telapsed),')\n']);

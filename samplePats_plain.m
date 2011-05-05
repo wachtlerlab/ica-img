@@ -1,4 +1,4 @@
-function Result = samplePats_plain(Result,fitPar)
+function Result = samplePats_plain(Result,fitPar,DataPar)
 % return a unique sample of patterns
 
 % Written by Mike Lewicki 4/99
@@ -37,7 +37,7 @@ if (isempty(Result.X) | Result.dataIdx > fitPar.npats)
     for filenameidx=Firstimg:Lastimg
      imagefile=datafilenames(filenameidx,:);
      
-     xtmp = mkpreprocpatch_plain(datadir,imagefile,Tperimg);
+     xtmp = mkpreprocpatch_plain(datadir,imagefile,Tperimg,DataPar);
      % xtmp = xtmp - (ones(Tperimg,1)*mean(xtmp'))';
      xtmp = xtmp - mean(xtmp(:));
      xtmp=xtmp/sqrt(var(xtmp(:)));

@@ -1,4 +1,4 @@
-function [D] = mkpreprocpatch_plain (ddir, flnm, npats)
+function [D] = mkpreprocpatch_plain (ddir, flnm, npats, DataPar)
 % mkcolordata -- 
 %   Usage
 %     [x] = mkpreprocpatch_plain (ddir, flnm, T)
@@ -14,8 +14,8 @@ function [D] = mkpreprocpatch_plain (ddir, flnm, npats)
 %
 
 % for debugging purposes only
-figure('Name', flnm);
-%set (0, 'CurrentFigure', 1);
+% figure('Name', flnm);
+% set (0, 'CurrentFigure', 1);
 
 %% load reference coords
 fprintf (['\n Loading ', flnm, ' refcard data']);
@@ -41,7 +41,7 @@ fprintf ([' (', num2str(telapsed), ')\n']);
 
 
 %% Reshaping data
-fprintf ('reshaping data ');
+fprintf (' reshaping data ');
 tic;
 
 [n,T] = size (data);
@@ -50,9 +50,6 @@ edgeN = sqrt (T);
 if edgeN ~= round (edgeN)
     error ('Image data to square!');
 end
-
-% originally: datamx=reshape(eval([flnm]),31,256,256), but see new toSML
-%datamx = reshape (data, 31, edgeN * edgeN);
 
 datamx = feval ('toSML', data);
 % datamx2 = log(datamx2+0.01*max(datamx2(:)));
@@ -70,76 +67,73 @@ telapsed = toc;
 fprintf ([' (',num2str(telapsed),')\n']);
 
 %% Applying Filter
-tic;
-fprintf (['Applying filter to ' , flnm]);
-
-mhat = mexican_hat (3, 20, 1, 6);
-ftData(1,:,:) = conv2 (squeeze(datamx2(1,:,:)), mhat, 'valid');
-ftData(2,:,:) = conv2 (squeeze(datamx2(2,:,:)), mhat, 'valid');
-ftData(3,:,:) = conv2 (squeeze(datamx2(3,:,:)), mhat, 'valid');
-
-telapsed = toc;
-fprintf ([' (', num2str(telapsed), ')\n']);
-
-%% debug info
-refxs = [1, 3, 3, 1, 1];
-refys = [2, 2, 4, 4, 2];
-
-fprintf ([' (',num2str(telapsed),')\n']);
-
-for idximg = 1:3
-   subplot (2, 3, idximg);
-   slice = squeeze (datamx2 (idximg, :, :));
-   imagesc (slice');
-   hold on;
-   colormap ('gray');
-   axis image
-   axis off
-   plot (refkoos(refxs), refkoos(refys), 'r-');
+if DataPar.doFilter
+    tic;
+    fprintf ([' applying filter to ' , flnm]);
+    
+    ftData = feval (DataPar.filterFn, datamx2, DataPar);
+    
+    telapsed = toc;
+    fprintf ([' (', num2str(telapsed), ')\n']);
+    
+    
+    %% debug info
+    % refxs = [1, 3, 3, 1, 1];
+    % refys = [2, 2, 4, 4, 2];
+    % for idximg = 1:3
+    %    subplot (2, 3, idximg);
+    %    slice = squeeze (datamx2 (idximg, :, :));
+    %    imagesc (slice');
+    %    hold on;
+    %    colormap ('gray');
+    %    axis image
+    %    axis off
+    %    plot (refkoos(refxs), refkoos(refys), 'r-');
+    % end
+    %
+    % drawnow;
+    
+    %% Use the filtered data now
+    s = zeros(2, 3);
+    s(2,:) = size (ftData);
+    s(1,:) = size (datamx2);
+    
+    sizeDiff = s(1,:) - s(2,:);
+    
+    edgeN = s(2,2);
+    
+    if edgeN ~= round (edgeN)
+        warning ('Image after filtering not square!');
+    end
+    
+    deltaM = sizeDiff(2);
+    deltaN = sizeDiff(3);
+    
+    refkoos(1) = refkoos(1) - deltaM;
+    refkoos(2) = refkoos(2) - deltaN;
+    
+    datamx2 = ftData;
 end
 
-drawnow;
-
-%% Use the filtered data now
-s = zeros(2, 3);
-s(2,:) = size (ftData);
-s(1,:) = size (datamx2);
-
-sizeDiff = s(1,:) - s(2,:);
-
-edgeN = s(2,2);
-
-if edgeN ~= round (edgeN)
-    warning ('Image after filtering not square!');
-end
-
-deltaM = sizeDiff(2);
-deltaN = sizeDiff(3);
-
-refkoos(1) = refkoos(1) - deltaM;
-refkoos(2) = refkoos(2) - deltaN;
-
-datamx2 = ftData;
-
-%% debugging
-
-for idximg = 1:3
-   subplot (2, 3, idximg + 3);
-   slice = squeeze (datamx2 (idximg, :, :));
-   imagesc (slice');
-   hold on;
-   colormap ('gray');
-   axis image
-   axis off
-   plot (refkoos(refxs), refkoos(refys), 'r-');
-end
-
-drawnow;
+% %% debugging
+% 
+% for idximg = 1:3
+%    subplot (2, 3, idximg + 3);
+%    slice = squeeze (datamx2 (idximg, :, :));
+%    imagesc (slice');
+%    hold on;
+%    colormap ('gray');
+%    axis image
+%    axis off
+%    plot (refkoos(refxs), refkoos(refys), 'r-');
+% end
+% 
+% drawnow;
 
 
 %% Create and randomize indexes
 tic;
-fprintf ('randomizing indexes ');
+fprintf (' randomizing indexes ');
 
 patchsize   = 7;               % size of image patch
 patchradius = (patchsize-1)/2; % patchsize should be odd number
@@ -185,7 +179,7 @@ telapsed = toc;
 fprintf ([' (',num2str(telapsed),')\n']);
 
 %% Extracting patches
-fprintf(['extracting patches']);
+fprintf(' extracting patches');
 tic;
 
 uh = T - 1;

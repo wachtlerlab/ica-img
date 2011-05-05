@@ -1,4 +1,4 @@
-function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar)
+function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar, DataParam)
 
 % Written by Mike Lewicki 4/99
 %
@@ -28,7 +28,7 @@ Result.X = [];		% force new dataset to be generated
 for i = start : fitPar.maxIters
   Result.iter = i;
 
-  Result = samplePats_plain(Result, fitPar);
+  Result = samplePats_plain(Result, fitPar, DataParam);
 
   if start == 1 & Result.iter == start
     Model = rescaleBfs(Model, Result);

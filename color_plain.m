@@ -45,13 +45,16 @@ DisplayParam.plotflag       = 1;
 DisplayParam.updateFreq     = 50;
 DisplayParam.maxPlotVecs    = M;
 
+% params related to generating the datasets, e.g. filtering
+DataParam.doFilter = false;
+
 if FitParam.startIter <= 1
   Model.A = eye(size(Model.A));		% again, we assume A is square
 end
 
 % infer matrix
 %
-[Model, Results] = fitModel_color_plain(Model, FitParam, DisplayParam);
+[Model, Results] = fitModel_color_plain(Model, FitParam, DisplayParam, DataParam);
 
 % time reporting
 telapsed=toc;
