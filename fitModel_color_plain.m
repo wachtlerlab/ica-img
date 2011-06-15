@@ -11,12 +11,51 @@ function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar, DataPara
 % suitability of this software for any purpose. It is provided "as is"
 % without express or implied warranty.
 
-if (fitPar.startIter > 1) 
+if (fitPar.startIter > 1)
   stateFile = sprintf('%s-state-rev-i%d', Model.name, fitPar.startIter);
   [Model, Result] = loadState(stateFile);
   start = fitPar.startIter + 1;		% start at iter after saved state
 else
   start = 1;
+end
+
+Result.images = prepare_images (DataParam);
+
+% Present the filtered pictures (inkluding the excluded patches)
+% to the user for visual validation
+
+if DataParam.doDebug
+    figure (1);
+    set (0, 'CurrentFigure', 1); 
+    colormap (gray)
+    
+    nx = length (Result.images);
+    ny = DataParam.dataDim;
+    ha = tight_subplot (nx, ny, [.01 .03], [.01 .01]); 
+    
+    n_plots = ny * nx;
+    
+    refxs = [1, 3, 3, 1, 1];
+    refys = [2, 2, 4, 4, 2];
+    
+    for idx=1:n_plots
+        
+        n_img = floor ((idx - 1) / ny) + 1;
+        n_p = mod (idx  - 1, ny) + 1;
+        img = Result.images(n_img).imgData;
+        refkoos = Result.images(n_img).refkoos;
+        bf = squeeze (img(n_p, :, :));
+        set (gcf, 'CurrentAxes', ha(idx));
+        %title (num2str (idx));
+        hold on
+        imagesc(bf');
+        axis image;
+        axis off;
+        plot (refkoos(refxs), refkoos(refys), 'r-');
+        rotate (ha(idx), [1 0 0], 180);
+    end
+    
+    drawnow;
 end
 
 [L,M] = size(Model.A);
@@ -39,9 +78,9 @@ for i = start : fitPar.maxIters
   [Model, Result] = adaptPrior(Model, Result, fitPar);
 
   if (i == start)
-    Result = updateDisplay_color(Model, Result, fitPar, dispPar, 'init');
+      Result = updateDisplay_color(Model, Result, fitPar, dispPar, 'init');
   elseif (rem(i, dispPar.updateFreq) == 0 | i == fitPar.maxIters)
-    Result = updateDisplay_color(Model, Result, fitPar, dispPar);
+      Result = updateDisplay_color(Model, Result, fitPar, dispPar);
   end
 
   dA = calcDeltaA(Result.S, Model);

@@ -45,11 +45,18 @@ DisplayParam.plotflag       = 1;
 DisplayParam.updateFreq     = 50;
 DisplayParam.maxPlotVecs    = M;
 
+
 % params related to generating the datasets, e.g. filtering
 %
+DataParam.fileList = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
+DataParam.dataDir = '../data/bristol/rad';
+DataParam.refDir = '../data/bristol/ref';
+DataParam.patchSize = 7;
+DataParam.dataDim = 3;
 DataParam.doFilter = true;
 DataParam.filter   = mexican_hat (3, 20, 1, 6);
 DataParam.filterFn = 'filterIDManual';
+DataParam.doDebug = true;
 
 if FitParam.startIter <= 1
   Model.A = eye(size(Model.A));		% again, we assume A is square

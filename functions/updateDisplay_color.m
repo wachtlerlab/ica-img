@@ -46,13 +46,12 @@ logL = calcLogPXA(Result.D, Result.S, Model);
 
 Result.logL(Result.plotIter) = logL / N;
 Result.bits(Result.plotIter) = estBits(logL, 8, Result.D) / (L*N);
-  
+
 if dispPar.plotflag
 %  figure(1);
 %  bfh = plotBFs(Model.A,dispPar.maxPlotVecs,'zeroc','l2ord');
 
   set (0, 'CurrentFigure', 2);
-%   figure(2);
   subplot(221), plot(Result.updateIters, Result.bits, '+');
 
   if skipDC
@@ -66,15 +65,15 @@ if dispPar.plotflag
   ylabel('\beta');
   Result.avgSD = 0.5*std(Result.S') + 0.5*Result.avgSD;
   subplot(224), plotSvar(Result.S,pidx,Result.avgSD);
-  
+
   set (0, 'CurrentFigure', 3);
-%   figure(3);
   nbins = N/10;
   plotShist2(Result.S, nbins, [3, 4]);
 
-%  drawnow;
+  drawnow;
 end
 
 fprintf('\r%5d: logL = %4.2f  (%4.2f bits/pixel)\n', ...
     Result.iter, Result.logL(Result.plotIter), Result.bits(Result.plotIter) );
 
+end

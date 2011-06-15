@@ -4,6 +4,7 @@ function Result = samplePats_plain(Result,fitPar,DataPar)
 % Written by Mike Lewicki 4/99
 %
 % Copyright (c) 1999 Michael S. Lewicki and CMU
+%           (c) 2011 Christian Kellner
 %
 % Permission to use, copy, modify, and distribute this software and its
 % documentation for any purpose and without fee is hereby granted,
@@ -13,36 +14,32 @@ function Result = samplePats_plain(Result,fitPar,DataPar)
 % without express or implied warranty.
 
 
-datafilenames=[ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
-
-Nimgs=8;      % # images in list
+Nimgs=length (Result.images);      % # images in list
 Firstimg=1;    % first and last images to use out of list above
 Lastimg=Nimgs; %
 
-filenameidx=1;
-imagefile=datafilenames(filenameidx,:);
 Tperimg=5000;
 T = Nimgs*Tperimg;
-datadir=['data'];  % path to data
 
 
-if (isempty(Result.X) | Result.dataIdx > fitPar.npats)
+if (isempty(Result.X) || Result.dataIdx > fitPar.npats)
   % generate a new dataset
 
-  fprintf('%5d: Generating new dataset: %s\n',Result.iter, fitPar.dataFn);
+  fprintf('%5d: Generating new images patches\n',Result.iter);
     
-
   % load new data
     xx=[];
-    for filenameidx=Firstimg:Lastimg
-     imagefile=datafilenames(filenameidx,:);
+    for idx=Firstimg:Lastimg
+        img = Result.images(idx);
+        
+        xtmp = generate_patches (img, Tperimg, DataPar);
      
-     xtmp = mkpreprocpatch_plain(datadir,imagefile,Tperimg,DataPar);
-     % xtmp = xtmp - (ones(Tperimg,1)*mean(xtmp'))';
-     xtmp = xtmp - mean(xtmp(:));
-     xtmp=xtmp/sqrt(var(xtmp(:)));
-     xx=[ xx xtmp ];
+        % xtmp = xtmp - (ones(Tperimg,1)*mean(xtmp'))';
+        xtmp = xtmp - mean(xtmp(:));
+        xtmp=xtmp/sqrt(var(xtmp(:)));
+        xx=[ xx xtmp ];
     end
+    
     permidxlst=randperm(T);
     x=xx(:,permidxlst);
     x = x - (ones(T,1)*mean(x'))';
