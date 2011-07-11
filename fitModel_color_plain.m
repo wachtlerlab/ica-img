@@ -11,6 +11,8 @@ function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar, dataPar)
 % suitability of this software for any purpose. It is provided "as is"
 % without express or implied warranty.
 
+Result.tStart = tic;
+
 if (fitPar.startIter > 1)
   stateFile = sprintf('%s-state-rev-i%d', Model.name, fitPar.startIter);
   [Model, Result] = loadState(stateFile);
@@ -25,7 +27,7 @@ Result.images = prepare_images (dataPar);
 % to the user for visual validation
 
 if dataPar.doDebug
-    displayImages (Result, dataPar, 1);
+    displayImages (Result.images, dataPar, 1);
 end
 
 [L,M] = size(Model.A);
@@ -62,4 +64,8 @@ for i = start : fitPar.maxIters
   if (rem(i, fitPar.saveFreq) == 0 || i == fitPar.maxIters)
     saveState(Model, Result, fitPar);
   end
+end
+
+Result.tEnd = toc (Result.tStart);
+
 end

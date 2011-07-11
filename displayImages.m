@@ -1,10 +1,15 @@
-function displayImages (Result, dataPar, figNum)
+function displayImages (images, dataPar, figNum)
 %displayImages ...
 
-set (0, 'CurrentFigure', figNum);
+if nargin < 3
+  figure;
+else
+  set (0, 'CurrentFigure', figNum);
+end
+
 colormap (gray)
 
-nx = length (Result.images);
+nx = length (images);
 ny = dataPar.dataDim;
 ha = tight_subplot (nx, ny, [.01 .03], [.01 .01]);
 
@@ -16,17 +21,18 @@ refys = [2, 2, 4, 4, 2];
 for idx=1:n_plots
   n_img = floor ((idx - 1) / ny) + 1;
   n_p = mod (idx  - 1, ny) + 1;
-  img = Result.images(n_img).imgData;
-  refkoos = Result.images(n_img).refkoos;
+  img = images(n_img).imgData;
+  refkoos = images(n_img).refkoos;
   bf = squeeze (img(n_p, :, :));
   set (gcf, 'CurrentAxes', ha(idx));
   %title (num2str (idx));
   hold on
-  imagesc(bf');
+  fi = imagesc(bf');
   axis image;
   axis off;
-  plot (refkoos(refxs), refkoos(refys), 'r-');
-  rotate (ha(idx), [1 0 0], 180);
+  fk = plot (refkoos(refxs), refkoos(refys), 'r-');
+  rotate (fi, [0 0 1], 180);
+  rotate (fk, [0 0 1], 180);
 end
 
 drawnow;
