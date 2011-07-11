@@ -2,6 +2,10 @@ function [ Model, Results ] = fitModel (modelId)
 
 clear Model fitPar dispPar Result;
 
+if exist ('state', 'dir') == 0
+   mkdir ('state'); 
+end
+
 tStart = tic;
 
 addpath (genpath ('functions'));
