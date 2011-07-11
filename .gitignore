@@ -2,4 +2,4 @@
 /*.mat
 /*.pdf
 *~
-*excluded_*.mat
+/state
