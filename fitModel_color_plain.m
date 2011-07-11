@@ -39,7 +39,7 @@ for i = start : fitPar.maxIters
 
   Result = samplePats_plain(Result, fitPar, dataPar);
 
-  if start == 1 & Result.iter == start
+  if start == 1 && Result.iter == start
     Model = rescaleBfs(Model, Result);
   end
 
@@ -49,7 +49,7 @@ for i = start : fitPar.maxIters
 
   if (i == start)
       Result = updateDisplay_color(Model, Result, fitPar, dispPar, 'init');
-  elseif (rem(i, dispPar.updateFreq) == 0 | i == fitPar.maxIters)
+  elseif (rem(i, dispPar.updateFreq) == 0 || i == fitPar.maxIters)
       Result = updateDisplay_color(Model, Result, fitPar, dispPar);
   end
 
@@ -59,7 +59,7 @@ for i = start : fitPar.maxIters
   dA = epsilon*dA;
   Model.A = Model.A + dA;
 
-  if (rem(i, fitPar.saveFreq) == 0 | i == fitPar.maxIters)
+  if (rem(i, fitPar.saveFreq) == 0 || i == fitPar.maxIters)
     saveState(Model, Result, fitPar);
   end
 end
