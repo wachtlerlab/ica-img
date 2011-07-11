@@ -1,5 +1,5 @@
 function [ loaded_images ] = prepare_images (DataPar)
-
+%%
 fprintf (['\n Loading images']);
 
 Img.filename = '';
@@ -104,7 +104,7 @@ end
 
 
 function [Img] = do_filter_image (Img, DataPar)
-
+%% Filter the data
 flnm = Img.filename;
 datamx2 = Img.imgData;
 
@@ -116,22 +116,6 @@ ftData = feval (DataPar.filterFn, datamx2, DataPar);
 telapsed = toc;
 fprintf ([' (', num2str(telapsed), ')\n']);
 
-
-%% debug info
-% refxs = [1, 3, 3, 1, 1];
-% refys = [2, 2, 4, 4, 2];
-% for idximg = 1:3
-%    subplot (2, 3, idximg);
-%    slice = squeeze (datamx2 (idximg, :, :));
-%    imagesc (slice');
-%    hold on;
-%    colormap ('gray');
-%    axis image
-%    axis off
-%    plot (refkoos(refxs), refkoos(refys), 'r-');
-% end
-%
-% drawnow;
 
 %% Use the filtered data now
 s = zeros(2, 3);
