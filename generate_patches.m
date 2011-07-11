@@ -33,7 +33,7 @@ for i=1:(edgeN-patchsize),
   end
 end
 
-eval (['save excluded_',flnm,' excl']);
+eval (['save state/excluded_',flnm,' excl']);
 
 cnt = cnt - 1;                   % set cnt to max index value 
 inneridx = inneridx (1:cnt, :);

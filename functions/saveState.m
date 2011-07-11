@@ -19,13 +19,13 @@ Result.D = [];
 Result.S = [];
 Result.priorS = [];
 
-stateFile = sprintf('%s-state-i%d', Model.name, Result.iter);
+stateFile = sprintf('state/%s-state-i%d', Model.name, Result.iter);
 fprintf('%5d: Saving state to %s\n', Result.iter, stateFile);
 eval(['save ',stateFile,' Model Result']);
 
 % save state with minimum number of bits/pixel in separate file
 if ( Result.bits(Result.plotIter) == min(Result.bits(1:Result.plotIter)) )
- optFile = sprintf('%s-state-minbits', Model.name);
+ optFile = sprintf('state/%s-state-minbits', Model.name);
  eval(['save ',optFile,' Model Result']);
 end
 
@@ -38,7 +38,7 @@ else
   % delete the previous state file.
   prevIter = max( 1, Result.iter - fitPar.saveFreq );
   if (rem(prevIter, 10000) ~= 0)
-   prevStateFile = sprintf( '%s-state-i%d.mat', Model.name, prevIter );
+   prevStateFile = sprintf( 'state/%s-state-i%d.mat', Model.name, prevIter );
    if exist( prevStateFile, 'file' ) ~= 0
      delete( prevStateFile );
    end
