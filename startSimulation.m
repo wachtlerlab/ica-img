@@ -1,4 +1,4 @@
-if isempty (modelId)
+if exist ('modelId', 'var') == 0
   modelId = 'color_plain';
 end
 
