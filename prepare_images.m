@@ -8,6 +8,7 @@ Img.imgPath = '';
 Img.refpixelN = 0;
 Img.refkoos = zeros (4, 1);
 Img.imgData = NaN;
+Img.SML = NaN;
 Img.edgeN = 0;
 
 nFiles = length (DataPar.fileList);
@@ -90,6 +91,7 @@ telapsed = toc;
 fprintf ([' (',num2str(telapsed),')\n']);
 
 Img.imgData = datamx2;
+Img.SML = datamx2;
 
 if DataPar.doFilter
     Img = do_filter_image (Img, DataPar);
