@@ -18,5 +18,7 @@ if isempty (Model) || ...
   error ('Config file corrupt');
 end
 
+Model.name = configId;
+
 end
 

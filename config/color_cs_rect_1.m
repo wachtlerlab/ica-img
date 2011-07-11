@@ -13,7 +13,6 @@ DataParam.doDebug   = true;
 
 % Model parameters
 %
-Model.name      = 'color_cs_1';  % 7x7 LMS(on,off) Filtered 
 L               = (DataParam.patchSize^2) * DataParam.dataDim;
 M               = L;		% expwr only allows square A for now
 Model.A         = zeros(L,M);

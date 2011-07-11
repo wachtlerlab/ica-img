@@ -1,5 +1,3 @@
-Model.name   = 'color_plain';  % 7x7 LMS 
-
 % Model parameters
 %
 L            = 7*7*3;  % 3 chromatic dimensions
