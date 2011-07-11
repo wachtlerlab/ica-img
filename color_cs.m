@@ -7,13 +7,27 @@ figure(1)
 figure(2)
 figure(3)
 
-Model.name   = 'color_plain_cs';  % 7x7 LMS Filtered 
+% params related to generating the datasets, e.g. filtering
+%
+DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
+DataParam.dataDir   = '../data/bristol/rad';
+DataParam.refDir    = '../data/bristol/ref';
+DataParam.patchSize = 7;
+DataParam.dataDim   = 6; %this is post filtering
+DataParam.doFilter  = true;
+DataParam.filter    = mexican_hat (3, 20, 1, 6);
+DataParam.filterFn  = 'filterCSRectify';
+DataParam.doDebug   = true;
+
 
 % Model parameters
 %
-L            = 7*7*3;  % 3 chromatic dimensions
-M            = L;		% expwr only allows square A for now
-Model.A      = zeros(L,M);
+Model.name      = 'color_plain_cs';  % 7x7 LMS(on,off) Filtered 
+L               = (DataParam.patchSize^2) * DataParam.dataDim;
+M               = L;		% expwr only allows square A for now
+Model.A         = zeros(L,M);
+Model.patchSize = DataParam.patchSize;
+Model.dataDim   = DataParam.dataDim;
 
 % params for exponential power prior
 ExPwr.mu     = zeros(M,1);
@@ -44,19 +58,6 @@ FitParam.maxIters = max(FitParam.iterPts);
 DisplayParam.plotflag       = 1;
 DisplayParam.updateFreq     = 50;
 DisplayParam.maxPlotVecs    = M;
-
-
-% params related to generating the datasets, e.g. filtering
-%
-DataParam.fileList = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
-DataParam.dataDir = '../data/bristol/rad';
-DataParam.refDir = '../data/bristol/ref';
-DataParam.patchSize = 7;
-DataParam.dataDim = 3;
-DataParam.doFilter = true;
-DataParam.filter   = mexican_hat (3, 20, 1, 6);
-DataParam.filterFn = 'filterIDManual';
-DataParam.doDebug = true;
 
 if FitParam.startIter <= 1
   Model.A = eye(size(Model.A));		% again, we assume A is square
