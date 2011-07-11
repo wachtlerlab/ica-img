@@ -1,4 +1,4 @@
-function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar, DataParam)
+function [Model, Result] = fitModel_color_plain(Model, fitPar, dispPar, dataPar)
 
 % Written by Mike Lewicki 4/99
 %
@@ -19,18 +19,18 @@ else
   start = 1;
 end
 
-Result.images = prepare_images (DataParam);
+Result.images = prepare_images (dataPar);
 
 % Present the filtered pictures (inkluding the excluded patches)
 % to the user for visual validation
 
-if DataParam.doDebug
+if dataPar.doDebug
     figure (1);
     set (0, 'CurrentFigure', 1); 
     colormap (gray)
     
     nx = length (Result.images);
-    ny = DataParam.dataDim;
+    ny = dataPar.dataDim;
     ha = tight_subplot (nx, ny, [.01 .03], [.01 .01]); 
     
     n_plots = ny * nx;
@@ -67,7 +67,7 @@ Result.X = [];		% force new dataset to be generated
 for i = start : fitPar.maxIters
   Result.iter = i;
 
-  Result = samplePats_plain(Result, fitPar, DataParam);
+  Result = samplePats_plain(Result, fitPar, dataPar);
 
   if start == 1 & Result.iter == start
     Model = rescaleBfs(Model, Result);
