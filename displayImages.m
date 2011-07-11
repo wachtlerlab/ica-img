@@ -1,4 +1,4 @@
-function [output_args] = displayImages (Result, dataPar, figNum)
+function displayImages (Result, dataPar, figNum)
 %displayImages ...
 
 set (0, 'CurrentFigure', figNum);
@@ -14,20 +14,19 @@ refxs = [1, 3, 3, 1, 1];
 refys = [2, 2, 4, 4, 2];
 
 for idx=1:n_plots
-    
-    n_img = floor ((idx - 1) / ny) + 1;
-    n_p = mod (idx  - 1, ny) + 1;
-    img = Result.images(n_img).imgData;
-    refkoos = Result.images(n_img).refkoos;
-    bf = squeeze (img(n_p, :, :));
-    set (gcf, 'CurrentAxes', ha(idx));
-    %title (num2str (idx));
-    hold on
-    imagesc(bf');
-    axis image;
-    axis off;
-    plot (refkoos(refxs), refkoos(refys), 'r-');
-    rotate (ha(idx), [1 0 0], 180);
+  n_img = floor ((idx - 1) / ny) + 1;
+  n_p = mod (idx  - 1, ny) + 1;
+  img = Result.images(n_img).imgData;
+  refkoos = Result.images(n_img).refkoos;
+  bf = squeeze (img(n_p, :, :));
+  set (gcf, 'CurrentAxes', ha(idx));
+  %title (num2str (idx));
+  hold on
+  imagesc(bf');
+  axis image;
+  axis off;
+  plot (refkoos(refxs), refkoos(refys), 'r-');
+  rotate (ha(idx), [1 0 0], 180);
 end
 
 drawnow;
