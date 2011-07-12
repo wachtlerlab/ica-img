@@ -8,7 +8,7 @@ end
 
 tStart = tic;
 
-addpath (genpath ('functions'));
+%addpath (genpath ('functions'));
 figure(1)
 figure(2)
 figure(3)
