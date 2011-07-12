@@ -2,10 +2,12 @@ function displayImages (images, dataPar, figNum)
 %displayImages ...
 
 if nargin < 3
-  figure;
+  figNum = figure;
 else
   set (0, 'CurrentFigure', figNum);
 end
+
+set (figNum, 'Color', [1 1 1]);
 
 colormap (gray)
 
@@ -25,7 +27,6 @@ for idx=1:n_plots
   refkoos = images(n_img).refkoos;
   bf = squeeze (img(n_p, :, :));
   set (gcf, 'CurrentAxes', ha(idx));
-  %title (num2str (idx));
   hold on
   fi = imagesc(bf');
   axis image;
