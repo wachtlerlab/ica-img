@@ -1,3 +1,4 @@
+path('filter/', path);
 path('functions/home/jung/matlab/', path);
 path('functions/home/tewon/Matlab/Lewicki/expwrcode/stats', path);
 path('functions/home/lewicki/matlab/oc', path);
@@ -17,4 +18,3 @@ path('functions/home/tewon/Matlab/Images', path);
 path('functions/home/tewon/Matlab/Tools/tmp', path);
 path('functions/home/tewon/Matlab/Speech', path);
 path(path,'functions');
-
