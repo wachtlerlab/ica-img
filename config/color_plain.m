@@ -1,10 +1,11 @@
+%% Model Configuration
 % Model parameters
 %
 L            = 7*7*3;  % 3 chromatic dimensions
 M            = L;		% expwr only allows square A for now
 Model.A      = zeros(L,M);
 
-% params for exponential power prior
+% params for *exponential power prior*
 ExPwr.mu     = zeros(M,1);
 ExPwr.sigma  = ones(M,1);
 ExPwr.beta   = 0.5*ones(M,1);	% assume slightly supergaussian (tanh)
@@ -14,7 +15,8 @@ ExPwr.tol    = 0.1;
 
 Model.prior  = ExPwr;
 
-% parameters related to fitting
+
+% parameters *related to fitting*
 %
 FitParam.startIter      = 1;
 FitParam.blocksize      = 100;
@@ -28,17 +30,17 @@ FitParam.saveFreq       = 100;
 
 FitParam.maxIters = max(FitParam.iterPts);
 
-% params related to displaying of results and fitting progress
+% params related to *displaying of results* and *fitting progress*
 %
 DisplayParam.plotflag       = 1;
 DisplayParam.updateFreq     = 50;
 DisplayParam.maxPlotVecs    = M;
 
-% params related to generating the datasets, e.g. filtering
+% params related to *generating the datasets*, e.g. filtering
 DataParam.doFilter = false;
-DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
-DataParam.dataDir   = '../data/bristol/rad';
-DataParam.refDir    = '../data/bristol/ref';
+DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
+                        'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
+DataParam.dataDir   = fullfile ('..', 'data', 'bristol');
 DataParam.patchSize = 7;
 DataParam.dataDim   = 3; 
 DataParam.doDebug   = false;

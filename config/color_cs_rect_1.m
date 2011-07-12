@@ -1,8 +1,7 @@
 % params related to generating the datasets, e.g. filtering
 %
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
-DataParam.dataDir   = '../data/bristol/rad';
-DataParam.refDir    = '../data/bristol/ref';
+DataParam.dataDir   = fullfile ('..', 'data', 'bristol');
 DataParam.patchSize = 7;
 DataParam.dataDim   = 6; %this is post filtering
 DataParam.doFilter  = true;
