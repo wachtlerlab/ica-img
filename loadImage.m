@@ -5,26 +5,27 @@ function [ Img ] = loadImage (filename, dataDir)
 flnm = strtrim (filename);
 Img.filename = flnm;
 imgpath = fullfile (dataDir, 'rad', flnm);
-refpath = fullfile (dataDir, 'ref', [flnm '.ref -ascii']);
+refpath = fullfile (dataDir, 'ref', [flnm '.ref']);
+fprintf ('\n Loading data for [%s] ', flnm);
 
 %% load reference coords
-fprintf (['\n Loading ', refpath, ' refcard data']);
+fprintf (['\n\t [ref data] from ', refpath]);
 
 % load coordinates of gray reference reflectance card
 % from directory "ref/" next to data directory
-eval (['load ', refpath]);
+eval (['load ', refpath, ' -ascii']);
 Img.refkoos = eval (flnm);
 
 
 %% Load image data into 'data' variable
-fprintf (['\n Loading ', flnm, ' image data']);
+fprintf (['\n\t [img data] from ', imgpath, '.mat']);
 tic;
 eval (['load ', imgpath]);
 data = eval (flnm);
 eval (['clear ', flnm]);
 
 telapsed = toc;
-fprintf ([' (', num2str(telapsed), ')\n']);
+fprintf (['\n\t Total time to load data: ', num2str(telapsed), '\n']);
 
 
 %% Reshaping data
