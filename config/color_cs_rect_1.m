@@ -14,7 +14,7 @@ DataParam.doDebug   = true;
 %
 L               = (DataParam.patchSize^2) * DataParam.dataDim;
 M               = L;		% expwr only allows square A for now
-Model.A         = zeros(L,M);
+Model.A         = randn (L, M) + 0.2 * eye(L, M); %zeros(L,M);
 Model.patchSize = DataParam.patchSize;
 Model.dataDim   = DataParam.dataDim;
 

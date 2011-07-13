@@ -3,7 +3,7 @@
 %
 L            = 7*7*3;  % 3 chromatic dimensions
 M            = L;		% expwr only allows square A for now
-Model.A      = zeros(L,M);
+Model.A      = eye (L,M);
 
 % params for *exponential power prior*
 ExPwr.mu     = zeros(M,1);
