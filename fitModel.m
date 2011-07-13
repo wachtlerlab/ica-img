@@ -16,7 +16,7 @@ figure(3)
 [ Model, FitParam, DisplayParam, DataParam ] = loadConfig (modelId);
 
 if FitParam.startIter <= 1
-  Model.A = eye(size(Model.A));		% again, we assume A is square
+  %Model.A = eye(size(Model.A));		% again, we assume A is square
 end
 
 % infer matrix
