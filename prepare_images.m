@@ -9,6 +9,7 @@ Img.imgData = NaN;
 Img.SML = NaN;
 Img.refpixelN = 0;
 Img.filtered = 0;
+Img.refBase = NaN;
 
 nFiles = length (DataPar.fileList);
 loaded_images = repmat (Img, nFiles, 1);
@@ -22,6 +23,8 @@ for idx=1:nFiles
       Img = do_filter_image (Img, DataPar);
     end
 
+    Img.refBase = prepareRefBase (Img, DataPar);
+    
     loaded_images(idx) = Img;
     
 end
@@ -29,6 +32,29 @@ end
 fprintf ('\n Done loading images');
 telapsed = toc;
 fprintf ([' (', num2str(telapsed), ')\n']);
+
+end
+
+function [refBase] = prepareRefBase (Img, dataPar)
+
+% generate posible combinations of patch indices
+patchsize = dataPar.patchSize;
+N = Img.edgeN - patchsize;
+reps = repmat (1:N, 1, N);
+l = [sort(reps); reps];
+
+refkoos = Img.refkoos;
+refa = refkoos(1) - patchsize;
+refb = refkoos(3);
+refc = refkoos(2) - patchsize;
+refd = refkoos(4);
+
+
+%filter out coordinates of the ref card
+validIdx = l(:, ~((l(1,:) > refa & l(1,:) < refb) & ...
+	  (l(2,:) > refc & l(2,:) < refd)));
+
+refBase = permute (validIdx, [2 1]);
 
 end
 
