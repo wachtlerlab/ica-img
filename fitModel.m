@@ -1,4 +1,4 @@
-function [ Model, Results ] = fitModel (modelId)
+function [ Model, Result ] = fitModel (modelId, options)
 
 % local config TODO: move to config file
 shouldSaveState = 0;
@@ -15,7 +15,11 @@ Result.tStart = tic;
 
 [Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
 
-shouldSaveState = fitPar.saveflag;
+if nargin > 1
+  dispPar.plotflag = options.progress;
+  fitPar.saveflag = options.savestate;
+  
+end
 
 if dispPar.plotflag
   figure(1)
@@ -65,7 +69,7 @@ for i = start : fitPar.maxIters
   dA = epsilon*dA;
   Model.A = Model.A + dA;
 
-  if (shouldSaveState && (rem(i, fitPar.saveFreq) == 0 || ...
+  if (fitPar.saveflag && (rem(i, fitPar.saveFreq) == 0 || ...
       i == fitPar.maxIters))
     saveState(Model, Result, fitPar);
   end
