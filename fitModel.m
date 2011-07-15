@@ -32,7 +32,7 @@ Result.images = prepare_images (dataPar);
 
 % Present the filtered pictures (inkluding the excluded patches)
 % to the user for visual validation
-if dataPar.doDebug
+if options.progress && dataPar.doDebug
     displayImages (Result.images, dataPar, 1);
 end
 
