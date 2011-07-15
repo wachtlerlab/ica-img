@@ -1,6 +1,7 @@
 % params related to generating the datasets, e.g. filtering
 %
-DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; 'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
+DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
+                        'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
 DataParam.dataDir   = fullfile ('..', 'data', 'bristol');
 DataParam.patchSize = 7;
 DataParam.dataDim   = 6; %this is post filtering
@@ -14,7 +15,7 @@ DataParam.doDebug   = true;
 %
 L               = (DataParam.patchSize^2) * DataParam.dataDim;
 M               = L;		% expwr only allows square A for now
-Model.A         = randn (L, M) + 0.2 * eye(L, M); %zeros(L,M);
+Model.A         = randn (L, M) + 0.5 * eye(L, M); %zeros(L,M);
 Model.patchSize = DataParam.patchSize;
 Model.dataDim   = DataParam.dataDim;
 
@@ -36,8 +37,9 @@ FitParam.priorAdaptSize = 5000;	% how many coefs to collect before adapting
 FitParam.npats          = 40000;	% number of pats in new dataset
 FitParam.dataFn         = 'getImageData';  % function that generates dataset
 FitParam.dataFnArgs     = [sqrt(L), FitParam.npats];
-FitParam.iterPts        =   [  1,    1000,   5000,  10000 30000];
-FitParam.epsilon        = 2*[ 0.02,  0.01,  0.005,  0.001 0.0005];
+FitParam.iterPts        =     [  1,    1000,   5000,  10000 30000 ];
+FitParam.epsilon        = 20 *[ 0.02,  0.01,  0.005,  0.001 0.0005];
+FitParam.saveflag       = 1;
 FitParam.saveFreq       = 100;
 
 FitParam.maxIters = max(FitParam.iterPts);
