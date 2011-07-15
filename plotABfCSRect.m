@@ -1,4 +1,11 @@
-function [hf] = plotModel (Model, start, num)
+function [hf] = plotABfCSRect (Model, start, num, figHandle)
+
+if (nargin < 4)
+  hf = figure ('Name', ['Basis Functions: ', Model.name], ...
+   'Position', [0, 0, 800, 1000], 'Color', 'w', 'PaperType', 'A4');
+else
+  hf = figHandle;
+end
 
 if (nargin < 3)
   num = 10;
@@ -15,9 +22,6 @@ dataDim = Model.dataDim;
 
 [~,M] = size(Model.A);
 A = sortAbf (Model.A);
-
-hf = figure ('Name', ['Basis Functions: ', Model.name], ...
-  'Position', [0, 0, 800, 1000], 'Color', 'w', 'PaperType', 'A4');
 
 ha = tight_subplot (num, dataDim, [.01 .01], 0);
 
