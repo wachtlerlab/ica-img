@@ -11,13 +11,17 @@ if exist ('state', 'dir') == 0
 end
 
 start = 1;
-tStart = tic;
-
-figure(1)
-figure(2)
-figure(3)
+Result.tStart = tic;
 
 [Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
+
+shouldSaveState = fitPar.saveflag;
+
+if dispPar.plotflag
+  figure(1)
+  figure(2)
+  figure(3)
+end
 
 %% Prepare image data
 Result.images = prepare_images (dataPar);
@@ -31,8 +35,7 @@ end
 %% Infer matrix
 %
 
-[L,M] = size(Model.A);
-dA = zeros(size(Model.A));
+dA = zeros (size(Model.A));
 Result.priorN = 0;
 Result.dataIdx = 1;
 Result.X = [];		% force new dataset to be generated
@@ -68,11 +71,9 @@ for i = start : fitPar.maxIters
   end
 end
 
-Result.tEnd = toc (Result.tStart);
-
 % time reporting
-telapsed = toc (tStart);
-fprintf (['Total time: (',num2str(telapsed),')\n']);
+Result.tDuration = toc (Result.tStart);
+fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
 end
 
