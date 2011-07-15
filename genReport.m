@@ -17,9 +17,9 @@ path ('report', path);
 %opts.useNewFigure = false;
 %publish ('report_template', opts);
 
-bfh1 = plotModel (Model, 1);
-bfh2 = plotModel (Model, 140);
-bfh3 = plotModel (Model, 284);
+bfh1 = plotBfs (Model, 1);
+bfh2 = plotBfs (Model, 140);
+bfh3 = plotBfs (Model, 284);
 
 % Model Configuration
 publishOptions.format = 'pdf';
