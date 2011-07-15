@@ -12,10 +12,13 @@ if nargin > 1
   options = parse_varargs (options, varargin);
 end
 
-fprintf ('Starting simulation for %s', modelId);
+currev = getCurRev ();
+
+fprintf ('Starting simulation for %s [code: %s]', modelId, currev);
 [Model, Result] = fitModel (modelId, options);
 
 Model.Result = Result;
+Model.codeVersion = currev;
 
 if options.autosave
   saveResult (Model);
