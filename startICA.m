@@ -21,7 +21,7 @@ Model.Result = Result;
 Model.codeVersion = currev;
 
 if options.autosave
-  saveResult (Model);
+  filename = saveResult (Model);
   fprintf ('Saved results to %s\n', filename);
 end
 
