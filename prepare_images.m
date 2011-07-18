@@ -62,12 +62,11 @@ end
 function [Img] = do_filter_image (Img, DataPar)
 %% Filter the data
 flnm = Img.filename;
-datamx2 = Img.imgData;
 
 tic;
 fprintf ([' applying filter to ' , flnm]);
 
-ftData = feval (DataPar.filterFn, datamx2, DataPar);
+ftData = feval (DataPar.filterFn, Img, DataPar);
 
 telapsed = toc;
 fprintf ([' (', num2str(telapsed), ')\n']);
@@ -76,7 +75,7 @@ fprintf ([' (', num2str(telapsed), ')\n']);
 %% Use the filtered data now
 s = zeros(2, 3);
 s(2,:) = size (ftData);
-s(1,:) = size (datamx2);
+s(1,:) = size (Img.imgData);
 
 sizeDiff = s(1,:) - s(2,:);
 

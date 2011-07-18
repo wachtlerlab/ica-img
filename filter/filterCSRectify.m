@@ -1,7 +1,6 @@
-function [ ftData ] = filterCSRectify (imageData, dataPar)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [ ftData ] = filterCSRectify (Img, dataPar)
 
+imageData = Img.imgData;
 s = size (imageData);
 
 if s(1) ~= 3
