@@ -22,7 +22,7 @@ dataDim = Model.dataDim;
 
 [~,M] = size(Model.A);
 A = sortAbf (Model.A);
-
+A = normABf (A);
 ha = tight_subplot (num, dataDim, [.01 .01], 0);
 
 lblChan = {{'S (off)'}, {'S (on)'}, {'M (off)'}, {'M (on)'}, {'L (off)'}, {'L (on)'}};
@@ -43,7 +43,7 @@ for ii = 1:num
     axis off;
     axis equal;
     colormap ('gray')
-    imagesc (shaped (:, :, n));
+    image (shaped (:, :, n)*200);
     cap = sprintf ('%d [%s]', idx, char (lblChan{n}));
     text (0.75, 1, cap, 'Color', 'm');
   end
