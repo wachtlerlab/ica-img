@@ -13,7 +13,7 @@ DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
 DataParam.filterFn  = 'filterCSRecConv';
 DataParam.doDebug   = true;
-DataParam.doLog     = false;
+DataParam.doLog     = true;
 
 % Model parameters
 %
