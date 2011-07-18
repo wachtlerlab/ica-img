@@ -29,13 +29,13 @@ LM = ((Lc + Mc) * 0.5);
 for n=1:3
   % the actual 'filtering'
   x = (wc * input(2:end-1, 2:end-1, n)) - LM;
-  [a, b] = rectifyData (x, dataPar.doLog);
-  data((n*2-1),:,:) = a;
-  data(n*2,:,:) = b;
+  [on, off] = rectifyData (x, dataPar.doLog);
+  data((n*2-1),:,:) = on;
+  data(n*2,:,:) = off;
 end
 
 data = permute (data, [1 3 2]);
-fprintf ('\n\tImg-stats after filtering: Min: %f, Max: %f, Mean: %f, Var: %f \n', ...
+fprintf ('\n\tImg-stats after filtering: Min: %f, Max: \n\t\t %f, Mean: %f, Var: %f \n', ...
   min (data(:)), max (data(:)), mean (data(:)),var (data(:)));
 end
 
@@ -53,8 +53,8 @@ off(off > 0) = 0;
 off = -1 * off;
 
 if doLog
-  on = log (on);
-  off = log (off);
+  on = log (on + 0.01 * max (on(:)));
+  off = log (off + 0.01 * max (off(:)));
 end
 
 end
