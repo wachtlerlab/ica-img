@@ -1,11 +1,21 @@
 function [ Img ] = loadImage (filename, dataDir)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%loadImage Load an image (and it's ref card) from a file
+
+if exist (dataDir, 'dir') ~= 7
+  error ('dataDir non existent or not a directory');
+end
 
 flnm = strtrim (filename);
 Img.filename = flnm;
+
 imgpath = fullfile (dataDir, 'rad', flnm);
 refpath = fullfile (dataDir, 'ref', [flnm '.ref']);
+
+
+if exist ([imgpath '.mat'], 'file') == 0 || exist (refpath, 'file') == 0
+  error ('Image data or refcard not found!\n\t[%s|%s]', imgpath, refpath);
+end
+
 fprintf ('\n Loading data for [%s] ', flnm);
 
 %% load reference coords
@@ -57,7 +67,7 @@ telapsed = toc;
 fprintf ([' (',num2str(telapsed),')\n']);
 
 Img.imgData = datamx2;
-Img.SML = permute (datamx2, [3 2 1]);
+Img.SML = permute (reshape (datamx, 3, edgeN, edgeN), [3 2 1]);
 
 % how big is ref card
 Img.refpixelN = (Img.refkoos(3)-Img.refkoos(1)+1)*(Img.refkoos(4)-Img.refkoos(2)+1);
