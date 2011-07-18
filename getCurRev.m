@@ -9,7 +9,7 @@ end
 
 fd = fopen (fullfile ('.git', 'HEAD'));
 curbranch = textscan (fd, '%s');
-path = char (curbranch{1}(2))
+path = char (curbranch{1}(2));
 rev = readFile (fullfile ('.git', path));
 fclose (fd);
 
