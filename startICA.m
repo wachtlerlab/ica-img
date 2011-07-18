@@ -4,12 +4,16 @@ if nargin < 1
   modelId = 'color_cs_rect_1';
 end;
 
-options = struct('autosave', 'false', ...
-                 'savestate', 'false', ...
-                 'progress', 'true');
+options = struct('autosave', 1, ...
+                 'savestate', 1, ...
+                 'progress', 0);
                
 if nargin > 1
   options = parse_varargs (options, varargin);
+end
+
+if exist (fullfile ('config', [modelId '.m']), 'file') == 0
+  error ('Cannot find config');
 end
 
 currev = getCurRev ();
