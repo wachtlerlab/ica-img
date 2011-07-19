@@ -43,13 +43,11 @@ for ii = 1:num
     axis off;
     axis equal;
     colormap ('gray')
-    image (shaped (:, :, n)*200);
+    image (shaped (:, :, n)*100);
     cap = sprintf ('%d [%s]', idx, char (lblChan{n}));
     text (0.75, 1, cap, 'Color', 'm');
   end
   
-  
 end
-
 
 end
