@@ -39,7 +39,7 @@ fprintf (['\n\t Total time to load data: ', num2str(telapsed), '\n']);
 
 
 %% Reshaping data
-fprintf (' reshaping data ');
+fprintf ('\tConverting images to SML');
 tic;
 
 [~, T] = size (data);

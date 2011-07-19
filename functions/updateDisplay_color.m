@@ -73,7 +73,7 @@ if dispPar.plotflag
   drawnow;
 end
 
-fprintf('\r%5d: logL = %4.2f  (%4.2f bits/pixel)\n', ...
+fprintf('%5d: logL = %4.2f  (%4.2f bits/pixel)\n', ...
     Result.iter, Result.logL(Result.plotIter), Result.bits(Result.plotIter) );
 
 end

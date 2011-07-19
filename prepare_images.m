@@ -64,12 +64,12 @@ function [Img] = do_filter_image (Img, DataPar)
 flnm = Img.filename;
 
 tic;
-fprintf ([' applying filter to ' , flnm]);
+fprintf ('\tApplying filter to %s\n', flnm);
 
 ftData = feval (DataPar.filterFn, Img, DataPar);
 
 telapsed = toc;
-fprintf ([' (', num2str(telapsed), ')\n']);
+fprintf (['\t Filtering done in (', num2str(telapsed), ')\n']);
 
 
 %% Use the filtered data now

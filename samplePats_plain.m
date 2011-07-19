@@ -24,8 +24,8 @@ T = Nimgs*Tperimg;
 
 if (isempty(Result.X) || Result.dataIdx > fitPar.npats)
   % generate a new dataset
-
-  fprintf('%5d: Generating new images patches\n',Result.iter);
+  tstart = tic;
+  fprintf('%5d: Generating new images patches\n', Result.iter);
     
   % load new data
     xx=[];
@@ -49,6 +49,8 @@ if (isempty(Result.X) || Result.dataIdx > fitPar.npats)
   Result.X = x;
   
   Result.dataIdx = 1;
+  
+  fprintf('%5s  done in %f \n', ' ', toc(tstart));
 end
 
 

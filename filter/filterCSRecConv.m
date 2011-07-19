@@ -35,8 +35,8 @@ for n=1:3
 end
 
 data = permute (data, [1 3 2]);
-fprintf ('\n\tImg-stats after filtering: Min: %f, Max: \n\t\t %f, Mean: %f, Var: %f \n', ...
-  min (data(:)), max (data(:)), mean (data(:)),var (data(:)));
+fprintf ('\t stats after filtering: Min: %f, Max: %f,\n\t\t Mean: %f, Std: %f \n', ...
+  min (data(:)), max (data(:)), mean (data(:)), std (data(:)));
 end
 
 function [on, off] = rectifyData(data, doLog)
