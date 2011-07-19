@@ -1,7 +1,9 @@
-[ ] Redo filtering code using convolution
+[x] Redo filtering code using convolution
 [ ] Redo displayImage
-[ ] Check (& fix) plotting code
-[ ] Move plotting code from utils to project
-[ ] Initially activate all of Model.A by initializing
-    with randn + 0.2 eye ()
-[ ] Adjust distribution
+[x] Check (& fix) plotting code
+[x] Move plotting code from utils to project
+[x] Initially activate all of Model.A by initializing
+    with randn + 0.2 eye () -> 0.5 * eye
+[!] Adjust distribution -> not needed
+[ ] Better config handling
+[ ] Make Model the central object
