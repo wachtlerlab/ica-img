@@ -1,4 +1,12 @@
 function [ out ] = CSRecToLMS (Model, cols)
+%CSRectTOLMS Convert CSRect data to LMS 
+% Supports shortcuts for $cols:
+%
+%      S    M    L 
+% 1 = on,  on,  on
+% 2 = off, off, off
+% 3 = on,  off, on
+% 4 = on,  off, on
 
 out = Model;
 
