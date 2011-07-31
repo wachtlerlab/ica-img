@@ -34,6 +34,13 @@ for idx=1:n_plots
   axis image;
   axis off;
   fk = plot (refkoos(refxs), refkoos(refys), 'r-');
+  
+  % if we selected channels adjust n_p
+  if isfield(dataPar, 'activeChs')
+    activeChs = dataPar.activeChs;
+    n_p = activeChs(n_p);
+  end
+  
   cap = sprintf ('%s', char (lblChan{n_p}));
   text (5, 15, cap, 'Color', 'r');
   rotate (fi, [0 0 1], 180);
