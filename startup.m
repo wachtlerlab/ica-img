@@ -1,5 +1,6 @@
 path('filter/', path);
 path('sml/', path);
+path('utils/', path);
 path('functions/home/jung/matlab/', path);
 path('functions/home/tewon/Matlab/Lewicki/expwrcode/stats', path);
 path('functions/home/lewicki/matlab/oc', path);
