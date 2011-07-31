@@ -18,7 +18,12 @@ if isempty (Model) || ...
   error ('Config file corrupt');
 end
 
+hashOpts.Method = 'SHA-1';
+hashOpts.isFile = 'true';
+
+Model.cfgId = DataHash (configFile, hashOpts);
 Model.name = configId;
+
 
 end
 
