@@ -1,4 +1,4 @@
-function Result = updateDisplay_color(Model, Result, fitPar, dispPar, initflag)
+function Result = updateDisplay_color(Model, Result, fitPar, dispPar)
 
 % display progress and update plots
 % also do calculations for progress reports
@@ -14,11 +14,9 @@ function Result = updateDisplay_color(Model, Result, fitPar, dispPar, initflag)
 % suitability of this software for any purpose. It is provided "as is"
 % without express or implied warranty.
 
-persistent bfh
-
 skipDC=1;
 
-[L,M] = size(Model.A);
+[~,M] = size(Model.A);
 [L,N] = size(Result.D);
 
 if Result.iter == 1
@@ -27,16 +25,6 @@ if Result.iter == 1
   Result.logL        = zeros(1);
   Result.bits        = zeros(1);
   Result.avgSD       = zeros(1,M);
-end
-
-if (isempty(bfh) | exist('initflag','var') == 1)		% first call
-  if dispPar.plotflag
-%    for i=1:3
-%      tilefig(i); clf;
-%    end
-%    figure(1);
-%    bfh = plotBFs(Model.A,dispPar.maxPlotVecs,'zeroc','l2ord');
-  end
 end
 
 Result.plotIter = Result.plotIter + 1;

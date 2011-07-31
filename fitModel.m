@@ -57,10 +57,8 @@ for i = start : fitPar.maxIters
 
   [Model, Result] = adaptPrior(Model, Result, fitPar);
 
-  if (i == start)
-      Result = updateDisplay(Model, Result, fitPar, dispPar, 'init');
-  elseif (rem(i, dispPar.updateFreq) == 0 || i == fitPar.maxIters)
-      Result = updateDisplay(Model, Result, fitPar, dispPar);
+  if (i == start || isUpdatePoint (i, dispPar.updateFreq, fitPar))
+    Result = updateDisplay(Model, Result, fitPar, dispPar);
   end
 
   dA = calcDeltaA(Result.S, Model);
@@ -69,8 +67,7 @@ for i = start : fitPar.maxIters
   dA = epsilon*dA;
   Model.A = Model.A + dA;
 
-  if (fitPar.saveflag && (rem(i, fitPar.saveFreq) == 0 || ...
-      i == fitPar.maxIters))
+  if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
     saveState(Model, Result, fitPar);
   end
 end
@@ -79,5 +76,9 @@ end
 Result.tDuration = toc (Result.tStart);
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
+end
+
+function [res] = isUpdatePoint (iter, freq, fitPar)
+  res = (rem(iter, freq) == 0 || iter == fitPar.maxIters);
 end
 
