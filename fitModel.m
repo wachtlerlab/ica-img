@@ -58,9 +58,9 @@ for i = start : fitPar.maxIters
   [Model, Result] = adaptPrior(Model, Result, fitPar);
 
   if (i == start)
-      Result = updateDisplay_color(Model, Result, fitPar, dispPar, 'init');
+      Result = updateDisplay(Model, Result, fitPar, dispPar, 'init');
   elseif (rem(i, dispPar.updateFreq) == 0 || i == fitPar.maxIters)
-      Result = updateDisplay_color(Model, Result, fitPar, dispPar);
+      Result = updateDisplay(Model, Result, fitPar, dispPar);
   end
 
   dA = calcDeltaA(Result.S, Model);
