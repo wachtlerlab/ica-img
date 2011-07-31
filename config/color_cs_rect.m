@@ -41,8 +41,8 @@ FitParam.priorAdaptSize = 5000;	% how many coefs to collect before adapting
 FitParam.npats          = 40000;	% number of pats in new dataset
 FitParam.dataFn         = 'getImageData';  % function that generates dataset
 FitParam.dataFnArgs     = [sqrt(L), FitParam.npats];
-FitParam.iterPts        =     [  1,    1000,   5000,  10000 30000 ];
-FitParam.epsilon        = 20 *[ 0.02,  0.01,  0.005,  0.001 0.0005];
+FitParam.iterPts        =     [  1,    1000,  5000, 10000, 30000,  40000 ];
+FitParam.epsilon        = 10 *[ 0.02,  0.01, 0.005, 0.001, 0.0005, 0.0001];
 FitParam.saveflag       = 1;
 FitParam.saveFreq       = 100;
 
