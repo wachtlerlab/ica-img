@@ -15,6 +15,8 @@ Result.tStart = tic;
 
 [Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
 
+Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
+
 if nargin > 1
   dispPar.plotflag = options.progress;
   fitPar.saveflag = options.savestate;
