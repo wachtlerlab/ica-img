@@ -25,7 +25,7 @@ A = sortAbf (Model.A);
 A = normABf (A);
 ha = tight_subplot (num, dataDim, [.01 .01], 0);
 
-lblChan = {{'S (off)'}, {'S (on)'}, {'M (off)'}, {'M (on)'}, {'L (off)'}, {'L (on)'}};
+lblChan = {{'S (on)'}, {'S (off)'}, {'M (on)'}, {'M (off)'}, {'L (on)'}, {'L (off)'}};
 
 for ii = 1:num
   

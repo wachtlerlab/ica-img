@@ -12,10 +12,10 @@ out = Model;
 
 if length (cols) == 1
                %  S    M    L 
-   m = [2,4,6; % on,  on,  on
-        1,3,5; % off, off, off
-        2,3,6; % on,  off, on
-        1,4,5  % on,  off, on
+   m = [1,3,5; % on,  on,  on
+        2,4,6; % off, off, off
+        1,4,5; % on,  off, on
+        2,4,6  % off, off, on
         ];
    cols = m(cols, :);
 end
