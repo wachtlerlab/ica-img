@@ -78,6 +78,11 @@ end
 
 % time reporting
 Result.tDuration = toc (Result.tStart);
+
+Model.fitPar = fitPar;
+Model.dispPar = dispPar;
+Model.dataPar = dataPar;
+
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
 end
