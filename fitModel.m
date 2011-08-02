@@ -20,7 +20,6 @@ Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
 if nargin > 1
   dispPar.plotflag = options.progress;
   fitPar.saveflag = options.savestate;
-  
 end
 
 if dispPar.plotflag
@@ -28,6 +27,9 @@ if dispPar.plotflag
   figure(2)
   figure(3)
 end
+
+fprintf ('\nFitting %s for config %s [%s]\n',...
+  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 
 %% Prepare image data
 Result.images = prepare_images (dataPar);
