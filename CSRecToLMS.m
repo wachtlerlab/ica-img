@@ -7,6 +7,13 @@ function [ out ] = CSRecToLMS (Model, cols)
 % 2 = off, off, off
 % 3 = on,  off, on
 % 4 = on,  off, on
+%
+% Son  = 1
+% Soff = 2
+% Mon  = 3
+% Moff = 4
+% Lon  = 5
+% Loff = 6
 
 out = Model;
 
@@ -15,7 +22,7 @@ if length (cols) == 1
    m = [1,3,5; % on,  on,  on
         2,4,6; % off, off, off
         1,4,5; % on,  off, on
-        2,4,6  % off, off, on
+        2,3,6; % off, on,  off
         ];
    cols = m(cols, :);
 end
