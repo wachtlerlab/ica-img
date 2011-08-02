@@ -1,25 +1,31 @@
-function plotAxis (A, bfs_selector)
+function [hf] = plotAxis (A, fh, bfs_selector)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
 if isa (A, 'struct')
     name = A.name;
+    A = sortModelA (A);
     A = A.A;
-
 else
     name = 'direct';
+    A = sortAbf (A);
 end
 
 [L,M] = size(A);
 
-if nargin < 2
+if nargin < 3
     bfs_selector = 1:M;
 end
 
-figure ('Name', ['Chromaticities of the basis functions: ', name]);
+if nargin < 2
+  hf = figure ('Name', ['Chromaticities of the basis functions: ', name]);
+else
+  set (0, 'CurrentFigure', fh);
+  hf = fh;
+end
+
 set (gcf,'Color',[0.9 0.9 0.9])
 
-A = sortAbf (A);
 B = reshapeAbf (A, 0);
 
 n = length(bfs_selector) + 1;
