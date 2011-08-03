@@ -1,7 +1,11 @@
-function genFullfigs (Model, name)
+function genFullfigs (Model)
 
 Model = sortModelA (Model);
-filePath = fullfile ('..', 'results', name);
+filePath = fullfile ('..', 'results', [Model.name '.ps']);
+
+if exist (filePath, 'file') ~= 0
+    delete (filePath);
+end
 
 fprintf ('Generating figures for %s (%s)\n\t [saveing to %s]\n',...
   Model.name, Model.id(1:7), filePath);
@@ -11,8 +15,10 @@ if Model.dataDim == 6
     Mx = CSRecToLMS (Model, n);
     plotBfAndAxis (Mx, filePath);
   end
-else
+elseif Model.dataDim == 3
   plotBfAndAxis (Model, filePath);
+else
+  fprintf ('Model.dataDim unsupported. No Color/Axis prints.\n');
 end
 
 [~,M] = size (Model.A);
