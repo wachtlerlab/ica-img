@@ -4,7 +4,8 @@ Mode.comment = 'On/Off Center-Surround with simple Filter (center: 1.1)';
 % params related to generating the datasets, e.g. filtering
 %
 simpleFilter = ones (3, 3) * 0.1250;
-simpleFilter(2,2) = 1.05;
+simpleFilter(2,2) = 1.1;
+simpleFilter([1 3 7 9]) = 0.11;
 
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
                         'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
@@ -15,7 +16,7 @@ DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
 DataParam.filterFn  = 'filterCSRecSpecific';
 DataParam.doDebug   = true;
-DataParam.doLog     = true;
+DataParam.doLog     = 0.0001;
 
 % Model parameters
 %
