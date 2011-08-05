@@ -2,10 +2,10 @@ function [ dataFiltered ] = filterCSRecConv (Img, dataPar)
 
 ft = dataPar.filter;
 
-%sur = ft;
-%sur(2,2) = 0;
-%surs = sum (sur(:));
-%fprintf ('Filter: S: %f, C: %f; %f\n', surs, ft(2,2), ft(2,2)/abs (surs));
+sur = ft;
+sur(2,2) = 0;
+surs = sum (sur(:));
+fprintf ('Filter: S: %f, C: %f; %f\n', surs, ft(2,2), ft(2,2)/abs (surs));
 
 % remember the weight of the center for later but set it to 0 for
 % the convolution of L,M
@@ -69,8 +69,8 @@ off(off > 0) = 0;
 off = -1 * off;
 
 if doLog
-  on = log (on + 0.01 * max (on(:)));
-  off = log (off + 0.01 * max (off(:)));
+  on = log (on + doLog * max (on(:)));
+  off = log (off + doLog * max (off(:)));
 end
 
 end
