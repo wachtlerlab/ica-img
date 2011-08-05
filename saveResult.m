@@ -1,7 +1,12 @@
 function [filename] = saveResult (Model)
 
-dstr = datestr (clock (), 'yyyymmddHHMM');
-filename = sprintf ('../results/%s-%s.mat', Model.name, dstr);
+if isfield (Model, 'id')
+  nick = Model.id(1:7);
+else
+  nick = datestr (clock (), 'yyyymmddHHMM');
+end
+
+filename = sprintf ('../results/%s-%s.mat', Model.name, nick);
 save (filename, 'Model');
 
 end
