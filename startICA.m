@@ -6,7 +6,8 @@ end;
 
 options = struct('autosave', 1, ...
                  'savestate', 1, ...
-                 'progress', 0);
+                 'progress', 0, ...
+                 'gpu', 1);
                
 if nargin > 1
   options = parse_varargs (options, varargin);
@@ -46,6 +47,8 @@ for cur = 1:2:args(2)
       options.savestate = str2num (arg);
     case 'progress'
       options.progress = str2num (arg);
+    case 'gpu'
+      options.gpu = str2num (arg);
     otherwise
       fprintf ('[W] Unkown option %s [%s]\n', opt, arg);
   end

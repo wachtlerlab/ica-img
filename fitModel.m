@@ -28,7 +28,8 @@ if dispPar.plotflag
   figure(3)
 end
 
-fprintf ('\nFitting %s for config %s [%s]\n',...
+fprintf ('\nUsing GPU: %d\n', options.gpu);
+fprintf ('Fitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 
 %% Prepare image data
@@ -65,7 +66,7 @@ for i = start : fitPar.maxIters
     Result = updateDisplay(Model, Result, fitPar, dispPar);
   end
 
-  dA = calcDeltaA(Result.S, Model);
+  dA = calcDeltaA(Result.S, Model, options.gpu);
   epsilon = interpIter(i, fitPar.iterPts, fitPar.epsilon);
   epsilon = epsilon/max(abs(dA(:)));
   dA = epsilon*dA;
@@ -82,6 +83,7 @@ Result.tDuration = toc (Result.tStart);
 Model.fitPar = fitPar;
 Model.dispPar = dispPar;
 Model.dataPar = dataPar;
+Model.onGPU = options.gpu;
 
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
