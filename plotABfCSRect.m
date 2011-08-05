@@ -27,17 +27,16 @@ A = normABf (A);
 ha = tight_subplot (num, dataDim*2, [.001 .02], 0);
 
 if isfield(Model, 'chanMap')
-    chanMap = Model.chanMap;
+  chanMap = Model.chanMap;
 else
-    if dataDim == 6
-     chanMap = [49 17 50 18 51 19];
-    elseif dataDim == 3
+  if dataDim == 6
+    chanMap = [49 17 50 18 51 19];
+  elseif dataDim == 3
     chanMap = [1 2 3];
-    elseif dataDim == 4
+  elseif dataDim == 4
     chanMap = [0 0 0 0];
-    end
+  end
 end
-
 
 wp = ones (M,M) * 255;
 scaleImg = 100;
@@ -78,10 +77,10 @@ for ii = 1:num
     xcr2 = mod(n+1,dataDim)+1;
     cr2 =  do_corr (R(n,:), R (xcr2,:));
     
-    txt = sprintf ('%.2f %s', cr, chan2str (xcr, chanMap));
-    text (1, (M/2)+10, txt, 'Color', 'red', 'FontSize', 5);
-    txt = sprintf ('%.2f %s', cr2, chan2str (xcr2, chanMap));
-    text (1, (0.2*M), txt, 'Color', 'blue', 'FontSize', 5);
+    txt = sprintf ('% .4f %s', cr, chan2str (xcr, chanMap));
+    text (1, (M/2), txt, 'Color', 'red', 'FontSize', 5);
+    txt = sprintf ('% .4f %s', cr2, chan2str (xcr2, chanMap));
+    text (1, (0.25*M), txt, 'Color', 'blue', 'FontSize', 5);
     
   end
   
@@ -90,6 +89,8 @@ end
 
 
 function [out] = do_corr (a, b)
+a = a - mean (a);
+b = b - mean (b);
 out = sum (a.*b);
 %out = max (xcorr (a, b, 'coeff'));
 end
