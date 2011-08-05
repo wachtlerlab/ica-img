@@ -4,7 +4,8 @@ Mode.comment = 'On/Off Center-Surround with simple Filter (center: 1.1)';
 % params related to generating the datasets, e.g. filtering
 %
 simpleFilter = ones (3, 3) * 0.1250;
-simpleFilter(2,2) = 1.1;
+simpleFilter(2,2) = 0.95;
+simpleFilter([1 3 7 9]) = 0.11;
 
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
                         'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
@@ -15,7 +16,7 @@ DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
 DataParam.filterFn  = 'filterCSRecConv';
 DataParam.doDebug   = true;
-DataParam.doLog     = true;
+DataParam.doLog     = 0.0001;
 
 % Model parameters
 %
@@ -44,7 +45,7 @@ FitParam.npats          = 40000;	% number of pats in new dataset
 FitParam.dataFn         = 'getImageData';  % function that generates dataset
 FitParam.dataFnArgs     = [sqrt(L), FitParam.npats];
 FitParam.iterPts        =     [  1,    1000,  5000, 10000, 30000,  60000 ];
-FitParam.epsilon        = 20 *[ 0.02,  0.01, 0.005, 0.001, 0.0005, 0.0001];
+FitParam.epsilon        = 5 *[ 0.02,  0.01, 0.005, 0.001, 0.0005, 0.0001];
 FitParam.saveflag       = 1;
 FitParam.saveFreq       = 100;
 
