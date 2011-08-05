@@ -4,7 +4,8 @@ Mode.comment = 'S mit L surround, L mit L surround, jeweils on und off';
 % params related to generating the datasets, e.g. filtering
 %
 simpleFilter = ones (3, 3) * 0.1250;
-simpleFilter(2,2) = 1.05;
+simpleFilter(2,2) = 0.95;
+simpleFilter([1 3 7 9]) = 0.11;
 
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
                         'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
@@ -14,8 +15,10 @@ DataParam.dataDim   = 4; %this is post filtering
 DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
 DataParam.filterFn  = 'filterCSRecDeuteranop';
+DataParam.filterCS  = 3;
 DataParam.doDebug   = true;
 DataParam.doLog     = true;
+DataParam.chanMap   = [49 17 51 19];
 
 % Model parameters
 %
@@ -24,6 +27,7 @@ M               = L;		% expwr only allows square A for now
 Model.A         = randn (L, M) + 0.5 * eye(L, M); %zeros(L,M);
 Model.patchSize = DataParam.patchSize;
 Model.dataDim   = DataParam.dataDim;
+
 
 % params for exponential power prior
 ExPwr.mu     = zeros(M,1);
