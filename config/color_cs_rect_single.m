@@ -12,9 +12,10 @@ DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
 DataParam.filterFn  = 'filterCSRecConv';
 DataParam.doDebug   = true;
-DataParam.doLog     = true;
+DataParam.doLog     = 0.0001;
 DataParam.activeChs = [1 3 5];
 DataParam.dataDim   = length (DataParam.activeChs); %this is post filtering
+DataParam.chanMap   = [49 50 51];
 
 % Model parameters
 %
