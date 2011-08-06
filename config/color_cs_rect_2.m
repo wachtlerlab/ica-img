@@ -1,5 +1,5 @@
 %
-Mode.comment = 'On/Off Center-Surround with simple Filter (center: 1.1)';
+Mode.comment = 'On/Off Center-Surround with simple Filter';
 
 % params related to generating the datasets, e.g. filtering
 %
