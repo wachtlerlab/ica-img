@@ -44,3 +44,6 @@ DataParam.dataDir   = fullfile ('..', 'data', 'bristol');
 DataParam.patchSize = 7;
 DataParam.dataDim   = 3; 
 DataParam.doDebug   = false;
+
+Model.patchSize = DataParam.patchSize;
+Model.dataDim   = DataParam.dataDim;
