@@ -1,4 +1,4 @@
-function plotComps (Model, range, fh)
+function [hf] = plotComps (Model, range, fh)
 
 name = Model.name;
 Model = sortModelA (Model);
@@ -29,16 +29,32 @@ if nargin < 2 || isempty (range)
   range = 1:num;
 end
 
-pcs = zeros (2, length(range));
+pcs = zeros (2, length (range));
 for idx=range
     slice = squeeze (B(idx,:,:,:));
     slice = reshape (slice, 49, 3);
     pc = getPC (slice);
     pcs(:,idx) = pc;
-    %plotComp (slice, hf);
+
 end
 
-compass (pcs(1,:), pcs(2,:), '-k');
+pcs_m = pcs .* -1;
+foo = cat (2, pcs, pcs_m);
+
+polar (0, 0.2); % Scaling of the polar plot to the maximum value (FIXME)
+hold on
+
+tt = atan2(foo(2,:), foo(1,:));
+rr = sqrt (foo(1,:).^2 + foo(2,:).^2);
+
+for idx = 1:length (foo)
+   
+   t = tt (idx);
+   r = rr (idx);
+   
+   polar ([0 t], [0 r], '-k');
+   hold on    
+end
 
 end
 
