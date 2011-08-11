@@ -1,4 +1,4 @@
-function [hf] = plotComps (Model, range, fh)
+function [hf] = plotAxisDirs (Model, range, fh)
 
 name = Model.name;
 Model = sortModelA (Model);
@@ -57,7 +57,7 @@ end
 function [pc] = getPC (basisFunction)
 
 
-slice = 0.5 + 0.5 * basisFunction / max(abs(basisFunction(:))); 
+slice = 0.5 + 0.5 * basisFunction / max(abs(basisFunction(:)));
 
 S = squeeze (slice(:,1));
 M = squeeze (slice(:,2));
@@ -82,7 +82,7 @@ if isa (A, 'struct')
 end
 
 if ndims (A) ~= 2
-   error ('Matrix must be 2D') 
+   error ('Matrix must be 2D')
 end
 
 if nargin < 2
@@ -117,7 +117,7 @@ end
 function [out] = selectChannel (Abf, cols)
 
 shaped = reshape (Abf, 6, 7*7);
-X = shaped(cols, :); 
+X = shaped(cols, :);
 out = reshape (X, 3*7*7, 1);
 
 end

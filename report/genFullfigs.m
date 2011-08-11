@@ -47,7 +47,7 @@ end
 
 function plotDirections (Model, filePath)
 hf = genFig ();
-plotComps (Model, [], hf);
+plotAxisDirs (Model, [], hf);
 do_print (hf, filePath, '600');
 close (hf);
 end
