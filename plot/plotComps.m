@@ -37,14 +37,14 @@ for idx=range
     pcs(:,idx) = pc;
 end
 
-pcs_m = pcs .* -1;
-foo = cat (2, pcs, pcs_m);
-
-
-tt = atan2(foo(2,:), foo(1,:));
-rr = sqrt (foo(1,:).^2 + foo(2,:).^2);
+tt = atan2(pcs(2,:), pcs(1,:));
+rr = sqrt (pcs(1,:).^2 + pcs(2,:).^2);
 
 xmax = max (abs (rr(:)));
+
+tt = cat (1, tt, tt + pi); %mirror directions
+rr = cat (1, rr, rr);
+
 polar (0, xmax); % Scaling of the polar plot to the maximum value
 hold on
 
@@ -68,7 +68,7 @@ y = S-((L+M)/2);
 
 X = [x'; y']';
 
-[pc,score,latent,tsquare] = princomp(X);
+[pc,~,latent,~] = princomp(X);
 pc = pc(:,1) * latent (1);
 
 end
