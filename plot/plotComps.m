@@ -77,35 +77,6 @@ pc = pc(:,1) * latent (1);
 
 end
 
-function plotComp (basisFunction, hf)
-
-%colord = 0.5 + 0.5 * basisFunction / max(abs(basisFunction(:))); 
-%colord = flipdim (colord, 2);
-
-slice = 0.5 + 0.5 * basisFunction / max(abs(basisFunction(:))); 
-
-S = squeeze (slice(:,1));
-M = squeeze (slice(:,2));
-L = squeeze (slice(:,3));
-
-x = L-M;
-y = S-((L+M)/2);
-
-X = [y'; x']';
-
-[pc,score,latent,tsquare] = princomp(X);
-p1 = pc(:,1) * latent (1);
-latent (1)
-
-if latent(1) <  0.01
-  return;
-end
-
-compass (pc(1,1), pc(2,1));
-hold on
-
-end
-
 
 function [ shapedA ] = reshapeAbf (A, doflip)
 %reshapeAbf Reshape the mixing matrix A to obtain the basis functions
