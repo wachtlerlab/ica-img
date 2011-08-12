@@ -4,8 +4,8 @@ Mode.comment = 'Protanop: S w/ M surround, M w/ M surround, je on & off';
 % params related to generating the datasets, e.g. filtering
 %
 simpleFilter = ones (3, 3) * 0.1250;
-simpleFilter(2,2) = 1.0;
-simpleFilter([1 3 7 9]) = 0.1;
+simpleFilter(2,2) = 0.95;
+simpleFilter([1 3 7 9]) = 0.11;
 
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
                         'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
