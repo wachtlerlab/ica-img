@@ -31,31 +31,16 @@ for idx = range
 
 end
 
-ha = tight_subplot(1, 2, .1, 0.1);
+len = length(l);
+midpoint = ceil ((len)/2);
 
-midpoint = ceil ((length(l)-1)/2)
+colormap ('gray')
+subplot(1,2,1);
+range = 1:midpoint;
+imagesc (1:4,range,l(range,:))
 
-set (gcf, 'CurrentAxes', ha(1));
-colormap ('gray');
-hold on;
-imagesc (l(1:midpoint,:));
-ylim ([min(range) range(midpoint)]);
-xlim ([1 4]);
-set(gca,'YTickLabel', min(range):range(midpoint))
-txt = sprintf ('%d:%d', min(range), range(midpoint));
-title (ha(1), txt);
-
-
-set (gcf, 'CurrentAxes', ha(2));
-colormap ('gray');
-hold on;
-imagesc (l(midpoint+1:end,:));
-%ylim ([range(midpoint+1) max(range)]);
-ylim ([min(range) range(midpoint)]);
-xlim ([1 4]);
-set(gca,'YTickLabel', range(midpoint+1):max(range))
-txt = sprintf ('%d:%d', range(midpoint+1), max(range));
-title (ha(2), txt);
-
+subplot(1,2,2);
+range = midpoint+1:len;
+imagesc (1:4,range, l(range,:))
 
 end
