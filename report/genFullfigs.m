@@ -23,7 +23,7 @@ if Model.dataDim == 6
   plotDirections (Model, filePath);
   
 elseif Model.dataDim == 4
-  fprintf ('Model.dataDim unsupported. No Color/Axis prints.\n');
+   splitAndPlotFN (Model, @plotRatios, 50, filePath);
 else
    plotBfAndAxis (Model, filePath);
    plotDirections (Model, filePath);
@@ -45,12 +45,36 @@ function [hf] = genFig ()
   hf = figure ('Position', [0, 0, 800, 1000], 'Color', 'w', 'PaperType', 'A4');
 end
 
+
+function splitAndPlotFN (Model, plotFN, stepSize, filePath)
+
+[~,M] = size (Model.A);
+r = rem (M, stepSize);
+
+for start = 1:stepSize:(M - r)
+  feval (plotFN, Model, start:start+stepSize, filePath);
+end
+
+feval (plotFN, Model, M-r:M, filePath);
+
+end
+
+
 function plotDirections (Model, filePath)
 hf = genFig ();
 plotAxisDirs (Model, [], hf);
 do_print (hf, filePath, '600');
 close (hf);
 end
+
+
+function plotRatios (Model, range, filePath)
+hf = genFig ();
+plotRatio (Model, range, hf);
+do_print (hf, filePath, '600');
+close (hf);
+end
+
 
 function plotBfAndAxis (Mx, filePath)
   hf = genFig ();
@@ -64,6 +88,7 @@ function plotBfAndAxis (Mx, filePath)
   close (hf);
 end
 
+
 function ppBfSingle (Model, start, num, filePath)
   hf = genFig ();
   plotABfCSRect (Model, start, num, hf);
@@ -71,12 +96,13 @@ function ppBfSingle (Model, start, num, filePath)
   close (hf);
 end
 
+
 function do_print (hf, filePath, res)
 
 if nargin < 3
   res = '300';
 end
 
-  print (hf, '-dpsc2', '-append', ['-r' res], filePath);
+  print (hf, '-dpsc2', '-append', ['-r' res], '-zbuffer', filePath);
   
 end
