@@ -1,8 +1,15 @@
-function genFullfigs (Model)
+function [filePath] = genReportFigures (Model)
 
 Model = sortModelA (Model);
 nick = Model.id(1:7);
-filePath = fullfile ('..', 'results', [Model.name '-' nick '.ps']);
+
+reportDir = fullfile ('..', 'reports');
+
+if exist (reportDir, 'dir') == 0
+   mkdir (reportDir); 
+end
+
+filePath = fullfile (reportDir, [Model.name '-' nick '.ps']);
 
 if exist (filePath, 'file') ~= 0
     delete (filePath);
