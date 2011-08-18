@@ -42,6 +42,7 @@ r = 1:midpoint;
 imagesc (1:4, r, l(r,:))
 ylim ([min(r) max(r)])
 title ([num2str(min(range)) ':' num2str(range(midpoint))])
+axis off
 
 subplot(1,2,2);
 r = midpoint+1:len;
