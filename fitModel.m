@@ -6,8 +6,10 @@ shouldSaveState = 0;
 % basic init
 clear Model fitPar dispPar Result;
 
-if exist ('state', 'dir') == 0
-   mkdir ('state'); 
+stateDir = fullfile ('..', 'state');
+
+if exist (stateDir, 'dir') == 0
+   mkdir (stateDir); 
 end
 
 start = 1;
