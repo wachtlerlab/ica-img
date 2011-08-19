@@ -5,7 +5,7 @@
 
 // kernel functions
 
-__global__ void absmax_kernel (const double *in, double *out)
+__global__ void absmax_kernel (const double *in, int s, double *out)
 {
   int tid, gid, off;
   extern __shared__ double data[];
@@ -15,9 +15,14 @@ __global__ void absmax_kernel (const double *in, double *out)
   off = 1;
 
   // read data from global memory
-  data[tid*2] = in[gid];
-  data[tid*2+1] = in[gid+1];
-
+  if (gid < s)
+    {
+      data[tid*2] = in[gid];
+      data[tid*2+1] = in[gid+1];
+    }
+  else
+    data[tid*2] =  data[tid*2+1] = 0;
+ 
   // b-tree result calculation
   for (off = 1; off < blockDim.x*2; off = off << 1)
     {
@@ -39,7 +44,7 @@ __global__ void absmax_kernel (const double *in, double *out)
 
 }
 
-#if 0
+
 // utility funtions
 
 int
@@ -89,14 +94,13 @@ absmax (const double *matrix, int s, double *result)
   double *test;
 
   p2 = nearest_power_of_two (s);
-  cudaMalloc (&data, p2 * sizeof (double));
+  cudaMalloc (&data, s * sizeof (double));
   cudaMemcpy (data, matrix, s * sizeof (double), cudaMemcpyHostToDevice);
-  cudaMemset (data + s, 0, (p2 - s) * sizeof (double));
 
   rem = calc_cfg (p2, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
   cudaMalloc (&out, blocksPerGrid * sizeof (double));
 
-  absmax_kernel<<<rem, threadsPerBlock, sharedMemSize>>>(data, out);
+  absmax_kernel<<<rem, threadsPerBlock, sharedMemSize>>>(data, s, out);
   cudaThreadSynchronize ();
 
   cudaMallocHost (&test, blocksPerGrid * sizeof (double));
@@ -112,12 +116,10 @@ absmax (const double *matrix, int s, double *result)
 
   do {
     cudaThreadSynchronize ();
-    absmax_kernel<<<blocksPerGrid, threadsPerBlock, sharedMemSize>>>(data, out);
+    absmax_kernel<<<blocksPerGrid, threadsPerBlock, sharedMemSize>>>(data, s, out);
     rem = calc_cfg (rem, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
     printf ("REM %d\n", rem);
   } while (rem > 1);
 
   cudaMemcpy (result, out, sizeof (double), cudaMemcpyDeviceToHost);
 }
-
-#endif
