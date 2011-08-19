@@ -30,9 +30,18 @@ if dispPar.plotflag
   figure(3)
 end
 
-fprintf ('\nUsing GPU: %d\n', options.gpu);
+
 fprintf ('Fitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
+
+%% Setup GPU context
+fprintf ('\nUsing GPU: %d\n', options.gpu);
+if options.gpu
+  Model.gpu = gpuDevice;
+  gpuContext.absmax = absmax_setup (Model.A);
+else
+  gpuContext = 0;
+end
 
 %% Prepare image data
 Result.images = prepare_images (dataPar);
@@ -67,12 +76,10 @@ for i = start : fitPar.maxIters
   if (i == start || isUpdatePoint (i, dispPar.updateFreq, fitPar))
     Result = updateDisplay(Model, Result, fitPar, dispPar);
   end
-
-  dA = calcDeltaA(Result.S, Model, options.gpu);
-  epsilon = interpIter(i, fitPar.iterPts, fitPar.epsilon);
-  epsilon = epsilon/max(abs(dA(:)));
-  dA = epsilon*dA;
-  Model.A = Model.A + dA;
+  
+  epsilon = interpIter (i, fitPar.iterPts, fitPar.epsilon);
+  [dA, A] = calcDeltaA (Result.S, Model, options.gpu);
+  Model.A = updateAwithDeltaA (A, dA, epsilon, gpuContext);
 
   if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
     saveState(Model, Result, fitPar);
@@ -93,5 +100,25 @@ end
 
 function [res] = isUpdatePoint (iter, freq, fitPar)
   res = (rem(iter, freq) == 0 || iter == fitPar.maxIters);
+end
+
+
+function [A] = updateAwithDeltaA (A, dA, epsilon, gpuContext)
+
+if isstruct (gpuContext)
+  e = gpuArray (epsilon);
+  e = e / absmax_cu (dA, gpuContext);
+  dA = e * dA;
+  A = A + dA;
+  A = gather (A);
+else
+  epsilon = epsilon/max(abs(dA(:)));
+  dA = epsilon * dA;
+  A = A + dA;
+end
+
+
+
+
 end
 
