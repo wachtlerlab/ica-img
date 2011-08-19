@@ -21,12 +21,17 @@ b = gpuArray (a);
 
 for x=1:n
   tStart = tic;
-  y = absmax_cu (b, gpuContext);
+  z = absmax_cu (b, gpuContext);
   tEnd = toc (tStart);
   ts(x) = tEnd;
 end
-
+ 
 mts_gpu = mean (ts);
 
 fprintf ('GPU: %f (%d) [%s]\n', mts_gpu, n, dev.Name);
 fprintf ('Ratio: %f\n', mts_gpu/mts_cpu);
+
+d = y - gather (z);
+if d ~= 0
+  fprintf ('Oh oh: %f\n', d);
+end
