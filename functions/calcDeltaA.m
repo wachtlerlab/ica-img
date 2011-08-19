@@ -1,14 +1,19 @@
-function dA = calcDeltaA(S,Model, onGPU)
+function [dA, A] = calcDeltaA(S,Model, onGPU)
+
+%tM = tic;
 
 if onGPU
-  dA = calcOnGPU (S, Model);
+  [dA, A] = calcOnGPU (S, Model);
 else
-  dA = calcOnHost (S, Model);
+  [dA, A] = calcOnHost (S, Model);
 end
+
+%te = toc (tM);
+%fprintf ('dA done in %f [gpu: %d]\n', te, onGPU);
 
 end
 
-function dA = calcOnGPU(S, Model)
+function [dA, A] = calcOnGPU(S, Model)
 
 A = Model.A;
 [~,M] = size(A);
@@ -23,23 +28,19 @@ for m=1:M
   Z(m,:) = -(q*c/(mp.sigma(m).^q)) * abs(s).^(q-1) .* sign(s);
 end
 
-%tM = tic;
 gA = gpuArray (A);
 gZ = gpuArray (Z);
 gS = gpuArray (S);
 gnpats = gpuArray (npats);
 
-gdA = -gA*gZ*gS' - gnpats*gA;
-gdA = gdA/gnpats;
-dA = gather (gdA);
+dA = -gA*gZ*gS' - gnpats*gA;
+dA = dA/gnpats;
 
-%te = toc (tM);
-%printf ('dA done in %f (CPU)\n', te);
-
+A = gA;
 
 end
 
-function dA = calcOnHost (S, Model)
+function [dA, A] = calcOnHost (S, Model)
 
 A = Model.A;
 [L,M] = size(A);
