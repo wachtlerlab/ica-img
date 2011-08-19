@@ -1,31 +1,21 @@
-function [ maximum ] = absmax_cu (A, kern)
-
-s = size (A);
-l = s(1)*s(2);
-
-p2 = pow2 (nextpow2 (l));
-
-A_flat = reshape (A, 1, l);
-A_fill = parallel.gpu.GPUArray.zeros (1, p2 - l);
-A = cat (2, A_flat, A_fill);
+function [ maximum ] = absmax_cu (A, gpuContext)
 
 if nargin < 2
-  kern = parallel.gpu.CUDAKernel ('absmax_kernel.ptx', 'absmax_kernel.cu');
+  gpuContext.absmax = absmax_setup (A);
 end
 
-[gridDim, ~] = calcKernParams (kern, p2);
-out = parallel.gpu.GPUArray.zeros (1, gridDim);
+kern = gpuContext.absmax.kernel;
+out = gpuContext.absmax.outArray;
+p2Size = gpuContext.absmax.p2Size;
+dataSize = gpuContext.absmax.dataSize;
 
-dataSize = p2;
+while p2Size > 1
 
-while dataSize > 1
-
-  [kern, dataSize] = setupKernel (kern, dataSize);
-  out = feval (kern, A, out);
+  [kern, p2Size] = setupKernel (kern, p2Size);
+  out = feval (kern, A, dataSize, out);
   A = out;
   
 end
-
 
 maximum = out(1,1);
 
@@ -34,21 +24,14 @@ end
 
 function [kern, gridDim] = setupKernel (kern, dataSize)
 
-[gridDim, blockDim, sharedMem] =  calcKernParams (kern, dataSize);
+blockSize = min (kern.MaxThreadsPerBlock, dataSize);
+
+blockDim = blockSize / 2;
+gridDim = dataSize / blockSize;
+sharedMem = blockSize * 8;
 
 kern.SharedMemorySize = sharedMem;
 kern.GridSize = [gridDim 1];
 kern.ThreadBlockSize = [blockDim 1 1];
-
-
-end
-
-function [gridDim, threads, sharedMem] = calcKernParams (kern, dataSize)
-
-blockSize = min (kern.MaxThreadsPerBlock, dataSize);
-
-threads = blockSize / 2;
-gridDim = dataSize / blockSize;
-sharedMem = blockSize * 8;
 
 end
