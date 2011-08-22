@@ -78,7 +78,7 @@ end
 function plotRatios (Model, range, filePath)
 hf = genFig ();
 plotRatio (Model, range, hf);
-do_print (hf, filePath, '600');
+do_print (hf, filePath, '600', '-zbuffer');
 close (hf);
 end
 
@@ -104,12 +104,18 @@ function ppBfSingle (Model, start, num, filePath)
 end
 
 
-function do_print (hf, filePath, res)
+function do_print (hf, filePath, res, renderer)
 
 if nargin < 3
   res = '300';
 end
 
-  print (hf, '-dpsc2', '-append', ['-r' res], '-zbuffer', filePath);
+if nargin < 4
+  re = [];
+else
+  re = ['-' renderer];
+end
+
+  print (hf, '-dpsc2', '-append', ['-r' res], re, filePath);
   
 end
