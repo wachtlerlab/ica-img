@@ -17,6 +17,8 @@ LDFLAGS=-L/usr/local/cuda/lib64 -lcuda -lm -lcudart
 absmax: absmax.o absmax_kernel.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+kernels: absmax_kernel.ptx calc_z.ptx
+
 .PHONY: clean
 
 clean:
