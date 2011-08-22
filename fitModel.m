@@ -82,7 +82,6 @@ for i = start : fitPar.maxIters
   [dA, A] = calcDeltaA (Result.S, Model, gpuContext);
   Model.A = updateAwithDeltaA (A, dA, epsilon, gpuContext);
 
-  fprintf ('Updating A done in %f\n', te);
   if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
     saveState(Model, Result, fitPar);
   end
