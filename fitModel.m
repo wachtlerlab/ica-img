@@ -31,7 +31,7 @@ if dispPar.plotflag
 end
 
 
-fprintf ('Fitting %s for config %s [%s]\n',...
+fprintf ('\nFitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 
 %% Setup GPU context
@@ -39,6 +39,7 @@ fprintf ('\nUsing GPU: %d\n', options.gpu);
 if options.gpu
   Model.gpu = gpuDevice;
   gpuContext.absmax = absmax_setup (Model.A);
+  gpuContext.calc_z = calc_z_setup (Model.A, fitPar.blocksize);
 else
   gpuContext = 0;
 end
@@ -78,9 +79,10 @@ for i = start : fitPar.maxIters
   end
   
   epsilon = interpIter (i, fitPar.iterPts, fitPar.epsilon);
-  [dA, A] = calcDeltaA (Result.S, Model, options.gpu);
+  [dA, A] = calcDeltaA (Result.S, Model, gpuContext);
   Model.A = updateAwithDeltaA (A, dA, epsilon, gpuContext);
 
+  fprintf ('Updating A done in %f\n', te);
   if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
     saveState(Model, Result, fitPar);
   end

@@ -1,42 +1,28 @@
-function [dA, A] = calcDeltaA(S,Model, onGPU)
+function [dA, A] = calcDeltaA(S,Model, gpuContext)
 
 %tM = tic;
 
-if onGPU
-  [dA, A] = calcOnGPU (S, Model);
+if isstruct (gpuContext)
+  [dA, A] = calcOnGPU (S, Model, gpuContext);
 else
   [dA, A] = calcOnHost (S, Model);
 end
 
 %te = toc (tM);
-%fprintf ('dA done in %f [gpu: %d]\n', te, onGPU);
+%fprintf ('dA done in %f [gpu: %d]\n', te, isstruct (gpuContext));
 
 end
 
-function [dA, A] = calcOnGPU(S, Model)
+function [dA, A] = calcOnGPU(S, Model, gpuContext)
 
-A = Model.A;
-[~,M] = size(A);
-npats = size(S,2);
-mp = Model.prior;
-Z = zeros (size(S));
+npats = gpuArray (size(S,2));
 
-for m=1:M
-  s = S(m,:) - mp.mu(m);
-  q = (2/(1+mp.beta(m)));
-  c = (gamma(3/q)/gamma(1/q)).^(q/2);
-  Z(m,:) = -(q*c/(mp.sigma(m).^q)) * abs(s).^(q-1) .* sign(s);
-end
+S = gpuArray (S);
+A = gpuArray (Model.A);
+Z = calc_z (S, Model.prior, gpuContext);
 
-gA = gpuArray (A);
-gZ = gpuArray (Z);
-gS = gpuArray (S);
-gnpats = gpuArray (npats);
-
-dA = -gA*gZ*gS' - gnpats*gA;
-dA = dA/gnpats;
-
-A = gA;
+dA = -A*Z*S' - npats*A;
+dA = dA/npats;
 
 end
 
