@@ -9,7 +9,7 @@ if id == 0
 end
 
 channelMap = {{'S'}, {'M'}, {'L'}};
-onoffMap = {{'off'}, {'on'}};
+onoffMap = {{'-'}, {'+'}};
 
 chan = bitand (id, bin2dec('00001111'));
 caption = char (channelMap{chan});
@@ -17,7 +17,7 @@ caption = char (channelMap{chan});
 if  bitand (bin2dec('00010000'), id) ~= 0
     idx = (bitand (bin2dec('00100000'), id) ~= 0) + 1;
     onoffstr = char (onoffMap{idx});
-    caption = char ([caption ' ' onoffstr]);
+    caption = char ([caption onoffstr]);
 end
 
 end
