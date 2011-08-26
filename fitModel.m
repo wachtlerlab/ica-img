@@ -38,6 +38,7 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
 fprintf ('\nUsing GPU: %d\n', options.gpu);
 if options.gpu
   Model.gpu = gpuDevice;
+  fprintf ('\t[%s]\n', Model.gpu.Name);
   gpuContext.absmax = absmax_setup (Model.A);
   gpuContext.calc_z = calc_z_setup (Model.A, fitPar.blocksize);
 else
@@ -56,7 +57,6 @@ end
 %% Infer matrix
 %
 
-dA = zeros (size(Model.A));
 Result.priorN = 0;
 Result.dataIdx = 1;
 Result.X = [];		% force new dataset to be generated
