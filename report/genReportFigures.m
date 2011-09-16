@@ -78,7 +78,7 @@ end
 function plotRatios (Model, range, filePath)
 hf = genFig ();
 plotRatio (Model, range, hf);
-do_print (hf, filePath, '600', '-zbuffer');
+do_print (hf, filePath, '600', 'zbuffer');
 close (hf);
 end
 
