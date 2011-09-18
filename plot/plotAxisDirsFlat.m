@@ -44,22 +44,44 @@ end
 tt = atan2(pcs(2,:), pcs(1,:));
 rr = sqrt (pcs(1,:).^2 + pcs(2,:).^2);
 
-tt = cat (2, tt, tt + pi); %mirror directions
+tt(tt < 0) = tt(tt < 0) + pi; % negative values get positive here
+
+tt = cat (2, tt, tt + pi); %mirror directions (0-180 -> 180-360)
 rr = cat (2, rr, rr);
 
 tt = tt * 180 / pi;
 
 x = [tt; tt];
-
-%ft = do_gauss (-10:0.1:10,0,2)*10;
-%rr = conv (rr, ft, 'same');
-
 y = [zeros(1,length(rr)); rr];
+y = y / max(y(:));
 
 hold on
-line (x, y, 'Color', 'black');
+line (x, y, 'Color', 'cyan');
 xlim([0 180])
 
+scale  = 100;
+
+l = length (tt);
+vals = zeros (1,360*scale);
+for n = 1:l
+  x = abs (ceil (tt(n) * scale)) + 1;
+  y = rr(n);
+  vals(x) = y;
+end
+
+
+kernel_x = -10:1/scale:10;
+kernel = do_gauss (kernel_x,0,3);
+n = length(kernel_x);
+cvals = [vals(length(vals)-(n-1):end) vals vals(1:n)]
+x_prime = conv (cvals, kernel, 'same');
+xpp = x_prime(n+1:end-n);
+xpp = (xpp/max(xpp(:)));
+
+plot (0:(1/scale):(360-1/scale),xpp, 'black');
+
+figure;
+plot (kernel_x, kernel);
 end
 
 function [pc] = getPC (basisFunction)
