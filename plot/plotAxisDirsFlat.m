@@ -1,4 +1,4 @@
-function [hf] = plotAxisDirsFlat (Model, range, fh)
+function [hf] = plotAxisDirsFlat (Model, range, fh, kernel_std)
 
 name = Model.name;
 Model = sortModelA (Model);
@@ -37,10 +37,6 @@ for idx=range
     pcs(:,idx) = pc;
 end
 
-%pcs(1,:) -> X; pcs(2,:) -> Y
-%x = [pcs(1,:); pcs(1,:)];
-%y = [zeros(1,length(pcs(2,:))); abs(pcs(2,:))];
-
 tt = atan2(pcs(2,:), pcs(1,:));
 rr = sqrt (pcs(1,:).^2 + pcs(2,:).^2);
 
@@ -69,19 +65,23 @@ for n = 1:l
   vals(x) = y;
 end
 
-
+if nargin < 4
+  kernel_std = 3;
+end
+  
 kernel_x = -10:1/scale:10;
-kernel = do_gauss (kernel_x,0,3);
+kernel = do_gauss (kernel_x, 0, kernel_std);
 n = length(kernel_x);
-cvals = [vals(length(vals)-(n-1):end) vals vals(1:n)]
+cvals = [vals(length(vals)-(n-1):end) vals vals(1:n)];
 x_prime = conv (cvals, kernel, 'same');
 xpp = x_prime(n+1:end-n);
 xpp = (xpp/max(xpp(:)));
 
 plot (0:(1/scale):(360-1/scale),xpp, 'black');
 
-figure;
+axes ('Position', [.20 .65 .2 .2], 'Layer','top');
 plot (kernel_x, kernel);
+title ('kernel');
 end
 
 function [pc] = getPC (basisFunction)
