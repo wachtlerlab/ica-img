@@ -46,13 +46,20 @@ else
 end
 
 %% Prepare image data
-Result.images = prepare_images (dataPar);
+images = prepare_images (dataPar);
 
 % Present the filtered pictures (inkluding the excluded patches)
 % to the user for visual validation
 if dispPar.plotflag && dataPar.doDebug
-    displayImages (Result.images, dataPar, 1);
+    displayImages (images, dataPar, 1);
 end
+
+%% Generate the DataSet
+tstart = tic;
+fprintf('\nGenerating dataset...\n');
+dataset = generateDataSet (images, fitPar, dataPar);
+fprintf('\t done in %f \n', ' ', toc(tstart));
+
 
 %% Infer matrix
 %
@@ -64,7 +71,7 @@ Result.X = [];		% force new dataset to be generated
 for i = start : fitPar.maxIters
   Result.iter = i;
 
-  Result = samplePats_plain(Result, fitPar, dataPar);
+  Result = samplePats(Result, dataset);
 
   if start == 1 && Result.iter == start
     Model = rescaleBfs(Model, Result);
