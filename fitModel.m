@@ -58,7 +58,7 @@ end
 tstart = tic;
 fprintf('\nGenerating dataset...\n');
 dataset = generateDataSet (images, fitPar, dataPar);
-fprintf('\t done in %f \n', ' ', toc(tstart));
+fprintf('   done in %f\n', toc(tstart));
 
 
 %% Infer matrix
