@@ -20,7 +20,7 @@ end
 permidxlst = dataset.patsperm(:,cluster);
 npats = dataset.npats;
 x = xx(:,permidxlst);
-x = x - (ones(npats,1)*mean(x'))';
+x = x - (mean(x,2) * ones(1, npats));
 patches = x/sqrt(var(x(:)));
 
 end
