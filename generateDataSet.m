@@ -19,12 +19,18 @@ for n = 1:nimages
   indicies(:,:,:,n) = idx;  
 end
 
+patsperm = zeros(npats, nclusters);
+for n = 1:nclusters
+  patsperm(:,n) = randperm(npats);
+end
+
 dataset.images    = images;
 dataset.patchsize = patchsize;
 dataset.npats     = npats;
 dataset.blocksize = blocksize;
 dataset.nclusters = nclusters;
 dataset.indicies  = indicies;
+dataset.patsperm  = patsperm;
 
 end
 

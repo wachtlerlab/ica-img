@@ -1,4 +1,4 @@
-function [ patches ] = extractPatches(dataset, block)
+function [ patches ] = extractPatches(dataset, cluster)
 
 nimages = length(dataset.images);
 
@@ -7,7 +7,7 @@ xx = [];
 for n = 1:nimages
   
   img = dataset.images(n);
-  idxs = dataset.indicies(:,:, block, n);
+  idxs = dataset.indicies(:,:, cluster, n);
   
   xtmp = patchesFromImg(img, idxs, dataset.patchsize);
   xtmp = xtmp - mean(xtmp(:));
@@ -16,10 +16,11 @@ for n = 1:nimages
         
 end
 
-[~, T] = size(xx);
-permidxlst = randperm(T);
+
+permidxlst = dataset.patsperm(:,cluster);
+npats = dataset.npats;
 x = xx(:,permidxlst);
-x = x - (ones(T,1)*mean(x'))';
+x = x - (ones(npats,1)*mean(x'))';
 patches = x/sqrt(var(x(:)));
 
 end
