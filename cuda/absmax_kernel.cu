@@ -112,8 +112,6 @@ absmax (const double *matrix, int s, double *result)
   rem = calc_cfg (rem, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
   data = out;
 
-  
-
   do {
     cudaThreadSynchronize ();
     absmax_kernel<<<blocksPerGrid, threadsPerBlock, sharedMemSize>>>(data, s, out);
