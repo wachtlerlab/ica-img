@@ -121,3 +121,43 @@ absmax (const double *matrix, int s, double *result)
 
   cudaMemcpy (result, out, sizeof (double), cudaMemcpyDeviceToHost);
 }
+
+// as absmax but operate on already allocated device memory
+void
+gpu_absmax (const double *matrix, int s, double *result)
+{
+  int blocksPerGrid;
+  int threadsPerBlock;
+  size_t sharedMemSize;
+  int rem;
+  size_t p2;
+  double *data;
+  double *out;
+  double *test;
+
+  p2 = nearest_power_of_two (s);
+  //cudaMalloc (&data, s * sizeof (double));
+  //cudaMemcpy (data, matrix, s * sizeof (double), cudaMemcpyHostToDevice);
+
+  rem = calc_cfg (p2, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
+  cudaMalloc (&out, blocksPerGrid * sizeof (double));
+
+  absmax_kernel<<<rem, threadsPerBlock, sharedMemSize>>>(matrix, s, out);
+  cudaThreadSynchronize ();
+
+  rem = calc_cfg (rem, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
+  data = out;
+
+  do {
+    cudaThreadSynchronize ();
+
+    absmax_kernel<<<blocksPerGrid, threadsPerBlock, sharedMemSize>>>(data, s, out);
+    rem = calc_cfg (rem, &blocksPerGrid, &threadsPerBlock, &sharedMemSize);
+
+  } while (rem > 1);
+
+  if (is_symbol)
+    cudaMemcpyToSymbol ();
+
+  cudaMemcpy (result, out, sizeof (double), cudaMemcpyDeviceToDevice);
+}

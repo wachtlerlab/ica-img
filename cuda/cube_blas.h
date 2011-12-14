@@ -1,14 +1,23 @@
 
 #ifndef CUBE_BLAS_H
 #define CUBE_BLAS_H
-              
-typedef enum _cube_blas_op_t cube_blas_op_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 enum _cube_blas_op_t {
   CUBE_BLAS_OP_N = 0,
   CUBE_BLAS_OP_T = 1,
   CUBE_BLAS_OP_C = 2
 };
+
+typedef enum _cube_blas_op_t cube_blas_op_t;
+
+void cube_blas_d_iamax (cube_t       *ctx,
+			int           n,
+			const double *x, int incx,
+			int          *result);
 
 void cube_blas_d_gemm (cube_t *ctx,
 		       cube_blas_op_t transa, cube_blas_op_t transb,
@@ -37,5 +46,8 @@ void cube_blas_d_scal (cube_t       *ctx,
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

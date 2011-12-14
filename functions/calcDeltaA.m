@@ -48,4 +48,6 @@ dA = -A*Z*S' - npats*A;
 % normalize by the number of patterns
 dA = dA/npats;
 
+X = dA;
+
 end

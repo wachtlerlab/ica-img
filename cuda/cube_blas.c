@@ -3,6 +3,25 @@
 #include "cube_blas.h"
 #include "cube_private.h"
 
+void
+cube_blas_d_iamax (cube_t       *ctx,
+		   int           n,
+		   const double *x, int incx,
+		   int          *result)
+{
+  cublasStatus_t status;
+  
+  if (! cube_context_check (ctx))
+    return;
+
+  status = cublasIdamax (ctx->h_blas,
+			 n,
+			 x, incx,
+			 result);
+
+  cube_blas_check (ctx, status);
+}
+
 
 void
 cube_blas_d_gemm (cube_t *ctx,

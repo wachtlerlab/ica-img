@@ -4,6 +4,7 @@
 #include "cube_private.h"
 
 #include <string.h>
+#include <stdio.h>
 
 static cube_t ctx_no_mem = {CUBE_ERROR_NO_MEMORY, CUBLAS_STATUS_NOT_INITIALIZED, 0};
 
@@ -68,6 +69,8 @@ cube_blas_check (cube_t *ctx, cublasStatus_t blas_status)
   ctx->status = CUBE_ERROR_CUDA;
   ctx->e_blas = blas_status;
 
+  printf ("WARNING: cuda_blas error encountered\n");
+
   return 0;
 }
 
@@ -79,6 +82,9 @@ cube_cuda_check (cube_t *ctx, cudaError_t cuda_error)
   
   ctx->status = CUBE_ERROR_CUDA;
   ctx->e_cuda = cuda_error;
+
+  printf ("WARNING: cuda_error encountered:\n\t%s\n",
+	  cudaGetErrorString (cuda_error));
 
   return 0;
 }
@@ -110,6 +116,23 @@ cube_free_device (cube_t *ctx, void *dev_ptr)
   cudaFree(dev_ptr);
 }
 
+void *
+cube_host_register (cube_t *ctx, void *host, size_t len)
+{
+  cudaError_t res;
+  void *dev_ptr;
+
+  if (! cube_context_check (ctx))
+    return NULL;
+
+  cudaHostRegister (host, len, cudaHostRegisterMapped);
+  res = cudaHostGetDevicePointer (&dev_ptr, host, 0);
+
+  if (! cube_cuda_check (ctx, res))
+    dev_ptr = NULL;
+
+  return dev_ptr;
+}
 
 void *
 cube_memcpy (cube_t *ctx,

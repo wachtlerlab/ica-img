@@ -2,6 +2,10 @@
 #ifndef CUBE_ERROR_H
 #define CUBE_ERROR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum _cube_status_t {
   CUBE_STATUS_OK  = 0,
 
@@ -13,5 +17,9 @@ enum _cube_status_t {
   CUBE_ERROR_FAILED = 255
 
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

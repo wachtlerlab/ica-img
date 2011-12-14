@@ -99,6 +99,36 @@ cube_matrix_sync (cube_t          *ctx,
 }
 
 void
+cube_matrix_iamax (cube_t              *ctx,
+		   const cube_matrix_t *A,
+		   int                 *result)
+{
+  int size;
+
+  if (! cube_context_check (ctx))
+    return;
+
+  size = A->m * A->n;
+
+  cube_blas_d_iamax (ctx,
+		     size,
+		     A->dev_ptr, 1,
+		     result);		     
+}
+
+void
+cube_matrix_amax (cube_t              *ctx,
+		  const cube_matrix_t *A,
+		  void                *result)
+{
+  if (! cube_context_check (ctx))
+    return;
+
+  
+ 
+}
+
+void
 cube_matrix_gemm (cube_t *ctx,
 		  cube_blas_op_t transa, cube_blas_op_t transb,
 		  const double *alpha,

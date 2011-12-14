@@ -32,7 +32,7 @@ all : libcube.$(SO_EXT)
 absmax: absmax.o absmax_kernel.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-libcube.$(SO_EXT): cube.o cube_blas.o cube_matrix.o cube_ica.o calc_z.o
+libcube.$(SO_EXT): cube.o cube_blas.o cube_matrix.o cube_ica.o cube_ica_kernels.o calc_z.o
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $^ $(LDFLAGS) $(LIBS)
 
 libcube_m.$(SO_EXT): libcube.$(SO_EXT) cube_matlab.o
