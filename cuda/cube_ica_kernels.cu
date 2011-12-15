@@ -17,13 +17,13 @@ update_AdA_kernel (double       *A,
 		   const double *epsilon,
 		   const int    *iamax)
 {
-  double max;
+  const double max = abs(dA[*iamax - 1]); /* global read, but LDU hopefully (FIXME, not sure) */
   const double eps = *epsilon;
   extern __shared__ double smem[];
   double *dA_data;
   double *A_data;
   int     global_x, global_y, lid, gid;
-  double  temp;
+
   
   /* calculate global and local ids */
   global_x = (blockDim.x * blockIdx.x) + threadIdx.x;
@@ -40,13 +40,7 @@ update_AdA_kernel (double       *A,
   A_data = &smem[0];
   dA_data = &smem[blockDim.x * blockDim.y];
 
-  /* read in the data from global memory */
-  max = abs(dA[*iamax - 1]); /* global read, but LDU hopefully (FIXME, not sure) */
-  //eps  = *epsilon;
-
-  temp = dA[gid];
-  dA_data[lid] = temp;
-
+  dA_data[lid] = dA[gid];
   A_data[lid] = A[gid];
 
   __syncthreads();

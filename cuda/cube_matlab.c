@@ -2,7 +2,7 @@
 #include "cube_blas.h"
 #include "cube_private.h"
 #include "cube_matlab.h"
-
+#include "cube_ica.h"
 
 #include <mat.h>
 
@@ -103,3 +103,40 @@ cube_matrix_from_array (cube_t *ctx, mxArray *A)
 }
 
 
+int
+cube_matlab_ica_update_A (cube_t  *ctx,
+			  mxArray *m_A,
+			  mxArray *m_S,
+			  mxArray *m_mu,
+			  mxArray *m_beta,
+			  mxArray *m_sigma,
+			  mxArray *m_npats,
+			  mxArray *m_epsilon)
+{
+  cube_matrix_t *A, *S, *mu, *beta, *sigma;
+  double *epsilon, *npats;
+
+  if (! cube_context_check (ctx))
+    return -1;
+
+  A     = cube_matrix_from_array (ctx, m_A);
+  S     = cube_matrix_from_array (ctx, m_S);
+  mu    = cube_matrix_from_array (ctx, m_mu);
+  beta  = cube_matrix_from_array (ctx, m_beta);
+  sigma = cube_matrix_from_array (ctx, m_sigma);
+
+  epsilon = (double *) mxGetData (m_epsilon);
+  npats = (double *) mxGetData (m_npats);
+
+  cube_matrix_sync (ctx, A, CUBE_SYNC_DEVICE);
+  cube_matrix_sync (ctx, S, CUBE_SYNC_DEVICE);
+  cube_matrix_sync (ctx, mu, CUBE_SYNC_DEVICE);
+  cube_matrix_sync (ctx, beta, CUBE_SYNC_DEVICE);
+  cube_matrix_sync (ctx, sigma, CUBE_SYNC_DEVICE);
+
+  cube_ica_update_A (ctx, A, S, mu, beta, sigma, npats, epsilon);
+
+  cube_matrix_sync (ctx, A, CUBE_SYNC_HOST);
+
+  return cube_context_check (ctx);
+}

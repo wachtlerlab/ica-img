@@ -98,6 +98,25 @@ cube_matrix_sync (cube_t          *ctx,
     }
 }
 
+int
+cube_matrix_get_m (cube_matrix_t *matrix)
+{
+  if (matrix == NULL)
+    return 0;
+
+  return matrix->m;
+}
+
+
+int
+cube_matrix_get_n (cube_matrix_t *matrix)
+{
+  if (matrix == NULL)
+    return 0;
+
+  return matrix->n;
+}
+
 void
 cube_matrix_iamax (cube_t              *ctx,
 		   const cube_matrix_t *A,
@@ -246,12 +265,12 @@ cube_matrix_dump (cube_matrix_t *matrix, int m_max, int n_max)
 
   A = matrix->data;
 
-  m = min (matrix->m, m_max);
-  n = min (matrix->n, n_max);
+  m = matrix->m; //min (matrix->m, m_max);
+  n = matrix->n; //min (matrix->n, n_max);
 
-  for (row = 0; row < m; row++)
+  for (row = 137; row < m; row++)
     {
-      for (col = 0; col < n; col++)
+      for (col = 137; col < n; col++)
 	{
 	  int pos = (col * matrix->m) + row;
 	  printf ("%lf ", A[pos]); //A[IDX2F(row, col, n)]);

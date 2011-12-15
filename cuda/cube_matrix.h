@@ -49,6 +49,9 @@ void            cube_matrix_sync    (cube_t          *ctx,
 				     cube_matrix_t   *matrix,
 				     cube_sync_dir_t  direction);
 
+int             cube_matrix_get_m   (cube_matrix_t *matrix);
+int             cube_matrix_get_n   (cube_matrix_t *matrix);
+
 void            cube_matrix_dump    (cube_matrix_t *matrix, int m_max, int n_max);
 
 void            cube_matrix_iamax   (cube_t              *ctx,
