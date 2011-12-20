@@ -5,3 +5,6 @@
 /state
 /*.png
 *.ptx
+*.o
+*.so
+*.trc
