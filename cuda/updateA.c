@@ -12,8 +12,8 @@
 
 typedef struct NAPair {
 
-  const char     *name;
-  cube_matrix_t **pa;
+  const char    *name;
+  mxArray      **pa;
 
 } NAPair;
 
@@ -28,7 +28,7 @@ main(int argc, char **argv)
   const char **dir;
   char *filename;
   int i, ndir;
-  cube_matrix_t *dA, *A, *S, *Z, *mu, *beta, *sigma, *X;
+  mxArray *dA, *A, *S, *Z, *mu, *beta, *sigma, *X;
   mxArray *mxa;
   NAPair  *iter;
   NAPair a_map[] = {"A", &A, "S", &S, "mu", &mu, "beta", &beta, "sigma", &sigma, NULL,};
@@ -37,6 +37,8 @@ main(int argc, char **argv)
   double epsilon;
   double *eps;
   int *iamax;
+  int res;
+  char *str;
 
   dA = A = S = mu = beta = sigma = Z = NULL;
 
@@ -57,12 +59,7 @@ main(int argc, char **argv)
       for (iter = a_map; iter->name; iter++)
 	if (strcmp (iter->name, name) == 0)
 	  {
-	    cube_matrix_t *cm;
-
-	    cm = cube_matrix_from_array (ctx, a);
-	    cube_matrix_sync (ctx, cm, CUBE_SYNC_DEVICE);
-
-	    *(iter->pa) = cm;
+	    *(iter->pa) = a;
 	    a = NULL;
 	    printf ("%s -> %s\n", iter->name, name);
 	    break;
@@ -75,67 +72,18 @@ main(int argc, char **argv)
 	}
     }
 
-  cube_matrix_dump (A, 10, 10);
-
-  mxa = mxCreateDoubleMatrix (147, 100, mxREAL);
-  Z = cube_matrix_from_array (ctx, mxa);
-  cube_matrix_sync (ctx, Z, CUBE_SYNC_DEVICE);
-
-  X = cube_matrix_new_on_device (ctx, 147, 100);
-
-  mxa = mxCreateDoubleMatrix (147, 147, mxREAL);
-  dA = cube_matrix_from_array (ctx, mxa);
-  cube_matrix_sync (ctx, dA, CUBE_SYNC_DEVICE);
-  //dA = cube_matrix_new_on_device (ctx, 147, 147);
-  cube_matrix_copy (ctx, A, dA, CUBE_SYNC_DEVICE);
-
-  cube_ica_calc_Z (ctx, S, mu, beta, sigma, Z);
-
-  a = -1.0;
-  b = 0.0;
-
-  /*  X = -1*A*Z  */
-  cube_matrix_gemm (ctx, CUBE_BLAS_OP_N, CUBE_BLAS_OP_N, &a, A, Z, &b, X);
-
-  /* dA = X * S' - 40000 * A" (with A" = copy of A) */
-  a = 1.0;
-  b = -100.0;
-  cube_matrix_gemm (ctx, CUBE_BLAS_OP_N, CUBE_BLAS_OP_T, &a, X, S, &b, dA);
- 
-  s = 1.0/100.0;
-  cube_matrix_scale (ctx, dA, &s);
-
-  /*cube_matrix_dump (A);
-  cube_matrix_dump (dA);
-  cube_matrix_dump (MA);
-  */
-
-  //cube_matrix_gemm (ctx, CUBE_BLAS_OP_N, CUBE_BLAS_OP_N, &a, A, dA, &b, MA);
-
-  cube_matrix_sync (ctx, Z, CUBE_SYNC_HOST);
-  cube_matrix_dump (Z, 10, 10);
-  //str = mxArrayToString (Z->data)
-
-  //cube_matrix_sync (ctx, Z, CUBE_SYNC_HOST);
-  //cube_matrix_dump (Z, 10, 10);
-
-  cube_matrix_iamax (ctx, dA, &maxidx);
-
-  cube_matrix_sync (ctx, dA, CUBE_SYNC_HOST);
-  cube_matrix_dump (dA, 10, 10);
-
-  printf ("amax: %d\n",  maxidx);
-
   epsilon = 0.0400;
+  res = cube_matlab_ica_update_A (ctx, A, S, mu, beta, sigma, epsilon);
+  printf ("res = %d\n", res);
 
-  eps = cube_host_register (ctx, &epsilon, sizeof (epsilon));
-  iamax = cube_host_register (ctx, &maxidx, sizeof (maxidx));
+  //str = mxArrayToString (A);
+  //printf ("\nA=\n\n%s\n\n", str);
+  //mxFree (str);
 
-  gpu_update_A_with_delta_A (ctx, A, dA, eps, iamax);
-
-  cube_matrix_sync (ctx, A, CUBE_SYNC_HOST);
-  cube_matrix_dump (A, 10, 10);
-
+  
+    //cube_matrix_sync (ctx, A, CUBE_SYNC_HOST);
+    //cube_matrix_dump (A, 10, 10);
+  //cube_matrix_dump (A, 10, 10);
 
   //for (iter = a_map; iter->name; iter++)
   // {

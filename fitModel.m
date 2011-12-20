@@ -37,12 +37,16 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
 %% Setup GPU context
 fprintf ('\nUsing GPU: %d\n', options.gpu);
 if options.gpu
-  Model.gpu = gpuDevice;
-  fprintf ('\t[%s]\n', Model.gpu.Name);
-  gpuContext.absmax = absmax_setup (Model.A);
-  gpuContext.calc_z = calc_z_setup (Model.A, fitPar.blocksize);
+  %Model.gpu = gpuDevice;
+  %fprintf ('\t[%s]\n', Model.gpu.Name);
+  %gpuContext.absmax = absmax_setup (Model.A);
+  %gpuContext.calc_z = calc_z_setup (Model.A, fitPar.blocksize);
+  hcube = cube()
+  hcube.setup()
+  gpuContext = 0;
 else
   gpuContext = 0;
+  hcube = 0;
 end
 
 %% Prepare image data
@@ -98,8 +102,13 @@ for i = start : fitPar.maxIters
   
   tstart = tic;
   epsilon = interpIter (i, fitPar.iterPts, fitPar.epsilon);
-  [dA, A] = calcDeltaA (Result.S, Model, gpuContext);
-  Model.A = updateAwithDeltaA (A, dA, epsilon, gpuContext);
+  if options.gpu
+    Model.A = updateAonGPU (Model, Result, epsilon, hcube);
+  else   
+    [dA, A] = calcDeltaA (Result.S, Model, gpuContext);
+    Model.A = updateAwithDeltaA (A, dA, epsilon);
+  end
+  
   calcTimes(cT, 4) = toc(tstart);
   
   if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
@@ -135,22 +144,24 @@ function [res] = isUpdatePoint (iter, freq, fitPar)
 end
 
 
-function [A] = updateAwithDeltaA (A, dA, epsilon, gpuContext)
+function [A] = updateAwithDeltaA (A, dA, epsilon)
 
-if isstruct (gpuContext)
-  e = gpuArray (epsilon);
-  e = e / absmax_cu (dA, gpuContext);
-  dA = e * dA;
-  A = A + dA;
-  A = gather (A);
-else
   epsilon = epsilon/max(abs(dA(:)));
   dA = epsilon * dA;
   A = A + dA;
-end
-
-
-
 
 end
 
+function [A] = updateAonGPU (Model, Result, epsilon, hcube)
+A = Model.A;
+S = Result.S;
+mu = Model.prior.mu;
+beta  = Model.prior.beta;
+sigma = Model.prior.sigma;
+res = hcube.ica_update_A (A, S, mu, beta, sigma, epsilon);
+
+if res ~= 1
+  error ('Error during computation on the GPU')
+end
+
+end

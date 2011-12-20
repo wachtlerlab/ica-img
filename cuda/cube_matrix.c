@@ -19,8 +19,10 @@ cube_matrix_new (cube_t *ctx)
     return NULL;
 
   ma = malloc (sizeof (cube_matrix_t));
-  memset (ma, 0, sizeof (cube_matrix_t));
 
+  if (ma)
+    memset (ma, 0, sizeof (cube_matrix_t));
+  
   return ma;
 }
 
@@ -206,6 +208,7 @@ cube_matrix_new_on_device (cube_t       *ctx,
   ma->m = m;
   ma->n = n;
   ma->dev_ptr = cube_malloc_device (ctx, size);
+  //ma->data = malloc (size);
 
   if (ma->dev_ptr == NULL)
     {
@@ -265,12 +268,12 @@ cube_matrix_dump (cube_matrix_t *matrix, int m_max, int n_max)
 
   A = matrix->data;
 
-  m = matrix->m; //min (matrix->m, m_max);
-  n = matrix->n; //min (matrix->n, n_max);
+  m = min (matrix->m, m_max);
+  n = min (matrix->n, n_max);
 
-  for (row = 137; row < m; row++)
+  for (row = 0; row < m; row++)
     {
-      for (col = 137; col < n; col++)
+      for (col = 0; col < n; col++)
 	{
 	  int pos = (col * matrix->m) + row;
 	  printf ("%lf ", A[pos]); //A[IDX2F(row, col, n)]);

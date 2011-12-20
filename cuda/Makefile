@@ -1,12 +1,14 @@
 MATLAB=/usr/local/MATLAB/R2011a
 CC=clang
 NVCC=nvcc
-GPUARCH=sm_13
+GPUARCH=sm_20
 ARCH=$(shell getconf LONG_BIT)
+CWD=$(shell pwd)
 CUDA=/usr/local/cuda
 CFLAGS=-I$(CUDA)/include -I$(MATLAB)/extern/include -m$(ARCH) -g
 LIBS=-lcuda -lm -lcudart -lcublas
 SO_EXT=so
+
 
 ifeq ($(ARCH), 32)
 	MATLAB_BINDIR=$(MATLAB)/bin/glnx86
@@ -16,7 +18,7 @@ else
 	CUDA_LIBDIR=$(CUDA)/lib64
 endif
 
-LDFLAGS=-L$(CUDA_LIBDIR) -L$(MATLAB_BINDIR) -L. -Wl,-rpath,$(MATLAB_BINDIR) -Wl,-rpath,$(CUDA_LIBDIR) -Wl,-rpath,.
+LDFLAGS=-L$(CUDA_LIBDIR) -L$(MATLAB_BINDIR) -L. -Wl,-rpath,$(MATLAB_BINDIR) -Wl,-rpath,$(CUDA_LIBDIR) -Wl,-rpath,$(CWD)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -fPIC -c -o $@ $<

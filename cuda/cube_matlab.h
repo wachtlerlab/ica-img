@@ -17,15 +17,14 @@ const char **    cube_matfile_get_dir (cube_t *ctx, cube_matfile_t *fd, int *n);
 mxArray *        cube_matfile_get_var (cube_t *ctx, cube_matfile_t *fd, const char *name);
 cube_matrix_t *  cube_matrix_from_array (cube_t *ctx, mxArray *array);
 
-int              cube_matlab_ica_update_A (cube_t  *ctx,
-					   mxArray *A,
-					   mxArray *S,
-					   mxArray *mu,
-					   mxArray *beta,
-					   mxArray *sigma,
-					   mxArray *npats,
-					   mxArray *epsilon);
-  
+
+int  cube_matlab_ica_update_A (cube_t  *ctx,
+			       mxArray *m_A,
+			       mxArray *m_S,
+			       mxArray *m_mu,
+			       mxArray *m_beta,
+			       mxArray *m_sigma,
+			       double   m_epsilon);
 #ifdef __cplusplus
 }
 #endif

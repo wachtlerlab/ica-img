@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+#include "cube.h"
+
 enum _cube_blas_op_t {
   CUBE_BLAS_OP_N = 0,
   CUBE_BLAS_OP_T = 1,

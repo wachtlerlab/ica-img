@@ -32,8 +32,8 @@ int      cube_context_check (cube_t *ctx);
 
 void *   cube_malloc_device (cube_t *ctx, size_t size);
 void     cube_free_device (cube_t *ctx, void *dev_ptr);
-void *   cube_host_register (cube_t *ctx, void *host, size_t len);
-
+void *   cube_host_register   (cube_t *ctx, void *host, size_t len);
+int      cube_host_unregister (cube_t *ctx, void *host);
 
 void *   cube_memcpy (cube_t *ctx,
 		      void   *dest,

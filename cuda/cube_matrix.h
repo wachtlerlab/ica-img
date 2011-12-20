@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "cube_blas.h"
+
 typedef struct _cube_matrix_t cube_matrix_t;
 
 struct _cube_matrix_t {

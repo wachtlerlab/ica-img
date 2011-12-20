@@ -110,11 +110,10 @@ cube_matlab_ica_update_A (cube_t  *ctx,
 			  mxArray *m_mu,
 			  mxArray *m_beta,
 			  mxArray *m_sigma,
-			  mxArray *m_npats,
-			  mxArray *m_epsilon)
+			  double   m_epsilon)
 {
   cube_matrix_t *A, *S, *mu, *beta, *sigma;
-  double *epsilon, *npats;
+  double *epsilon, npats;
 
   if (! cube_context_check (ctx))
     return -1;
@@ -125,8 +124,8 @@ cube_matlab_ica_update_A (cube_t  *ctx,
   beta  = cube_matrix_from_array (ctx, m_beta);
   sigma = cube_matrix_from_array (ctx, m_sigma);
 
-  epsilon = (double *) mxGetData (m_epsilon);
-  npats = (double *) mxGetData (m_npats);
+  npats   = 1.0 / (double) cube_matrix_get_n (S);
+  epsilon = cube_host_register (ctx, &m_epsilon, sizeof (double));
 
   cube_matrix_sync (ctx, A, CUBE_SYNC_DEVICE);
   cube_matrix_sync (ctx, S, CUBE_SYNC_DEVICE);
@@ -134,9 +133,15 @@ cube_matlab_ica_update_A (cube_t  *ctx,
   cube_matrix_sync (ctx, beta, CUBE_SYNC_DEVICE);
   cube_matrix_sync (ctx, sigma, CUBE_SYNC_DEVICE);
 
-  cube_ica_update_A (ctx, A, S, mu, beta, sigma, npats, epsilon);
+  cube_ica_update_A (ctx, A, S, mu, beta, sigma, &npats, epsilon);
 
   cube_matrix_sync (ctx, A, CUBE_SYNC_HOST);
+cube_matrix_dump (A, 10, 10);
+  cube_host_unregister (ctx, &m_epsilon);
+  cube_matrix_destroy (ctx, A);
+  cube_matrix_destroy (ctx, S);
+  cube_matrix_destroy (ctx, mu);
+  cube_matrix_destroy (ctx, sigma);
 
   return cube_context_check (ctx);
 }

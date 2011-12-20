@@ -134,6 +134,19 @@ cube_host_register (cube_t *ctx, void *host, size_t len)
   return dev_ptr;
 }
 
+int 
+cube_host_unregister (cube_t *ctx, void *host)
+{
+  cudaError_t res;
+
+  if (! cube_context_check (ctx))
+    return cube_context_check (ctx);
+
+  res = cudaHostUnregister (host);
+   
+  return cube_cuda_check (ctx, res);
+}
+
 void *
 cube_memcpy (cube_t *ctx,
 	     void   *dest,
