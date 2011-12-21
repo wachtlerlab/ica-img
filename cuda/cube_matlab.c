@@ -5,6 +5,7 @@
 #include "cube_ica.h"
 
 #include <mat.h>
+#include <stdarg.h>
 
 typedef struct MATFile _cube_matfile_t;
 
@@ -74,6 +75,36 @@ cube_matfile_get_var (cube_t         *ctx,
 
   return a;
 }
+
+
+int
+cube_matfile_get_vars (cube_t         *ctx,
+		       cube_matfile_t *mfd,
+		       ...)
+{
+  va_list ap;
+  char    *var;
+  int      count;
+
+  va_start (ap, mfd); 
+
+  while ((var = va_arg (ap, char *)) != NULL)
+    {
+      mxArray **map;
+
+      map = va_arg (ap, mxArray **);
+
+      if (ap == NULL)
+	break;
+
+      *map = cube_matfile_get_var (ctx, mfd, var);
+      count++;
+    }
+ 
+  va_end(ap);
+  return count;
+}
+
 
 cube_matrix_t *
 cube_matrix_from_array (cube_t *ctx, mxArray *A)

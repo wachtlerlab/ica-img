@@ -19,6 +19,8 @@ gpu_update_A_with_delta_A (cube_t        *ctx,
 			   cube_matrix_t *dA,
 			   const double  *epsilon,
 			   const int     *iamax);
+double
+gpu_sumpower (cube_t *ctx, const double *in, int n, double p);
 
 #ifdef __cplusplus
 }
