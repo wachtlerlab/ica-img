@@ -12,7 +12,6 @@
 __device__ void
 sumpower_dev (const double *x,
 	      int           n,
-	      int           incx,
 	      double        p,
 	      double        mu,
 	      double        sigma,
@@ -21,9 +20,8 @@ sumpower_dev (const double *x,
 {
   int i, off;
 
+  // zero out shared mem so we can sum on int directly
   sum[threadIdx.x] = 0;
-
-  off = 1;
 
   __syncthreads (); // necessary?
 
@@ -31,11 +29,13 @@ sumpower_dev (const double *x,
     {
       int block = threadIdx.x*bs;
       int col = block+i;
+      double u;
 
       if (!(col < n))
 	break;
 
-      sum[threadIdx.x] += powf (fabs (x[col]), p);
+      u = pow (fabs ((x[col] - mu) / sigma), p);
+      sum[threadIdx.x] += u;
     }
 
   // b-tree result calculation
@@ -58,19 +58,16 @@ sumpower_dev (const double *x,
 }
 
 __global__ void
-sumpower_kernel (const double *in, int n, double p, double *out)
+sumpower_kernel (const double *in, int n, int bs, double p, double *out)
 {
-  int tid, gid, off;
+  int tid;
   extern __shared__ double data[];
   double *sum;
-  int i, bs;
+  int i;
 
   tid = threadIdx.x;
-  off = 1;
 
   // read data from global memory
-
-  bs = ceil ((double) n / blockDim.x);
 
   for (i = 0; i < bs; i++)
     {
@@ -81,38 +78,9 @@ sumpower_kernel (const double *in, int n, double p, double *out)
     }
 
   sum = &data[n];
-  sum[tid] = 0;
 
-  __syncthreads (); // necessary?
+  sumpower_dev (data, n, p, 0, 1, sum, bs);
 
-  for (i = 0; i < bs; i++)
-    {
-      int block = tid*bs;
-      int col = block+i;
-
-      if (!(col < n))
-	break;
-
-      sum[tid] += powf (fabs (data[col]), p);
-    }
-
-  
-  // b-tree result calculation
-  for (off = 1; off < blockDim.x; off = off << 1)
-    {
-      __syncthreads ();
-
-      if (tid < (blockDim.x/(off*2)))
-        {
-          int off_x = (tid * off * 2);
-	  int off_y = off_x + off;
-
-          sum[off_x] += sum[off_y];
-        }
-    }
-
-  // write memory back to device memory
-  __syncthreads ();
   if (tid == 0)
     out[blockIdx.x] = sum[0];
 
@@ -125,19 +93,20 @@ gpu_sumpower (cube_t *ctx, const double *in, int n, double p)
   double *devp, res, *out;
   dim3 grid, block;
   size_t smem;
+  int bs;
 
   if (! cube_context_check (ctx))
     return -1;
-
-  block.x = 512;
 
   out = (double *) cube_host_register (ctx, &res, sizeof (res));
   devp = (double *) cube_malloc_device (ctx, sizeof (double) * n);
   cube_memcpy (ctx, devp, (void *) in, sizeof (double) * n, CMK_HOST_2_DEVICE);
 
+  block.x = 512;
   smem = (block.x + n) * sizeof (double);
+  bs = ceil ((double) n / block.x);
 
-  sumpower_kernel<<<grid, block, smem>>>(devp, n, p, out);
+  sumpower_kernel<<<grid, block, smem>>>(devp, n, bs, p, out);
   
   r = cudaPeekAtLastError ();
   cube_cuda_check (ctx, r);
