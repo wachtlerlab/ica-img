@@ -9,6 +9,31 @@
 #include <cuda.h>
 #include <stdio.h>
 
+__device__ double dsign (double v)
+{
+  if (v > 0)
+    return 1;
+  else if (v < 0)
+    return -1;
+  else
+    return 0;
+}
+
+typedef struct _exp_param
+{
+  double *y;
+  int    n;
+  
+  double mu;
+  double sigma;
+  double a;
+  double b;
+
+  double *sum;
+  int     bs;
+
+} exp_param;
+
 __device__ void
 sumpower_dev (const double *x,
 	      int           n,
@@ -56,6 +81,267 @@ sumpower_dev (const double *x,
   __syncthreads (); // not sure that is needed either
   // sum[0] will hold the result!
 }
+
+__device__ double
+exp_pwr_l_beta (double beta, const exp_param params)
+{
+  double *y;
+  double mu, sigma, a, b;
+  double c, logw, uas, l;
+  double p;
+  int n;
+
+  y     = params.y;
+  n     = params.n;
+  mu    = params.mu;
+  sigma = params.sigma;
+  a     = params.a;
+  b     = params.b;
+
+
+  p = 2.0/(1+beta);
+
+  c = pow ((tgamma(3.0/p)/tgamma(1/p)), (p/2.0));
+  logw = 0.5 * lgamma (3.0/p) - 1.5 * lgamma (1/p) - log (1+beta);
+
+  sumpower_dev (y, n, p, mu, sigma, params.sum, params.bs);
+  uas = params.sum[0];
+
+  l = (-1*lgamma(a)) - (a*log(b)) + ((a-1.0)*log(1.0+beta)) +
+    n*logw - n*log(sigma) - ((1.0+beta)/b) - (c * uas);
+
+  return l;
+}
+
+__device__ double
+exp_pwrlbeta_fmin (double x, const exp_param fparams)
+{
+  double l, beta;
+
+  beta = exp (x) - 1;
+
+  l = -1 *  exp_pwr_l_beta (beta, fparams);
+  
+  return l;
+}
+
+/* No input checking, ax > bx required  */
+__device__ double
+f_min_bound (double ax, double bx, double tol, const exp_param fparams)
+{
+  double tol1, tol2;
+  int maxfun,  maxiter;
+  const double seps = 1.4901e-08;;
+  double a, b, c, d, e;
+  double v, fv, w, fw, x, xf, fx, xm;
+  int count, iter;
+
+  count = 0.0;
+
+  maxfun = 500.0;
+  maxiter = 500.0;
+  
+  c = 0.5 * (3.0 - sqrt (5.0));
+  a = ax;
+  b = bx;
+  v = a + c * (b - a);
+  w = v;
+  xf = v;
+  d = 0.0;
+  e = 0.0;
+  x = xf;
+
+  fx = exp_pwrlbeta_fmin (x, fparams);
+  count++;
+
+  fv = fx;
+  fw = fx;
+  xm = 0.5 * (a + b);
+  tol1 = seps * fabs (xf) + tol/3.0;
+  tol2 = 2.0 * tol1;
+
+  while (fabs (xf-xm) > (tol2 - 0.5*(b-a)))
+    {
+      double r, q, p, si, fu;
+      int gs = 1;
+
+      if (abs(e) > tol1)
+	{
+	  gs = 0;
+
+	  r = (xf-w)*(fx-fv);
+	  q = (xf-v)*(fx-fw);
+	  p = (xf-v)*q-(xf-w)*r;
+	  q = 2.0*(q-r);
+	  
+	  if (q > 0.0)
+	    p = -p;
+
+	  q = fabs(q);
+	  r = e; e = d;
+
+	  if ((fabs(p) < fabs(0.5*q*r)) &&
+	      (p > q*(a-xf)) &&
+	      (p < q*(b-xf)))
+	    {
+	      d = p/q;
+	      x = xf + d;
+
+	      if (((x-a) < tol2) || ((b-x) < tol2))
+		{
+		  si = dsign (xm-xf) + ((xm-xf) == 0);
+		  d = tol1 * si;
+		}
+	    }
+	  else
+	    {
+	      gs = 1;
+	    }
+	}
+
+      if (gs)
+	{
+	  if (xf >= xm)
+	    e = a-xf;
+	  else
+	    e = b-xf;
+
+	  d = c*e;
+	}
+
+      si = dsign(d) + (d == 0);
+      x = xf + si * fmax (fabs(d), tol1);
+
+      fu = exp_pwrlbeta_fmin (x, fparams);
+      count++;
+      iter++;
+
+      if (fu <= fx)
+	{
+	  if (x >= xf)
+	    a = xf;
+	  else 
+	    b = xf;
+
+	  v = w; fv = fw;
+	  w = xf; fw = fx;
+	  xf = x; fx = fu;
+	}
+      else // fu > fx
+	{
+	  if (x < xf)
+	    a = x;
+	  else
+	    b = x;
+	       
+	  if ((fu <= fw) || (w == xf))
+	    {
+	      v = w; fv = fw;
+	      w = x; fw = fu;
+	    }
+	  else if ((fu <= fv) || (v == xf) || (v == w))
+	    {
+	      v = x; fv = fu;
+	    }
+	  
+	}
+
+      xm = 0.5 * (a+b);
+      tol1 = seps * abs(xf) + tol/3.0;
+      tol2 = 2.0 * tol1;
+      
+      if (count > maxfun || iter > maxiter)
+	{
+	  break;
+	}
+    }
+
+  return xf;
+}
+
+__global__ void
+aprior_kernel (const double *in,
+	       const int     n,
+	       const int     bs,
+	       const double  ax,
+	       const double  bx,
+	       const double  tol,
+	       const double  a,
+	       const double  b,
+	       double       *out)
+{
+  exp_param fparams;
+  extern __shared__ double data[];
+  int i;
+  double res;
+
+  // read data from global memory
+
+  for (i = 0; i < bs; i++)
+    {
+      int col = threadIdx.x*bs+i;
+
+      if (col < n)
+	data[col] = in[col];
+    }
+
+  // now the calculation
+ 
+  fparams.y = &data[0];
+  fparams.n = n;
+  fparams.bs = bs;
+
+  fparams.sum = &data[n];
+  fparams.a = a;
+  fparams.b = b;
+  fparams.mu = 0;
+  fparams.sigma = 1;
+
+  res = f_min_bound (ax, bx, tol, fparams);
+
+  if (threadIdx.x == 0)
+    out[blockIdx.x] = expf(res) - 1;
+}
+
+double
+gpu_aprior (cube_t *ctx, const double *in, int n, double tol, double a, double b)
+{
+  cudaError_t r;
+  double *devp, res, *out;
+  double betamin, betamax;
+  double xmin, xmax;
+  dim3 grid, block;
+  size_t smem;
+  int bs;
+
+  if (! cube_context_check (ctx))
+    return -1;
+
+  betamin = -0.9;
+  betamax = 20.0;
+
+  xmin = log (1 + betamin);
+  xmax = log (1 + betamax);
+
+  out = (double *) cube_host_register (ctx, &res, sizeof (res));
+  devp = (double *) cube_malloc_device (ctx, sizeof (double) * n);
+  cube_memcpy (ctx, devp, (void *) in, sizeof (double) * n, CMK_HOST_2_DEVICE);
+
+  block.x = 512;
+  smem = (block.x + n) * sizeof (double);
+  bs = ceil ((double) n / block.x);
+
+  aprior_kernel<<<grid, block, smem>>>(devp, n, bs, xmin, xmax, tol, a, b, out);
+  
+  r = cudaPeekAtLastError ();
+  cube_cuda_check (ctx, r);
+
+  cube_host_unregister (ctx, &res);
+
+  return res;
+}
+
+
 
 __global__ void
 sumpower_kernel (const double *in, int n, int bs, double p, double *out)
@@ -117,15 +403,8 @@ gpu_sumpower (cube_t *ctx, const double *in, int n, double p)
 }
 
 
-__device__ double dsign (double v)
-{
-  if (v > 0)
-    return 1;
-  else if (v < 0)
-    return -1;
-  else
-    return 0;
-}
+
+
 
 __global__ void
 kernel_calc_z (const double *S_g,

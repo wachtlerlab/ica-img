@@ -10,7 +10,8 @@
 #include <string.h>
 
 #include <math.h>
-
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 double
 dnorm_centered (double *x, int n, int incx, double p, double mu, double sigma)
@@ -125,7 +126,7 @@ f_min_bound (double ax, double bx, double tol, exp_param fparams)
   e = 0.0;
   x = xf;
 
-  x = exp_pwrlbeta_fmin (x, fparams);
+  fx = exp_pwrlbeta_fmin (x, fparams);
   count++;
 
   fv = fx;
@@ -134,12 +135,12 @@ f_min_bound (double ax, double bx, double tol, exp_param fparams)
   tol1 = seps * fabs (xf) + tol/3.0;
   tol2 = 2.0 * tol1;
 
-  while (abs (xf- xm) > (tol2 - 0.5*(b-a)))
+  while (fabs (xf- xm) > (tol2 - 0.5*(b-a)))
     {
-      double r, q, p, si, xm, fu;
+      double r, q, p, si, fu;
       int gs = 1;
 
-      if (abs(e) > tol1)
+      if (fabs(e) > tol1)
 	{
 	  gs = 0;
 
@@ -221,7 +222,7 @@ f_min_bound (double ax, double bx, double tol, exp_param fparams)
 	}
 
       xm = 0.5 * (a+b);
-      tol1 = seps * abs(xf) + tol/3.0;
+      tol1 = seps * fabs(xf) + tol/3.0;
       tol2 = 2.0 * tol1;
       
       if (count > maxfun || iter > maxiter)
@@ -230,7 +231,7 @@ f_min_bound (double ax, double bx, double tol, exp_param fparams)
 	}
     }
 
-  return fx;
+  return xf;
 }
 
 
@@ -293,10 +294,15 @@ main(int argc, char **argv)
   mxArray *y, *p, *mu, *sigma, *uas_r, *a, *b, *beta, *x;
   double uas, l, fmin, be;
   exp_param params;
-
+  cudaEvent_t start, stop;
+  float elpased;
 
   ctx = cube_context_new ();
-  
+
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+
+
   filename = argv[1];
 
   fd = cube_matfile_open (ctx, filename);
@@ -334,6 +340,13 @@ main(int argc, char **argv)
   be = exp_pwr_map_beta (0.1, params);
   
   printf ("beta: %e\n", be);
-  
+
+  cudaEventRecord(start, 0);
+  be = gpu_aprior (ctx, params.y, params.n, 0.1, params.a, params.b);
+  cudaEventRecord(stop, 0);
+  cudaEventElapsedTime(&elpased, start, stop);
+
+  printf ("beta: %e [%f in ms (%f)]\n", be, elpased, elpased/1000.0);
+
   return 0;
 }
