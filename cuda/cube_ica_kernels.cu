@@ -34,7 +34,7 @@ typedef struct _exp_param
 
 } exp_param;
 
-__device__ void
+__device__ double
 sumpower_dev (const double *x,
 	      int           n,
 	      double        p,
@@ -80,6 +80,7 @@ sumpower_dev (const double *x,
   // write memory back to device memory
   __syncthreads (); // not sure that is needed either
   // sum[0] will hold the result!
+  return sum[0];
 }
 
 __device__ double
@@ -104,8 +105,7 @@ exp_pwr_l_beta (double beta, const exp_param params)
   c = pow ((tgamma(3.0/p)/tgamma(1/p)), (p/2.0));
   logw = 0.5 * lgamma (3.0/p) - 1.5 * lgamma (1/p) - log (1+beta);
 
-  sumpower_dev (y, n, p, mu, sigma, params.sum, params.bs);
-  uas = params.sum[0];
+  uas = sumpower_dev (y, n, p, mu, sigma, params.sum, params.bs);
 
   l = (-1*lgamma(a)) - (a*log(b)) + ((a-1.0)*log(1.0+beta)) +
     n*logw - n*log(sigma) - ((1.0+beta)/b) - (c * uas);
@@ -127,16 +127,17 @@ exp_pwrlbeta_fmin (double x, const exp_param fparams)
 
 /* No input checking, ax > bx required  */
 __device__ double
-f_min_bound (double ax, double bx, double tol, const exp_param fparams)
+f_min_bound (double ax, double bx, double tol, exp_param fparams)
 {
   double tol1, tol2;
   int maxfun,  maxiter;
-  const double seps = 1.4901e-08;;
+  const double seps = 1.4901e-08;
   double a, b, c, d, e;
   double v, fv, w, fw, x, xf, fx, xm;
   int count, iter;
 
   count = 0.0;
+  iter = 0;
 
   maxfun = 500.0;
   maxiter = 500.0;
@@ -165,7 +166,7 @@ f_min_bound (double ax, double bx, double tol, const exp_param fparams)
       double r, q, p, si, fu;
       int gs = 1;
 
-      if (abs(e) > tol1)
+      if (fabs(e) > tol1)
 	{
 	  gs = 0;
 
@@ -247,13 +248,11 @@ f_min_bound (double ax, double bx, double tol, const exp_param fparams)
 	}
 
       xm = 0.5 * (a+b);
-      tol1 = seps * abs(xf) + tol/3.0;
+      tol1 = seps * fabs(xf) + tol/3.0;
       tol2 = 2.0 * tol1;
       
       if (count > maxfun || iter > maxiter)
-	{
-	  break;
-	}
+	break;
     }
 
   return xf;
@@ -300,7 +299,7 @@ aprior_kernel (const double *in,
   res = f_min_bound (ax, bx, tol, fparams);
 
   if (threadIdx.x == 0)
-    out[blockIdx.x] = expf(res) - 1;
+    out[blockIdx.y] = exp(res) - 1;
 }
 
 double
@@ -323,6 +322,8 @@ gpu_aprior (cube_t *ctx, const double *in, int n, double tol, double a, double b
   xmin = log (1 + betamin);
   xmax = log (1 + betamax);
 
+  res = 0;
+
   out = (double *) cube_host_register (ctx, &res, sizeof (res));
   devp = (double *) cube_malloc_device (ctx, sizeof (double) * n);
   cube_memcpy (ctx, devp, (void *) in, sizeof (double) * n, CMK_HOST_2_DEVICE);
@@ -337,8 +338,97 @@ gpu_aprior (cube_t *ctx, const double *in, int n, double tol, double a, double b
   cube_cuda_check (ctx, r);
 
   cube_host_unregister (ctx, &res);
+  cube_free_device (ctx, devp);
 
   return res;
+}
+
+/* x, y are memory references (C layout, row-major),
+   m, n are matrix dimensions,
+   (col-major means m == y and n == x) */
+__global__ void
+adapt_prior_kernel (const double *in,
+		    const int     m,
+		    const int     bs,
+		    const double  ax,
+		    const double  bx,
+		    const double  a,
+		    const double  b,
+		    double       *out)
+{
+  exp_param fparams;
+  extern __shared__ double data[];
+  int i;
+  double res;
+
+  // read data from global memory
+  for (i = 0; i < bs; i++)
+    {
+      int x = threadIdx.x * bs + i;
+      int y = blockIdx.y * m;
+
+      if (x < m)
+	data[x] = in[y + x];
+    }
+
+  // now the calculation
+ 
+  fparams.y = &data[0];
+  fparams.n = m;
+  fparams.bs = bs;
+
+  fparams.sum = &data[m];
+  fparams.a = a;
+  fparams.b = b;
+  fparams.mu = 0.0;
+  fparams.sigma = 1.0;
+
+  res = f_min_bound (ax, bx, 0.1, fparams);
+
+  if (threadIdx.x == 0)
+    out[blockIdx.y] = exp(res) - 1;
+}
+
+int
+gpu_adapt_prior (cube_t *ctx, const double *in, int m, int n, double mu, double sigma, double tol, double a, double b, double *beta)
+{
+  cudaError_t r;
+  double *devp, *out;
+  double betamin, betamax;
+  double xmin, xmax;
+  dim3 grid, block;
+  size_t smem;
+  int bs;
+
+  if (! cube_context_check (ctx))
+    return -1;
+
+  betamin = -0.9;
+  betamax = 20.0;
+
+  xmin = log (1 + betamin);
+  xmax = log (1 + betamax);
+
+  out = (double *) cube_malloc_device (ctx, sizeof (double) * n);
+  devp = (double *) cube_malloc_device (ctx, sizeof (double) * n * m);
+  cube_memcpy (ctx, devp, (void *) in, sizeof (double) * n * m, CMK_HOST_2_DEVICE);
+
+  grid.y = n;
+  block.x = 512;
+
+  smem = (block.x + m) * sizeof (double);
+  bs = ceil ((double) m / block.x);
+
+  adapt_prior_kernel<<<grid, block, smem>>>(devp, m, bs, xmin, xmax, a, b, out);
+  
+  r = cudaPeekAtLastError ();
+  cube_cuda_check (ctx, r);
+
+  cube_memcpy (ctx, beta, out, sizeof (double) * n, CMK_DEVICE_2_HOST);
+  cube_free_device (ctx, devp);
+  cube_free_device (ctx, out);
+
+  return cube_cuda_check (ctx, r);
 }
 
 

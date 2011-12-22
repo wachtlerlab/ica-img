@@ -4,6 +4,8 @@
 #include "cube_matlab.h"
 #include "cube_ica.h"
 
+#include "cube_ica_kernels.h"
+
 #include <mat.h>
 #include <stdarg.h>
 
@@ -86,6 +88,8 @@ cube_matfile_get_vars (cube_t         *ctx,
   char    *var;
   int      count;
 
+  count = 0;
+
   va_start (ap, mfd); 
 
   while ((var = va_arg (ap, char *)) != NULL)
@@ -167,7 +171,7 @@ cube_matlab_ica_update_A (cube_t  *ctx,
   cube_ica_update_A (ctx, A, S, mu, beta, sigma, &npats, epsilon);
 
   cube_matrix_sync (ctx, A, CUBE_SYNC_HOST);
-cube_matrix_dump (A, 10, 10);
+
   cube_host_unregister (ctx, &m_epsilon);
   cube_matrix_destroy (ctx, A);
   cube_matrix_destroy (ctx, S);
@@ -175,4 +179,32 @@ cube_matrix_dump (A, 10, 10);
   cube_matrix_destroy (ctx, sigma);
 
   return cube_context_check (ctx);
+}
+
+int
+cube_matlab_ica_adapt_prior (cube_t  *ctx,
+			     mxArray *Sp,
+			     double   mu,
+			     double   sigma,
+			     double   tol,
+			     double   a,
+			     double   b,
+			     mxArray *beta)
+{
+  int res;
+  if (! cube_context_check (ctx))
+    return -1;
+
+  res = gpu_adapt_prior (ctx,
+			 mxGetPr(Sp),
+			 mxGetM(Sp),
+			 mxGetN(Sp),
+			 mu,
+			 sigma,
+			 tol,
+			 a,
+			 b,
+			 mxGetPr(beta));
+
+  return res;
 }

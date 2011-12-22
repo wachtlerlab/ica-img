@@ -93,7 +93,7 @@ for i = start : fitPar.maxIters
   calcTimes(cT, 2) = toc(tstart);
   
   tstart = tic;
-  [Model, Result] = adaptPrior(Model, Result, fitPar);
+  [Model, Result] = adaptPrior(Model, Result, fitPar, hcube, options);
   calcTimes(cT, 3) = toc(tstart);
   
   if (i == start || isUpdatePoint (i, dispPar.updateFreq, fitPar))

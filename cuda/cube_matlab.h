@@ -19,6 +19,14 @@ int              cube_matfile_get_vars (cube_t *ctx, cube_matfile_t *mfd, ...);
 
 cube_matrix_t *  cube_matrix_from_array (cube_t *ctx, mxArray *array);
 
+int cube_matlab_ica_adapt_prior (cube_t  *ctx,
+				 mxArray *Sp,
+				 double   mu,
+				 double   sigma,
+				 double   tol,
+				 double   a,
+				 double   b,
+				 mxArray *beta);
 
 int  cube_matlab_ica_update_A (cube_t  *ctx,
 			       mxArray *m_A,
@@ -27,6 +35,8 @@ int  cube_matlab_ica_update_A (cube_t  *ctx,
 			       mxArray *m_beta,
 			       mxArray *m_sigma,
 			       double   m_epsilon);
+
+
 #ifdef __cplusplus
 }
 #endif

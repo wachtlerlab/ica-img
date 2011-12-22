@@ -21,10 +21,10 @@ endif
 LDFLAGS=-L$(CUDA_LIBDIR) -L$(MATLAB_BINDIR) -L. -Wl,-rpath,$(MATLAB_BINDIR) -Wl,-rpath,$(CUDA_LIBDIR) -Wl,-rpath,$(CWD)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
+	$(CC) $(CFLAGS) -Wall -fPIC -c -o $@ $<
 
 %.o: %.cu
-	$(NVCC) $(CFLAGS) -G -arch $(GPUARCH) -c -o $@ $< 
+	$(NVCC) $(CFLAGS) -Xcompiler "-Wall" -G -arch $(GPUARCH) -c -o $@ $< 
 
 %.ptx: %.cu
 	$(NVCC) $(CFLAGS) -arch $(GPUARCH) -ptx $< 
@@ -45,6 +45,9 @@ kernels: absmax_kernel.ptx calc_z.ptx
 transpose: transpose.o
 
 updateA: updateA.o libcube_m.$(SO_EXT)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) -lcube -lmat -lmx
+
+aprior: aprior.o libcube_m.$(SO_EXT)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) -lcube -lmat -lmx
 
 .PHONY: clean

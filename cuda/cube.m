@@ -24,6 +24,10 @@ classdef cube < handle
       nA = calllib('libcube_m', 'cube_matlab_ica_update_A', cube.h, A, S, mu, beta, sigma, epsilon);
     end
     
+    function res = ica_adapt_prior(cube, Sp, mu, sigma, tol, a, b, beta)
+      res = calllib('libcube_m', 'cube_matlab_ica_adapt_prior', cube.h, Sp, mu, sigma, tol, a, b, beta);
+    end
+    
   end
   
 end

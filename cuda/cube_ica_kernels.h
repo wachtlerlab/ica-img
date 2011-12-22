@@ -24,6 +24,9 @@ gpu_sumpower (cube_t *ctx, const double *in, int n, double p);
 double
 gpu_aprior (cube_t *ctx, const double *in, int n, double tol, double a, double b);
 
+int
+gpu_adapt_prior (cube_t *ctx, const double *in, int m, int n, double mu, double sigma, double tol, double a, double b, double *beta);
+
 #ifdef __cplusplus
 }
 #endif

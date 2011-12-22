@@ -48,6 +48,8 @@ exp_pwr_l_beta (double beta, double *y, int n, double incy, double mu, double si
   l = (-1*lgamma(a)) - (a*log(b)) + ((a-1.0)*log(1.0+beta)) +
     n*logw - n*log(sigma) - ((1.0+beta)/b) - (c * uas);
 
+  printf ("CPU: %e\n", l);
+
   return l;
 }
 
@@ -110,6 +112,7 @@ f_min_bound (double ax, double bx, double tol, exp_param fparams)
   int count, iter;
 
   count = 0.0;
+  iter = 0;
 
   maxfun = 500.0;
   maxiter = 500.0;
@@ -291,7 +294,7 @@ main(int argc, char **argv)
   cube_t  *ctx;
   cube_matfile_t *fd;
   char *filename;
-  mxArray *y, *p, *mu, *sigma, *uas_r, *a, *b, *beta, *x;
+  mxArray *y, *p, *mu, *sigma, *uas_r, *a, *b, *beta, *x, *ps, *mpb;
   double uas, l, fmin, be;
   exp_param params;
   cudaEvent_t start, stop;
@@ -299,15 +302,17 @@ main(int argc, char **argv)
 
   ctx = cube_context_new ();
 
-  cudaEventCreate(&start);
-  cudaEventCreate(&stop);
+  //cudaEventCreate(&start);
+  //cudaEventCreate(&stop);
 
 
   filename = argv[1];
 
   fd = cube_matfile_open (ctx, filename);
 
-  cube_matfile_get_vars (ctx, fd, "y", &y, "p", &p, "sigma", &sigma, "mu", &mu, "uas", &uas_r, "a", &a, "b", &b, "beta", &beta, "x", &x, NULL);
+  cube_matfile_get_vars (ctx, fd, "y", &y, "p", &p, "sigma", &sigma, "mu", &mu,
+			 "uas", &uas_r, "a", &a, "b", &b, "beta", &beta, "x", &x, "ps", &ps, 
+			 "mpb", &mpb, NULL);
 
   mat_array_dump (y, 10, 10);
   mat_array_dump (p, 10, 10);
@@ -339,14 +344,18 @@ main(int argc, char **argv)
 
   be = exp_pwr_map_beta (0.1, params);
   
-  printf ("beta: %e\n", be);
+  printf ("beta (host): %e\n", be);
 
-  cudaEventRecord(start, 0);
-  be = gpu_aprior (ctx, params.y, params.n, 0.1, params.a, params.b);
-  cudaEventRecord(stop, 0);
-  cudaEventElapsedTime(&elpased, start, stop);
+  //cudaEventRecord(start, 0);
+  be = gpu_aprior (ctx, mxGetPr(y), mxGetN(y), 0.1, params.a, params.b);
+  //cudaEventRecord(stop, 0);
+  //cudaEventElapsedTime(&elpased, start, stop);
 
-  printf ("beta: %e [%f in ms (%f)]\n", be, elpased, elpased/1000.0);
+  printf ("beta (gpu): %e \n", be);
+
+  gpu_adapt_prior (ctx, mxGetPr(ps), mxGetM(ps), mxGetN(ps), mxGetPr(mu)[0], mxGetPr(sigma)[0], 0.1, params.a, params.b, mxGetPr(mpb));
+
+  mat_array_dump (mpb, 10, 10);
 
   return 0;
 }
