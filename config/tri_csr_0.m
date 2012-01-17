@@ -1,8 +1,10 @@
 % params related to generating the datasets, e.g. filtering
 %
 
-simpleFilter = ones (3, 3) * 0.1250;
+simpleFilter = ones (3, 3) *  0.1020;
+simpleFilter(2:2:8) = 0.1224;
 simpleFilter(2,2) = 1.0;
+
 
 DataParam.fileList  = [ 'ashton3 '; 'fuschia '; 'moss    '; 'plaza   '; ...
                         'red1    '; 'rwood   '; 'valley  '; 'yellow1 ' ];
@@ -11,7 +13,7 @@ DataParam.patchSize = 7;
 DataParam.dataDim   = 6; %this is post filtering
 DataParam.doFilter  = true;
 DataParam.filter    = simpleFilter;
-DataParam.filterFn  = 'filterCSRecConvOld';
+DataParam.filterFn  = 'filterCSRecConv';
 DataParam.doDebug   = true;
 DataParam.doLog     = false;
 
@@ -41,8 +43,8 @@ FitParam.priorAdaptSize = 5000;	% how many coefs to collect before adapting
 FitParam.npats          = 40000;	% number of pats in new dataset
 FitParam.dataFn         = 'getImageData';  % function that generates dataset
 FitParam.dataFnArgs     = [sqrt(L), FitParam.npats];
-FitParam.iterPts        =     [  1,    1000,   5000,  10000 30000 ];
-FitParam.epsilon        = 20 *[ 0.02,  0.01,  0.005,  0.001 0.0005];
+FitParam.iterPts        =     [  1,    1000,   5000,  10000 30000 60000  90000];
+FitParam.epsilon        = 20 *[ 0.02,  0.01,  0.005,  0.001 0.0005 0.0001 0.00005];
 FitParam.saveflag       = 1;
 FitParam.saveFreq       = 100;
 
