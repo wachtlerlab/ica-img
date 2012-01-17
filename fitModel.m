@@ -72,8 +72,10 @@ Result.priorN = 0;
 Result.dataIdx = 1;
 Result.X = [];		% force new dataset to be generated
 
+
 profileLen = 1000;
 calcTimes = zeros(profileLen, 4);
+Result.S = zeros (length (Model.A), dataset.blocksize);
 
 for i = start : fitPar.maxIters
   Result.iter = i;
@@ -89,7 +91,18 @@ for i = start : fitPar.maxIters
   end
   
   tstart = tic;
-  Result.S = pinv(Model.A)*Result.D;
+  if options.gpu
+    res = hcube.ica_calc_S(Model.A, Result.D, Result.S);
+    if res ~= 1
+      error ('Error during computation on the GPU')
+    end
+  else
+    Result.S = pinv(Model.A)*Result.D;
+    %Ai = zeros(size(Model.A));
+    %hcube.ica_pinv(Model.A, Ai);
+    %Result.S = Ai*Result.D;
+    %hcube.ica_calc_S (Model.A, Result.D, Result.S);
+  end
   calcTimes(cT, 2) = toc(tstart);
   
   tstart = tic;

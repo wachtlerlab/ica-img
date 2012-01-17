@@ -17,8 +17,6 @@ typedef struct NAPair {
 
 } NAPair;
 
-
-
 int
 main(int argc, char **argv)
 {
