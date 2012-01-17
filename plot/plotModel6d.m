@@ -2,18 +2,27 @@ function plotModel6d( Model)
 
 hf = figure('Name', ['Basis Functions: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
 
+X = [ 0,  0,  0,  0,  1, -1;    % L
+      0,  0,  1, -1,  0,  0;    % M 
+      1,  -1, 0,  0,  0,  0];   % S
+
 [~,M] = size (Model.A);
+Model = sortModelA(Model);
+A = Model.A;
+bfs = reshape (A, 6, 7*7*M);
+imgx = permute (reshape (X*bfs, 3, 7, 7, M), [3 2 1 4]);
+
 ha = tight_subplot(18, 17, [.01 .03], [.01 .01]);
 
 for idx=1:M
-
-    bf = anaModel(Model, idx);
-    set (gcf, 'CurrentAxes', ha(idx));
-    %title (num2str (idx));
-    hold on
-    image(bf);
-    axis image;
-    axis off;
+  p = imgx(:,:,:,idx);
+  bf = 0.5+0.5*p/max(abs(p(:)));
+  set (gcf, 'CurrentAxes', ha(idx));
+  %title (num2str (idx));
+  hold on
+  image(bf);
+  axis image;
+  axis off;
 end
 
 hold off;
@@ -24,7 +33,8 @@ hb = tight_subplot(18, 17, [.01 .03], [.01 .01]);
 pcs = zeros (2, M);
 for idx=1:M
 
-    bf = anaModel(Model, idx);
+    p = imgx(:,:,:,idx);
+    bf = 0.5+0.5*p/max(abs(p(:)));
     set (gcf, 'CurrentAxes', hb(idx));
     %title (num2str (idx));
     hold on
