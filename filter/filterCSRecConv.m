@@ -2,15 +2,16 @@ function [ dataFiltered ] = filterCSRecConv (Img, dataPar)
 
 ft = dataPar.filter;
 
-sur = ft;
-sur(2,2) = 0;
-surs = sum (sur(:));
-fprintf ('Filter: S: %f, C: %f; %f\n', surs, ft(2,2), ft(2,2)/abs (surs));
+mp = ceil(length(ft)/2.0);
 
 % remember the weight of the center for later but set it to 0 for
 % the convolution of L,M
-wc = ft(2,2);
-ft(2,2) = 0;
+wc = ft(mp,mp);
+ft(mp,mp) = 0;
+
+surs = sum (ft(:));
+fprintf ('Filter: S: %f, C: %f; %f\n', surs, wc, wc/abs (surs));
+%ft(mp,mp) = wc;
 
 %SML is 256x256x3 (r,c,f) wysiwyg :-> 3x256x256 (f,c,r)
 
@@ -32,7 +33,7 @@ LM = ((Lc + Mc) * 0.5);
 
 for n=1:3
   % the actual 'filtering'
-  x = (wc * input(2:end-1, 2:end-1, n)) - LM;
+  x = (wc * input(:,:,n)) - abs(LM);
   [on, off] = rectifyData (x, dataPar.doLog);
   data((n*2-1),:,:) = on;
   data(n*2,:,:) = off;
@@ -77,7 +78,7 @@ end
 
 function [res] = doConv (data, kernel)
 
-res = conv2 (data, kernel);
-res = res(3:end-2, 3:end-2);
+res = conv2 (data, kernel, 'same');
+%res = res(3:end-2, 3:end-2);
 
 end
