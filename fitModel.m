@@ -101,6 +101,7 @@ Model.fitPar = fitPar;
 Model.dispPar = dispPar;
 Model.dataPar = dataPar;
 Model.onGPU = options.gpu;
+Model.dataset = dataset;
 
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
