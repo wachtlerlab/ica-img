@@ -17,6 +17,26 @@ for n = 1:N
   data(n, 2) = interpIter (i, iterPts, epsSteps);
 end
 
+%% ---- mean, std ----
+gcpl = H5P.create ('H5P_LINK_CREATE');
+H5P.set_create_intermediate_group (gcpl, 1);
+gt = '/test/math';
+group = H5G.create (fd, gt, gcpl,'H5P_DEFAULT', 'H5P_DEFAULT');
+
+M = 128;
+X = pi + exp(1).*randn (M,M);
+m = mean (X(:));
+s = std (X(:));
+Xzm = X-m;
+
+saveData (fd, '/test/math/data', X);
+saveData (fd, '/test/math/mean', m);
+saveData (fd, '/test/math/std', s);
+saveData (fd, '/test/math/data_zm', Xzm);
+
+
+H5G.close (group);
+
 %% ---- interpolate test ----
 gcpl = H5P.create ('H5P_LINK_CREATE');
 H5P.set_create_intermediate_group (gcpl, 1);
@@ -66,11 +86,32 @@ H5F.close (fd);
 
 end
 
+
+function [dtype] = class2h5 (data)
+
+k = class(data);
+
+switch (k)
+  case 'uint16'
+    dtype = 'H5T_NATIVE_USHORT';
+    
+  case 'int32'
+    dtype = 'H5T_NATIVE_INT';
+    
+  case 'double'
+    dtype = 'H5T_NATIVE_DOUBLE';
+    
+  otherwise
+    error ('Implement me!');
+end
+
+end
+
 function [dsid] = saveData (fd, name, data)
 
 dims = fliplr (size (data));
 dsp = H5S.create_simple (length(dims), dims, dims);
-dtype = H5T.copy('H5T_NATIVE_DOUBLE');
+dtype = H5T.copy(class2h5(data));
 
 dset = H5D.create(fd, name, dtype, dsp, 'H5P_DEFAULT');
 H5D.write (dset, 'H5ML_DEFAULT','H5S_ALL','H5S_ALL', ...
