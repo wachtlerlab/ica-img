@@ -27,11 +27,11 @@ nimages = length(dataset.images);
 
 [z, x, y] = size (dataset.images(1).imgData);
 
-imgdata = zeros(z, x * y, nimages);
+imgdata = zeros(z, x, y, nimages);
 
 for n = 1:nimages
-  data = reshape (dataset.images(n).imgData, z, x * y);
-  imgdata(:,:,n) = data;
+  data = reshape (dataset.images(n).imgData, z, x, y);
+  imgdata(:,:,:,n) = data;
 end
 
 dataset.imgdata = imgdata;
@@ -63,12 +63,31 @@ if nargin > 1
 end
 end
 
+function [dtype] = class2h5 (data)
+
+k = class(data);
+
+switch (k)
+  case 'uint16'
+    dtype = 'H5T_NATIVE_USHORT';
+    
+  case 'int32'
+    dtype = 'H5T_NATIVE_INT';
+    
+  case 'double'
+    dtype = 'H5T_NATIVE_DOUBLE';
+    
+  otherwise
+    error ('Implement me!');
+end
+
+end
 
 function [dsid] = saveData (fd, name, data)
 
 dims = fliplr (size (data));
 dsp = H5S.create_simple (length(dims), dims, dims);
-dtype = H5T.copy('H5T_NATIVE_DOUBLE');
+dtype = H5T.copy(class2h5(data));
 
 dset = H5D.create(fd, name, dtype, dsp, 'H5P_DEFAULT');
 H5D.write (dset, 'H5ML_DEFAULT','H5S_ALL','H5S_ALL', ...

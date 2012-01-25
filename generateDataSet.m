@@ -19,7 +19,7 @@ for n = 1:nimages
   indicies(:,:,:,n) = idx;  
 end
 
-patsperm = zeros(npats, nclusters);
+patsperm = zeros(npats, nclusters, 'int32');
 for n = 1:nclusters
   patsperm(:,n) = randperm(npats);
 end
