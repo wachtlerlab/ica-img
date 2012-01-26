@@ -4,7 +4,7 @@ path('utils/', path);
 path('plot/', path);
 path('report/', path);
 path('cube/', path);
-path('functions/home/jung/matlab/', path);
+%path('functions/home/jung/matlab/', path);
 path('functions/home/tewon/Matlab/Lewicki/expwrcode/stats', path);
 path('functions/home/lewicki/matlab/oc', path);
 path('functions/home/lewicki/matlab/oc/Images',path);
