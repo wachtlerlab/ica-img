@@ -26,11 +26,13 @@ group = H5G.create (fd, gt, gcpl,'H5P_DEFAULT', 'H5P_DEFAULT');
 M = 128;
 X = pi + exp(1).*randn (M,M);
 m = mean (X(:));
+v = var(X(:));
 s = std (X(:));
 Xzm = X-m;
 
 saveData (fd, '/test/math/data', X);
 saveData (fd, '/test/math/mean', m);
+saveData (fd, '/test/math/var', v);
 saveData (fd, '/test/math/std', s);
 saveData (fd, '/test/math/data_zm', Xzm);
 
