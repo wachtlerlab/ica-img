@@ -83,9 +83,59 @@ saveData (fd, '/test/dataset/Ainit', ds.Ainit);
 c0 = extractPatches(ds, 1);
 saveData (fd, '/test/dataset/c0', c0);
 
+D = c0(:,1:(ds.blocksize-1));
+saveData (fd, '/test/dataset/D', D);
+
+sigma = std(D(:));
+saveData (fd, '/test/dataset/D_sigma', sigma)
+
+A = ds.Ainit;
+[~,M] = size(A);
+for m=1:M
+  A(:,m) = A(:,m) * sigma;
+end
+
+saveData (fd, '/test/dataset/A_scaled', A)
+
+H5G.close (group);
+
+%% ----
+group = H5G.create (fd, '/test/ica', gcpl,'H5P_DEFAULT', 'H5P_DEFAULT');
+saveData (fd, '/test/ica/A', A);
+
+S = pinv(A)*D;
+saveData (fd, '/test/ica/S', S);
+
+[~, M] = size (A);
+ExPwr.mu     = zeros(M,1);
+ExPwr.sigma  = ones(M,1);
+ExPwr.beta   = 0.5*ones(M,1);
+ExPwr.a      = 2;
+ExPwr.b      = 2;
+ExPwr.tol    = 0.1;
+
+saveData (fd, '/test/ica/mu', ExPwr.mu);
+saveData (fd, '/test/ica/beta', ExPwr.beta);
+saveData (fd, '/test/ica/sigma', ExPwr.sigma);
+
+Model.prior  = ExPwr;
+Model.A = A;
+
+[dA, A] = calcDeltaA (S, Model);
+
+saveData (fd, '/test/ica/dA', dA);
+
+epsilon = interpIter (1, iterPts, epsSteps);
+eps = epsilon/max(abs(dA(:)));
+dA = eps * dA;
+Aref = A + dA;
+
+saveData (fd, '/test/ica/eps', epsilon);
+saveData (fd, '/test/ica/Aref', Aref);
+
+
 H5G.close (group);
 H5F.close (fd);
-
 end
 
 
