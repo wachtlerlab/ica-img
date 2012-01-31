@@ -1,39 +1,10 @@
-function [dA, A] = calcDeltaA(S,Model, gpuContext)
-
-%tM = tic;
-
-if isstruct (gpuContext)
-  [dA, A] = calcOnGPU (S, Model, gpuContext);
-else
-  [dA, A] = calcOnHost (S, Model);
-end
-
-%te = toc (tM);
-%fprintf ('dA done in %f [gpu: %d]\n', te, isstruct (gpuContext));
-
-end
-
-function [dA, A] = calcOnGPU(S, Model, gpuContext)
-
-npats = gpuArray (size(S,2));
-
-S = gpuArray (S);
-A = gpuArray (Model.A);
-Z = calc_z (S, Model.prior, gpuContext);
-
-dA = -A*Z*S' - npats*A;
-dA = dA/npats;
-
-end
-
-function [dA, A] = calcOnHost (S, Model)
+function [dA, A] = calcDeltaA(S, Model)
 
 A = Model.A;
-[L,M] = size(A);
+[~,M] = size(A);
 npats = size(S,2);
 mp = Model.prior;
 
-dA = zeros(size(A));
 Z  = zeros(size(S));
 
 for m=1:M
@@ -47,7 +18,5 @@ dA = -A*Z*S' - npats*A;
 
 % normalize by the number of patterns
 dA = dA/npats;
-
-X = dA;
 
 end

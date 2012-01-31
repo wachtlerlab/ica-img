@@ -118,7 +118,7 @@ for i = start : fitPar.maxIters
   if options.gpu
     Model.A = updateAonGPU (Model, Result, epsilon, hcube);
   else   
-    [dA, A] = calcDeltaA (Result.S, Model, gpuContext);
+    [dA, A] = calcDeltaA (Result.S, Model);
     Model.A = updateAwithDeltaA (A, dA, epsilon);
   end
   
