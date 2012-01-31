@@ -16,9 +16,10 @@ if (block == 1)
   fprintf('%5s  done in %f \n', ' ', toc(tstart));
 end
 
-if dataIdx + blocksize - 1 >= npats
+if dataIdx + blocksize - 1 > npats
   r = ceil(npats*rand(blocksize,1));
   Result.D = Result.X(:,r);
+  fprintf ('WARNING: running out of patches! (%d)\n', dataIdx);
 else
   xs = dataIdx;
   xe = xs + blocksize - 1; 
