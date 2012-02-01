@@ -11,9 +11,9 @@ indicies = h5read (path, [loc '/indicies']);
 patsperm = h5read (path, [loc '/patsperm']);
 Ainit    = h5read (path, [loc '/Ainit']);
 
-patchsize = h5readatt ('ds0.h5', loc, 'patchsize');
+patchsize = h5readatt (path, loc, 'patchsize');
 [npats, nclusters] = size (patsperm);
-blocksize = h5readatt ('ds0.h5', loc, 'blocksize');
+blocksize = h5readatt (path, loc, 'blocksize');
 
 
 dataset.imgdata   = imgdata;
