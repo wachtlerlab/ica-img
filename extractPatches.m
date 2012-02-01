@@ -1,15 +1,15 @@
 function [ patches ] = extractPatches(dataset, cluster)
 
-nimages = length(dataset.images);
+[~, ~, ~, nimages] = size(dataset.imgdata);
 
 xx = [];
 
 for n = 1:nimages
   
-  img = dataset.images(n);
+  imgdata = dataset.imgdata(:,:,:,n);
   idxs = dataset.indicies(:,:, cluster, n);
   
-  xtmp = patchesFromImg(img, idxs, dataset.patchsize);
+  xtmp = patchesFromImg(imgdata, idxs, dataset.patchsize);
   xtmp = xtmp - mean(xtmp(:));
   xtmp = xtmp/sqrt(var(xtmp(:)));
   xx = [ xx xtmp ];
@@ -26,9 +26,9 @@ patches = x/sqrt(var(x(:)));
 end
 
 
-function [ D ] = patchesFromImg(img, indicies, patchsize)
+function [ D ] = patchesFromImg(imgdata, indicies, patchsize)
 
-[ndim, ~, ~] = size(img.imgData);
+[ndim, ~, ~] = size(imgdata);
 N = patchsize^2;
 ergvecdim = N * ndim;
 
@@ -39,7 +39,7 @@ D = zeros (ergvecdim, npats);
 for j = 1:npats,
   ix = indicies (j,1); 
   iy = indicies (j,2); 
-  datapatch = img.imgData (:, ix:ix+patchsize-1, iy:iy+patchsize-1);
+  datapatch = imgdata (:, ix:ix+patchsize-1, iy:iy+patchsize-1);
   D(:,j) = reshape (datapatch, ergvecdim, 1);
 end
 
