@@ -3,15 +3,9 @@ function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, Result, 
 %% Setup GPU context
 fprintf ('\nUsing GPU: %d\n', options.gpu);
 if options.gpu
-  %Model.gpu = gpuDevice;
-  %fprintf ('\t[%s]\n', Model.gpu.Name);
-  %gpuContext.absmax = absmax_setup (Model.A);
-  %gpuContext.calc_z = calc_z_setup (Model.A, fitPar.blocksize);
-  hcube = cube()
+  hcube = cube();
   hcube.setup()
-  gpuContext = 0;
 else
-  gpuContext = 0;
   hcube = 0;
 end
 
@@ -44,10 +38,6 @@ for i = start : fitPar.maxIters
     end
   else
     Result.S = pinv(Model.A)*Result.D;
-    %Ai = zeros(size(Model.A));
-    %hcube.ica_pinv(Model.A, Ai);
-    %Result.S = Ai*Result.D;
-    %hcube.ica_calc_S (Model.A, Result.D, Result.S);
   end
   calcTimes(cT, 2) = toc(tstart);
   
