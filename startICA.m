@@ -10,8 +10,10 @@ options = struct('autosave', 1, ...
                  'gpu', 1);
                
 if nargin > 1
-  options = parse_varargs (options, varargin);
+  [options, ds_path] = parse_varargs (options, varargin);
 end
+
+
 
 if exist (fullfile ('config', [modelId '.m']), 'file') == 0
   error ('Cannot find config');
@@ -53,20 +55,20 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
 
 
 %% Prepare image data
-images = prepare_images (dataPar);
 
-% Present the filtered pictures (inkluding the excluded patches)
-% to the user for visual validation
-if dispPar.plotflag && dataPar.doDebug
-    displayImages (images, dataPar, 1);
+if isempty (ds_path)
+
+  images = prepare_images (dataPar);
+
+  tstart = tic;
+  fprintf('\nGenerating dataset...\n');
+  dataset = generateDataSet (images, fitPar, dataPar);
+  fprintf('   done in %f\n', toc(tstart));
+  
+else
+  dataset = loadDataSet (ds_path, '/ds');
+  Model.A = dataset.Ainit;
 end
-
-%% Generate the DataSet
-tstart = tic;
-fprintf('\nGenerating dataset...\n');
-dataset = generateDataSet (images, fitPar, dataPar);
-fprintf('   done in %f\n', toc(tstart));
-
 
 %% Setup the Model & Result structs
 %
@@ -109,9 +111,10 @@ end
 end
 
 
-function [options] = parse_varargs(options, varargin)
+function [options, dataset] = parse_varargs(options, varargin)
 
 args = size (varargin{1});
+dataset = '';
 for cur = 1:2:args(2)
   opt = char (varargin{1}(cur));
   arg = char (varargin{1}(cur + 1));
@@ -125,6 +128,8 @@ for cur = 1:2:args(2)
       options.progress = str2num (arg);
     case 'gpu'
       options.gpu = str2num (arg);
+    case 'dataset'
+      dataset = arg;
     otherwise
       fprintf ('[W] Unkown option %s [%s]\n', opt, arg);
   end
