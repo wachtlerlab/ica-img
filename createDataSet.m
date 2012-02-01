@@ -22,21 +22,7 @@ fprintf('\nGenerating dataset...\n');
 dataset = generateDataSet (images, fitPar, dataPar);
 fprintf('   done in %f\n', toc(tstart));
 
-
-nimages = length(dataset.images);
-
-[z, x, y] = size (dataset.images(1).imgData);
-
-imgdata = zeros(z, x, y, nimages);
-
-for n = 1:nimages
-  data = reshape (dataset.images(n).imgData, z, x, y);
-  imgdata(:,:,:,n) = data;
-end
-
-dataset.imgdata = imgdata;
-
-[c, ~, ~] = size (imgdata);
+[c, ~, ~] = size (dataset.imgdata);
 N = dataset.patchsize^2 * c;
 dataset.Ainit = randn (N, N) + 0.5 * eye(N, N);
 
