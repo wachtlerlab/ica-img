@@ -12,11 +12,17 @@ Tperimg = npats / nimages;
 
 indicies = zeros(Tperimg, 2, nclusters, nimages, 'uint16');
 
+[z, x, y] = size (images(1).imgData);
+imgdata = zeros(z, x, y, nimages);
+
 for n = 1:nimages
   img = images(n);
   refBase = calcRefBase(img, patchsize);
   idx = generatePatchIndices(refBase, Tperimg, nclusters);
-  indicies(:,:,:,n) = idx;  
+  indicies(:,:,:,n) = idx;
+  
+  data = reshape (img.imgData, z, x, y);
+  imgdata(:,:,:,n) = data;
 end
 
 patsperm = zeros(npats, nclusters, 'int32');
@@ -25,6 +31,7 @@ for n = 1:nclusters
 end
 
 dataset.images    = images;
+dataset.imgdata = imgdata;
 dataset.patchsize = patchsize;
 dataset.npats     = npats;
 dataset.blocksize = blocksize;
