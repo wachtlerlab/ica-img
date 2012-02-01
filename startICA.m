@@ -20,8 +20,84 @@ end
 currev = getCurRev ();
 
 fprintf ('Starting simulation for %s [code: %s]', modelId, currev);
-[Model, Result] = fitModel (modelId, options);
 
+%%
+% basic init
+clear Model fitPar dispPar Result;
+
+stateDir = fullfile ('..', 'state');
+
+if exist (stateDir, 'dir') == 0
+   mkdir (stateDir); 
+end
+
+
+[Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
+
+Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
+
+if nargin > 1
+  dispPar.plotflag = options.progress;
+  fitPar.saveflag = options.savestate;
+end
+
+if dispPar.plotflag
+  figure(1)
+  figure(2)
+  figure(3)
+end
+
+
+fprintf ('\nFitting %s for config %s [%s]\n',...
+  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
+
+
+%% Prepare image data
+images = prepare_images (dataPar);
+
+% Present the filtered pictures (inkluding the excluded patches)
+% to the user for visual validation
+if dispPar.plotflag && dataPar.doDebug
+    displayImages (images, dataPar, 1);
+end
+
+%% Generate the DataSet
+tstart = tic;
+fprintf('\nGenerating dataset...\n');
+dataset = generateDataSet (images, fitPar, dataPar);
+fprintf('   done in %f\n', toc(tstart));
+
+
+%% Setup the Model & Result structs
+%
+
+Result.priorN = 0;
+Result.dataIdx = 1;
+Result.X = [];		% force new dataset to be generated
+
+Result.iter = 1;
+Result.tStart = tic;
+
+Result.S = zeros (length (Model.A), dataset.blocksize);
+
+
+
+%% Infer the Model
+
+[Model, Result] = fitModel (Model, fitPar, dispPar, dataset, Result, options);
+
+%% 
+
+% time reporting
+Result.tDuration = toc (Result.tStart);
+
+Model.fitPar = fitPar;
+Model.dispPar = dispPar;
+Model.dataPar = dataPar;
+Model.onGPU = options.gpu;
+Model.dataset = dataset;
+
+fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 Model.Result = Result;
 Model.codeVersion = currev;
 

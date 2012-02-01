@@ -1,38 +1,4 @@
-function [ Model, Result ] = fitModel (modelId, options)
-
-% local config TODO: move to config file
-shouldSaveState = 0;
-
-% basic init
-clear Model fitPar dispPar Result;
-
-stateDir = fullfile ('..', 'state');
-
-if exist (stateDir, 'dir') == 0
-   mkdir (stateDir); 
-end
-
-start = 1;
-Result.tStart = tic;
-
-[Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
-
-Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
-
-if nargin > 1
-  dispPar.plotflag = options.progress;
-  fitPar.saveflag = options.savestate;
-end
-
-if dispPar.plotflag
-  figure(1)
-  figure(2)
-  figure(3)
-end
-
-
-fprintf ('\nFitting %s for config %s [%s]\n',...
-  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
+function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, Result, options)
 
 %% Setup GPU context
 fprintf ('\nUsing GPU: %d\n', options.gpu);
@@ -49,33 +15,13 @@ else
   hcube = 0;
 end
 
-%% Prepare image data
-images = prepare_images (dataPar);
-
-% Present the filtered pictures (inkluding the excluded patches)
-% to the user for visual validation
-if dispPar.plotflag && dataPar.doDebug
-    displayImages (images, dataPar, 1);
-end
-
-%% Generate the DataSet
-tstart = tic;
-fprintf('\nGenerating dataset...\n');
-dataset = generateDataSet (images, fitPar, dataPar);
-fprintf('   done in %f\n', toc(tstart));
-
-
-%% Infer matrix
-%
-
-Result.priorN = 0;
-Result.dataIdx = 1;
-Result.X = [];		% force new dataset to be generated
-
-
+%% Profiling
 profileLen = 1000;
 calcTimes = zeros(profileLen, 4);
-Result.S = zeros (length (Model.A), dataset.blocksize);
+
+
+%% Main Loop
+start = Result.iter;
 
 for i = start : fitPar.maxIters
   Result.iter = i;
@@ -139,16 +85,7 @@ for i = start : fitPar.maxIters
   end
 end
 
-% time reporting
-Result.tDuration = toc (Result.tStart);
 
-Model.fitPar = fitPar;
-Model.dispPar = dispPar;
-Model.dataPar = dataPar;
-Model.onGPU = options.gpu;
-Model.dataset = dataset;
-
-fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
 
 end
 
