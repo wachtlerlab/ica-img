@@ -69,9 +69,6 @@ fprintf ([' (',num2str(telapsed),')\n']);
 Img.imgData = datamx2;
 Img.SML = permute (reshape (datamx, 3, edgeN, edgeN), [3 2 1]);
 
-% how big is ref card
-Img.refpixelN = (Img.refkoos(3)-Img.refkoos(1)+1)*(Img.refkoos(4)-Img.refkoos(2)+1);
-
 Img.filtered = 0;
 
 end
