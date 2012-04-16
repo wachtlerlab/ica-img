@@ -58,7 +58,7 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
 
 if isempty (ds_path)
 
-  images = prepare_images (dataPar);
+  images = prepareImages (dataPar);
 
   tstart = tic;
   fprintf('\nGenerating dataset...\n');

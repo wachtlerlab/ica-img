@@ -1,4 +1,5 @@
-function [ loaded_images ] = prepare_images (DataPar)
+function [ loaded_images ] = prepareImages (DataPar)
+
 %%
 fprintf (['\n Loading images']);
 

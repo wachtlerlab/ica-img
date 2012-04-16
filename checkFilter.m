@@ -12,7 +12,7 @@ clear Model fitPar dispPar Result;
 
 fprintf ('Config Id: %s\n', Model.cfgId(1:7));
 
-images = prepare_images (DataParam);
+images = prepareImages (DataParam);
 displayImages (images, DataParam);
 
 end

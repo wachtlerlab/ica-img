@@ -16,7 +16,7 @@ end
 
 
 %% Prepare image data
-images = prepare_images (dataPar);
+images = prepareImages (dataPar);
 
 tstart = tic;
 fprintf('\nGenerating dataset...\n');
