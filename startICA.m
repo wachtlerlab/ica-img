@@ -14,7 +14,6 @@ if nargin > 1
 end
 
 
-
 if exist (fullfile ('config', [modelId '.m']), 'file') == 0
   error ('Cannot find config');
 end
@@ -27,31 +26,10 @@ fprintf ('Starting simulation for %s [code: %s]', modelId, currev);
 % basic init
 clear Model fitPar dispPar Result;
 
-stateDir = fullfile ('..', 'state');
-
-if exist (stateDir, 'dir') == 0
-   mkdir (stateDir); 
-end
-
 
 [Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
 
 Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
-
-if nargin > 1
-  dispPar.plotflag = options.progress;
-  fitPar.saveflag = options.savestate;
-end
-
-if dispPar.plotflag
-  figure(1)
-  figure(2)
-  figure(3)
-end
-
-
-fprintf ('\nFitting %s for config %s [%s]\n',...
-  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 
 
 %% Prepare image data
@@ -71,7 +49,27 @@ else
 end
 
 
+%% create state dir if necessary
+stateDir = fullfile ('..', 'state');
+
+if exist (stateDir, 'dir') == 0
+   mkdir (stateDir); 
+end
+
+
+%% create figures for display, if needed
+dispPar.plotflag = options.progress;
+fitPar.saveflag = options.savestate;
+
+if options.progress
+  figure(1)
+  figure(2)
+  figure(3)
+end
+
 %% Infer the Model
+fprintf ('\nFitting %s for config %s [%s]\n',...
+  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 
 tStart = tic;
 
