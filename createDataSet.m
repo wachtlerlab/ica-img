@@ -1,4 +1,4 @@
-function [ dataset ] = generateDataSet (images, fitPar, dataPar)
+function [ dataset ] = createDataSet (images, fitPar, dataPar)
 %GENERATEDATASET generate a dataset from a set of images
 
 npats     = fitPar.npats;

@@ -63,7 +63,18 @@ saveData (fd, [gt '/Ai'], Ai);
 H5G.close (group);
 
 %% ---- dataset ---
-ds = createDataSet ('tri_csr_0_log');
+[Model, fitPar, ~, dataPar] = loadConfig ('tri_csr_0');
+
+
+%% Prepare image data
+images = prepareImages (dataPar);
+
+tstart = tic;
+fprintf('\nGenerating dataset...\n');
+ds = createDataSet (images, fitPar, dataPar);
+fprintf('   done in %f\n', toc(tstart));
+
+ds.Ainit = Model.A;
 
 gcpl = H5P.create ('H5P_LINK_CREATE');
 H5P.set_create_intermediate_group (gcpl, 1);

@@ -20,7 +20,7 @@ images = prepareImages (dataPar);
 
 tstart = tic;
 fprintf('\nGenerating dataset...\n');
-dataset = generateDataSet (images, fitPar, dataPar);
+dataset = createDataSet (images, fitPar, dataPar);
 fprintf('   done in %f\n', toc(tstart));
 
 nimages = length(dataset.images);
