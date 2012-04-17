@@ -21,8 +21,9 @@ priorAdaptSize = fitPar.priorAdaptSize;
 
 %% Main Loop
 start = 1;
+maxIters = fitPar.maxIters;
 
-for i = start : fitPar.maxIters
+for i = start : maxIters
   Result.iter = i;
 
   cT = mod(i - 1, profileLen) + 1;
@@ -46,7 +47,7 @@ for i = start : fitPar.maxIters
   
   calcTimes(cT, 3) = toc(tstart);
   
-  if (i == start || isUpdatePoint (i, dispPar.updateFreq, fitPar))
+  if (i == start || isUpdatePoint (i, dispPar.updateFreq, maxIters))
     Result = updateDisplay(Model, Result, fitPar, dispPar);
   end
   
@@ -59,7 +60,7 @@ for i = start : fitPar.maxIters
   
   calcTimes(cT, 4) = toc(tstart);
   
-  if (savestate && isUpdatePoint (i, fitPar.saveFreq, fitPar))
+  if (savestate && isUpdatePoint (i, fitPar.saveFreq, maxIters))
     tstart = tic;
     fprintf('%5d: Saving state\n',Result.iter);
     saveState(Model, Result, fitPar);
@@ -78,8 +79,8 @@ end
 
 end
 
-function [res] = isUpdatePoint (iter, freq, fitPar)
-  res = (rem(iter, freq) == 0 || iter == fitPar.maxIters);
+function [res] = isUpdatePoint (iter, freq, maxIters)
+  res = (rem(iter, freq) == 0 || iter == maxIters);
 end
 
 
