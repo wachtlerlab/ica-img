@@ -21,7 +21,7 @@ Result.S = zeros (length (Model.A), dataset.blocksize);
 
 %% Main Loop
 start = 1;
-maxIters = fitPar.maxIters;
+maxIters = dataset.maxiter;
 
 for i = start : maxIters
   Result.iter = i;

@@ -38,6 +38,7 @@ dataset.blocksize = blocksize;
 dataset.nclusters = nclusters;
 dataset.indicies  = indicies;
 dataset.patsperm  = patsperm;
+dataset.maxiter   = fitPar.maxIters;
 
 end
 
