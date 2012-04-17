@@ -48,7 +48,7 @@ for i = start : maxIters
   calcTimes(cT, 3) = toc(tstart);
   
   if (i == start || isUpdatePoint (i, dispPar.updateFreq, maxIters))
-    Result = updateDisplay(Model, Result, fitPar, dispPar);
+    Result = updateDisplay(Model, Result, dispPar);
   end
   
   tstart = tic;
