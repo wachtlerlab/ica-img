@@ -4,7 +4,8 @@ if nargin < 1
   modelId = 'color_cs_rect_1';
 end;
 
-options = struct('autosave', 1, ...
+options = struct('createpic', 1, ...
+                 'autosave', 1, ...
                  'savestate', 1, ...
                  'progress', 0);
 ds_path = '';
@@ -46,6 +47,13 @@ if isempty (ds_path)
 else
   dataset = loadDataSet (ds_path, '/ds');
   Model.A = dataset.Ainit;
+end
+
+%% check if we are just creating the PIC
+if options.createpic
+  datapath = savePIC (modelId, Model, dataset, fitPar);
+  fprintf ('Created PIC (%s)\n', datapath);
+  return
 end
 
 
@@ -108,6 +116,8 @@ for cur = 1:2:args(2)
   arg = char (varargin{1}(cur + 1));
   
   switch opt
+    case 'createpic'
+      options.createpic = str2num (arg);
     case 'autosave'
       options.autosave = str2num (arg);
     case 'savestate'

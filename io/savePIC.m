@@ -1,31 +1,12 @@
-function [ data_path ] = genICA (modelId)
-% basic init
-clear Model fitPar dispPar Result;
+function [ data_path ] = savePIC(modelId, Model, dataset, fitPar)
+%SAVEPIC Save a Precompiled ICA Configuration (PIC)
+%        to a hdf5 file
 
-stateDir = fullfile ('..', 'state');
-
-if exist (stateDir, 'dir') == 0
-   mkdir (stateDir); 
-end
-
-if exist (fullfile ('config', [modelId '.m']), 'file') == 0
-  error ('Cannot find config');
-end
-
-[Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
-
-
-%% Prepare image data
-images = prepareImages (dataPar);
-
-tstart = tic;
-fprintf('\nGenerating dataset...\n');
-dataset = createDataSet (images, fitPar, dataPar);
-fprintf('   done in %f\n', toc(tstart));
-
+% hack for now
 dataset.Ainit = Model.A;
 
-data_path = [modelId '_' Model.cfgId(1:7) '.h5']
+pic_id = [modelId '_' Model.cfgId(1:7) '.pic'];
+data_path = [pic_id '.h5'];
 
 fd = H5F.create (data_path, 'H5F_ACC_TRUNC', 'H5P_DEFAULT', 'H5P_DEFAULT');
 
@@ -58,8 +39,8 @@ H5G.close (group);
 
 H5F.close (fd);
 
-
 end
+
 
 
 function [dtype] = class2h5 (data)
