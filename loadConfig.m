@@ -1,4 +1,4 @@
-function [ Model, FitParam, DisplayParam, DataParam ] = loadConfig (configId)
+function [ Model, FitParam, DataParam ] = loadConfig (configId)
 %loadConfig reads in config from simulation config file
 
 configFile = sprintf('config/%s.m', configId);
@@ -13,7 +13,6 @@ eval (codeData);
 
 if isempty (Model) || ...
    isempty (FitParam) || ...
-   isempty (DisplayParam) || ...
    isempty (DataParam)
   error ('Config file corrupt');
 end

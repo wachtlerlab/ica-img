@@ -30,7 +30,7 @@ fprintf ('Starting simulation for %s [code: %s]', modelId, currev);
 clear Model fitPar dispPar Result;
 
 
-[Model, fitPar, dispPar, dataPar] = loadConfig (modelId);
+[Model, fitPar, dataPar] = loadConfig (modelId);
 
 Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
 
