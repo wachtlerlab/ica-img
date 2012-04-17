@@ -8,7 +8,7 @@ fprintf ('Checking filter for [%s]\n', modelId);
 
 clear Model fitPar dispPar Result;
 
-[ Model, FitParam, DisplayParam, DataParam ] = loadConfig (modelId);
+[ Model, FitParam, DataParam ] = loadConfig (modelId);
 
 fprintf ('Config Id: %s\n', Model.cfgId(1:7));
 
