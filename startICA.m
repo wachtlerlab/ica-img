@@ -75,9 +75,6 @@ end
 
 
 %% create figures for display, if needed
-dispPar.plotflag = options.progress;
-fitPar.saveflag = options.savestate;
-
 if options.progress
   figure(1)
   figure(2)
@@ -99,8 +96,6 @@ tDuration = toc (tStart);
 % time reporting
 Result.tDuration = tDuration;
 
-Model.fitPar = fitPar;
-Model.dispPar = dispPar;
 Model.dataPar = dataPar;
 Model.onGPU = 0;
 Model.dataset = dataset;
