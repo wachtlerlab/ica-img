@@ -1,4 +1,4 @@
-function saveState( Model, fullResult, fitPar )
+function saveState( Model, fullResult, saveFreq )
 
 % Written by Mike Lewicki 4/99
 %
@@ -46,7 +46,7 @@ if (Result.iter == 1)
 else
 
   % delete the previous state file.
-  prevIter = max( 1, Result.iter - fitPar.saveFreq );
+  prevIter = max( 1, Result.iter - saveFreq );
   if (rem(prevIter, 10000) ~= 0)
     prevStateFileName = sprintf ('%s-%s-i%d.mat', Model.name, nick, prevIter);
     prevStateFile = fullfile (stateDir, prevStateFileName);

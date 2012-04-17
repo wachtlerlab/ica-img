@@ -7,6 +7,7 @@ end;
 options = struct('createpic', 0, ...
                  'autosave', 1, ...
                  'savestate', 1, ...
+                 'savefreq', 100, ...
                  'progress', 0);
 ds_path = '';
 
@@ -122,6 +123,8 @@ for cur = 1:2:args(2)
       options.autosave = str2num (arg);
     case 'savestate'
       options.savestate = str2num (arg);
+    case 'savefreq'
+      options.savefreq = str2num (arg);
     case 'progress'
       options.progress = str2num (arg);
     case 'dataset'
