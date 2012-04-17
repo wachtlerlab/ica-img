@@ -1,4 +1,4 @@
-function [ data_path ] = savePIC(modelId, Model, dataset, fitPar)
+function [ data_path ] = savePIC(modelId, Model, dataset, gradient)
 %SAVEPIC Save a Precompiled ICA Configuration (PIC)
 %        to a hdf5 file
 
@@ -33,7 +33,7 @@ saveData (fd, '/prior/sigma', Model.prior.sigma);
 H5G.close (group);
 
 group = H5G.create (fd, '/fit', gcpl, 'H5P_DEFAULT', 'H5P_DEFAULT');
-epsilon = [fitPar.iterPts; fitPar.epsilon]';
+epsilon = [gradient.iterPoints; gradient.epsilon]';
 saveData (fd, '/fit/epsilon', epsilon);
 H5G.close (group);
 

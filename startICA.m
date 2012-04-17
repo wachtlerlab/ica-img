@@ -51,12 +51,19 @@ else
   Model.A = dataset.Ainit;
 end
 
+
+%% prepare gradient
+gradient = createGradient (fitPar, dataset.maxiter);
+
+
 %% check if we are just creating the PIC
 if options.createpic
-  datapath = savePIC (modelId, Model, dataset, fitPar);
+  datapath = savePIC (modelId, Model, dataset, gradient);
   fprintf ('Created PIC (%s)\n', datapath);
   return
 end
+
+
 
 
 %% create state dir if necessary
@@ -82,8 +89,6 @@ end
 fprintf ('\nFitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 tStart = tic;
-
-gradient = createGradient (fitPar, dataset.maxiter);
 
 [Model, Result] = fitModel (Model, gradient, dataset, options);
 
