@@ -3,7 +3,6 @@ path('sml/', path);
 path('utils/', path);
 path('plot/', path);
 path('report/', path);
-path('cube/', path);
 path('io/', path);
 path('gradient/', path);
 path('data/', path);
