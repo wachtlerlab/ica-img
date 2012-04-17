@@ -23,6 +23,8 @@ hashOpts.isFile = 'true';
 Model.cfgId = DataHash (configFile, hashOpts);
 Model.name = configId;
 
+%compatibility alias 
+Model.prior.adaptSize = FitParam.priorAdaptSize;
 
 end
 
