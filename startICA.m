@@ -6,8 +6,7 @@ end;
 
 options = struct('autosave', 1, ...
                  'savestate', 1, ...
-                 'progress', 0, ...
-                 'gpu', 1);
+                 'progress', 0);
                
 if nargin > 1
   [options, ds_path] = parse_varargs (options, varargin);
@@ -86,7 +85,7 @@ Result.tDuration = tDuration;
 Model.fitPar = fitPar;
 Model.dispPar = dispPar;
 Model.dataPar = dataPar;
-Model.onGPU = options.gpu;
+Model.onGPU = 0;
 Model.dataset = dataset;
 
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
@@ -116,8 +115,6 @@ for cur = 1:2:args(2)
       options.savestate = str2num (arg);
     case 'progress'
       options.progress = str2num (arg);
-    case 'gpu'
-      options.gpu = str2num (arg);
     case 'dataset'
       dataset = arg;
     otherwise

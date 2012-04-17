@@ -1,13 +1,5 @@
 function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, options)
 
-%% Setup GPU context
-fprintf ('\nUsing GPU: %d\n', options.gpu);
-if options.gpu
-  hcube = cube();
-  hcube.setup()
-else
-  hcube = 0;
-end
 
 %% Profiling
 profileLen = 1000;
@@ -40,18 +32,14 @@ for i = start : fitPar.maxIters
   end
   
   tstart = tic;
-  if options.gpu
-    res = hcube.ica_calc_S(Model.A, Result.D, Result.S);
-    if res ~= 1
-      error ('Error during computation on the GPU')
-    end
-  else
-    Result.S = pinv(Model.A)*Result.D;
-  end
-  calcTimes(cT, 2) = toc(tstart);
   
+  Result.S = pinv(Model.A)*Result.D;
+  
+  calcTimes(cT, 2) = toc(tstart);
   tstart = tic;
-  [Model, Result] = adaptPrior(Model, Result, fitPar, hcube, options);
+  
+  [Model, Result] = adaptPrior(Model, Result, fitPar);
+  
   calcTimes(cT, 3) = toc(tstart);
   
   if (i == start || isUpdatePoint (i, dispPar.updateFreq, fitPar))
@@ -60,12 +48,10 @@ for i = start : fitPar.maxIters
   
   tstart = tic;
   epsilon = interpIter (i, fitPar.iterPts, fitPar.epsilon);
-  if options.gpu
-    Model.A = updateAonGPU (Model, Result, epsilon, hcube);
-  else   
-    [dA, A] = calcDeltaA (Result.S, Model);
-    Model.A = updateAwithDeltaA (A, dA, epsilon);
-  end
+  
+  
+  [dA, A] = calcDeltaA (Result.S, Model);
+  Model.A = updateAwithDeltaA (A, dA, epsilon);
   
   calcTimes(cT, 4) = toc(tstart);
   
@@ -98,19 +84,5 @@ function [A] = updateAwithDeltaA (A, dA, epsilon)
   epsilon = epsilon/max(abs(dA(:)));
   dA = epsilon * dA;
   A = A + dA;
-
-end
-
-function [A] = updateAonGPU (Model, Result, epsilon, hcube)
-A = Model.A;
-S = Result.S;
-mu = Model.prior.mu;
-beta  = Model.prior.beta;
-sigma = Model.prior.sigma;
-res = hcube.ica_update_A (A, S, mu, beta, sigma, epsilon);
-
-if res ~= 1
-  error ('Error during computation on the GPU')
-end
 
 end

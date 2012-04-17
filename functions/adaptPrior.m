@@ -1,4 +1,4 @@
-function [Model, Result] = adaptPrior(Model, Result, fitPar, hcube, options)
+function [Model, Result] = adaptPrior(Model, Result, fitPar)
 
 % Written by Mike Lewicki 4/99
 %
@@ -46,19 +46,12 @@ end
 
 if Result.priorIdx + N >= fitPar.priorAdaptSize
   fprintf('%5d: Updating prior\n',Result.iter);
-  if options.gpu
-    res = hcube.ica_adapt_prior (Result.priorS', 0, 1, mp.tol, mp.a, mp.b, mp.beta);
-    if res ~= 1
-      error ('Error during computation on the GPU (adapt prior)')
-    end
-
-  else
-    for m=1:M;
-      mp.beta(m) = expwrmapbeta(Result.priorS(m,:), mp.mu(m), mp.sigma(m), ...
-        mp.a, mp.b, mp.tol);
-    end
-    Model.prior = mp;
+  
+  for m=1:M;
+    mp.beta(m) = expwrmapbeta(Result.priorS(m,:), mp.mu(m), mp.sigma(m), ...
+      mp.a, mp.b, mp.tol);
   end
+  Model.prior = mp;
   
 end
 
