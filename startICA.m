@@ -7,7 +7,8 @@ end;
 options = struct('autosave', 1, ...
                  'savestate', 1, ...
                  'progress', 0);
-               
+ds_path = '';
+
 if nargin > 1
   [options, ds_path] = parse_varargs (options, varargin);
 end
