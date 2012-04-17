@@ -1,4 +1,4 @@
-function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, Result, options)
+function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, options)
 
 %% Setup GPU context
 fprintf ('\nUsing GPU: %d\n', options.gpu);
@@ -13,9 +13,18 @@ end
 profileLen = 1000;
 calcTimes = zeros(profileLen, 4);
 
+%% Setup the Result structs
+%
+Result.priorN = 0;
+Result.dataIdx = 1;
+Result.X = [];		% force new dataset to be generated
+
+Result.tStart = tic;
+
+Result.S = zeros (length (Model.A), dataset.blocksize);
 
 %% Main Loop
-start = Result.iter;
+start = 1;
 
 for i = start : fitPar.maxIters
   Result.iter = i;

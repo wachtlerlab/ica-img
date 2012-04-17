@@ -70,28 +70,18 @@ else
   Model.A = dataset.Ainit;
 end
 
-%% Setup the Model & Result structs
-%
-
-Result.priorN = 0;
-Result.dataIdx = 1;
-Result.X = [];		% force new dataset to be generated
-
-Result.iter = 1;
-Result.tStart = tic;
-
-Result.S = zeros (length (Model.A), dataset.blocksize);
-
-
 
 %% Infer the Model
 
-[Model, Result] = fitModel (Model, fitPar, dispPar, dataset, Result, options);
+tStart = tic;
 
+[Model, Result] = fitModel (Model, fitPar, dispPar, dataset, options);
+
+tDuration = toc (tStart);
 %% 
 
 % time reporting
-Result.tDuration = toc (Result.tStart);
+Result.tDuration = tDuration;
 
 Model.fitPar = fitPar;
 Model.dispPar = dispPar;
