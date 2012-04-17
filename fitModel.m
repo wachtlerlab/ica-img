@@ -1,5 +1,7 @@
 function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, options)
 
+savestate = options.savestate;
+
 
 %% Profiling
 profileLen = 1000;
@@ -57,7 +59,7 @@ for i = start : fitPar.maxIters
   
   calcTimes(cT, 4) = toc(tstart);
   
-  if (fitPar.saveflag && isUpdatePoint (i, fitPar.saveFreq, fitPar))
+  if (savestate && isUpdatePoint (i, fitPar.saveFreq, fitPar))
     tstart = tic;
     fprintf('%5d: Saving state\n',Result.iter);
     saveState(Model, Result, fitPar);
