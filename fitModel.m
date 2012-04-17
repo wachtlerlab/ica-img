@@ -1,4 +1,4 @@
-function [ Model, Result ] = fitModel (Model, fitPar, dataset, options)
+function [ Model, Result ] = fitModel (Model, gradient, dataset, options)
 
 savestate = options.savestate;
 saveFreq = options.savefreq;
@@ -52,10 +52,10 @@ for i = start : maxIters
   end
   
   tstart = tic;
-  epsilon = interpIter (i, fitPar.iterPts, fitPar.epsilon);
-  
   
   [dA, A] = calcDeltaA (Result.S, Model);
+  
+  epsilon = gradientGetEpsilon (gradient, i);
   Model.A = updateAwithDeltaA (A, dA, epsilon);
   
   calcTimes(cT, 4) = toc(tstart);

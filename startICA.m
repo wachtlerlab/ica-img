@@ -83,7 +83,9 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
 tStart = tic;
 
-[Model, Result] = fitModel (Model, fitPar, dataset, options);
+gradient = createGradient (fitPar, dataset.maxiter);
+
+[Model, Result] = fitModel (Model, gradient, dataset, options);
 
 tDuration = toc (tStart);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
