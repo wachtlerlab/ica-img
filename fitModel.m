@@ -15,6 +15,8 @@ Result.tStart = tic;
 
 Result.S = zeros (length (Model.A), dataset.blocksize);
 
+priorAdaptSize = fitPar.priorAdaptSize;
+
 %% Main Loop
 start = 1;
 
@@ -38,7 +40,7 @@ for i = start : fitPar.maxIters
   calcTimes(cT, 2) = toc(tstart);
   tstart = tic;
   
-  [Model, Result] = adaptPrior(Model, Result, fitPar);
+  [Model, Result] = adaptPrior(Model, Result, priorAdaptSize);
   
   calcTimes(cT, 3) = toc(tstart);
   

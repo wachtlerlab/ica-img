@@ -1,4 +1,4 @@
-function [Model, Result] = adaptPrior(Model, Result, fitPar)
+function [Model, Result] = adaptPrior(Model, Result, adaptSize)
 
 % Written by Mike Lewicki 4/99
 %
@@ -11,7 +11,7 @@ function [Model, Result] = adaptPrior(Model, Result, fitPar)
 % suitability of this software for any purpose. It is provided "as is"
 % without express or implied warranty.
 
-if fitPar.priorAdaptSize == 0		% 0 means don't adapt
+if adaptSize == 0		% 0 means don't adapt
   return
 end
 
@@ -20,21 +20,21 @@ end
 mp = Model.prior;
 
 if Result.priorN == 0
-  Result.priorS = zeros(M,fitPar.priorAdaptSize);
+  Result.priorS = zeros(M,adaptSize);
   Result.priorIdx = 1;
 end
 
 % add current coeffs to dataset for prior
 
-N = min( N, fitPar.priorAdaptSize );
+N = min( N, adaptSize );
 
 a = Result.priorIdx;
-if a+N-1 <= fitPar.priorAdaptSize
+if a+N-1 <= adaptSize
   b = Result.priorIdx + N - 1;
   Result.priorS(:,a:b) = Result.S(:,1:N);
 else
   % handle wrap around
-  b = fitPar.priorAdaptSize;
+  b = adaptSize;
   n = b-a+1;
   Result.priorS(:,a:b) = Result.S(:,1:n);
   a = 1;
@@ -44,7 +44,7 @@ end
 
 % adapt every time the buffer is filled
 
-if Result.priorIdx + N >= fitPar.priorAdaptSize
+if Result.priorIdx + N >= adaptSize
   fprintf('%5d: Updating prior\n',Result.iter);
   
   for m=1:M;
@@ -55,5 +55,5 @@ if Result.priorIdx + N >= fitPar.priorAdaptSize
   
 end
 
-Result.priorIdx = mod(Result.priorIdx + N, fitPar.priorAdaptSize);
-Result.priorN   = min(Result.priorN + N, fitPar.priorAdaptSize);
+Result.priorIdx = mod(Result.priorIdx + N, adaptSize);
+Result.priorN   = min(Result.priorN + N, adaptSize);
