@@ -77,15 +77,16 @@ if options.progress
   figure(3)
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Infer the Model
 fprintf ('\nFitting %s for config %s [%s]\n',...
   Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
-
 tStart = tic;
 
 [Model, Result] = fitModel (Model, fitPar, dataset, options);
 
 tDuration = toc (tStart);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 
 % time reporting
