@@ -1,7 +1,9 @@
-function [ Model, Result ] = fitModel (Model, fitPar, dispPar, dataset, options)
+function [ Model, Result ] = fitModel (Model, fitPar, dataset, options)
 
 savestate = options.savestate;
 saveFreq = options.savefreq;
+plotflag = options.progress;
+plotfreq = options.plotfreq;
 
 %% Profiling
 profileLen = 1000;
@@ -47,8 +49,8 @@ for i = start : maxIters
   
   calcTimes(cT, 3) = toc(tstart);
   
-  if (i == start || isUpdatePoint (i, dispPar.updateFreq, maxIters))
-    Result = updateDisplay(Model, Result, dispPar);
+  if (i == start || isUpdatePoint (i, plotfreq, maxIters))
+    Result = updateDisplay(Model, Result, plotflag);
   end
   
   tstart = tic;

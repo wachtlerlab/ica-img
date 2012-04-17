@@ -1,4 +1,4 @@
-function Result = updateDisplay(Model, Result, dispPar)
+function Result = updateDisplay(Model, Result, plotflag)
 
 % display progress and update plots
 % also do calculations for progress reports
@@ -35,7 +35,7 @@ logL = calcLogPXA(Result.D, Result.S, Model);
 Result.logL(Result.plotIter) = logL / N;
 Result.bits(Result.plotIter) = estBits(logL, 8, Result.D) / (L*N);
 
-if dispPar.plotflag
+if plotflag
 %  figure(1);
 %  bfh = plotBFs(Model.A,dispPar.maxPlotVecs,'zeroc','l2ord');
 

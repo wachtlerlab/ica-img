@@ -8,7 +8,8 @@ options = struct('createpic', 0, ...
                  'autosave', 1, ...
                  'savestate', 1, ...
                  'savefreq', 100, ...
-                 'progress', 0);
+                 'progress', 0, ...
+                 'plotfreq', 50);
 ds_path = '';
 
 if nargin > 1
@@ -82,7 +83,7 @@ fprintf ('\nFitting %s for config %s [%s]\n',...
 
 tStart = tic;
 
-[Model, Result] = fitModel (Model, fitPar, dispPar, dataset, options);
+[Model, Result] = fitModel (Model, fitPar, dataset, options);
 
 tDuration = toc (tStart);
 %% 
@@ -127,6 +128,8 @@ for cur = 1:2:args(2)
       options.savefreq = str2num (arg);
     case 'progress'
       options.progress = str2num (arg);
+    case 'plotfreq'
+      options.plotfreq = str2num (arg);
     case 'dataset'
       dataset = arg;
     otherwise
