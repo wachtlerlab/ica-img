@@ -1,4 +1,4 @@
-function Result = updateDisplay_color(Model, Result, fitPar, dispPar)
+function Result = updateDisplay(Model, Result, fitPar, dispPar)
 
 % display progress and update plots
 % also do calculations for progress reports
