@@ -1,4 +1,4 @@
-function [Model, Result] = adaptPrior(Model, Result, adaptSize)
+function [Model, Result] = adaptPrior(Model, Result)
 
 % Written by Mike Lewicki 4/99
 %
@@ -10,6 +10,8 @@ function [Model, Result] = adaptPrior(Model, Result, adaptSize)
 % all copies.  Copyright holder(s) make no representation about the
 % suitability of this software for any purpose. It is provided "as is"
 % without express or implied warranty.
+
+adaptSize = Model.prior.adaptSize;
 
 if adaptSize == 0		% 0 means don't adapt
   return
