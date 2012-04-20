@@ -34,9 +34,10 @@ eval (['load ', imgpath]);
 data = eval (flnm);
 eval (['clear ', flnm]);
 
+Img.hs_data = data;
+
 telapsed = toc;
 fprintf (['\n\t Total time to load data: ', num2str(telapsed), '\n']);
-
 
 %% Reshaping data
 fprintf ('\tConverting images to SML');
