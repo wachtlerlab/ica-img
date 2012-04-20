@@ -1,9 +1,7 @@
-function [ gradient ] = createGradient (fitParam, maxIter)
-%CREATEGRADIENT Create the gradient for updating A
-%               basically a dummy function for the old config system
+function [ gradient ] = createGradient (cfg, maxIter)
 
-gradient.iterPoints = fitParam.iterPts;
-gradient.epsilon = fitParam.epsilon;
+gradient.iterPoints = cfg.iter_points;
+gradient.epsilon = cfg.eps_scale * cfg.epsilon;
 
 maxGradient = max(gradient.iterPoints);
 if maxIter > maxGradient
@@ -12,4 +10,6 @@ if maxIter > maxGradient
     maxGradient, maxIter )
 end
 
+
 end
+

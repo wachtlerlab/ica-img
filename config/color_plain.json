@@ -1,5 +1,5 @@
 {
-    "name": "tri_csr",
+    "name": "color_plain",
     "version": 1.0,
     "data":
     {
@@ -11,16 +11,8 @@
 	},
 	"filter":
 	{
-	    "class": "CSRect",
-	    "center": ["S", "M", "L"],
-	    "surround": ["S", "M", "L"],
-	    "kernel":
-	    {
-		"type": "direct",
-		"x": 3,
-		"y": 3,
-		"data": [0.1020, 0.1224, 0.1020, 0.1224, 1.0000, 0.1224, 0.1020, 0.1224, 0.1020]
-	    }
+	    "class": "SML",
+	    "log": 1
 	},
 	"patchsize": 7,
 	"blocksize": 100,

@@ -1,7 +1,7 @@
-function [Model] = startICA (modelId, varargin)
+function [Model] = ica (cfgid, varargin)
 
 if nargin < 1
-  modelId = 'color_cs_rect_1';
+  error('Need configuration identifer')
 end;
 
 options = struct('createpic', 0, ...
@@ -10,50 +10,38 @@ options = struct('createpic', 0, ...
                  'savefreq', 100, ...
                  'progress', 0, ...
                  'plotfreq', 50);
-ds_path = '';
 
 if nargin > 1
-  [options, ds_path] = parse_varargs (options, varargin);
+  options = parse_varargs (options, varargin);
 end
 
-
-if exist (fullfile ('config', [modelId '.m']), 'file') == 0
-  error ('Cannot find config');
-end
 
 currev = getCurRev ();
 
-fprintf ('Starting simulation for %s [code: %s]', modelId, currev);
+fprintf ('Starting simulation for %s [code: %s]', cfgid, currev);
 
-%%
-% basic init
-clear Model fitPar dispPar Result;
+%% laod config and prepare dataset, prior, model
+
+cfg = loadConfig (cfgid);
+
+images = prepareImages (cfg.data);
+
+tstart = tic;
+fprintf('\nGenerating dataset...\n');
+dataset = createDataSet (images, cfg);
+fprintf('   done in %f\n', toc(tstart));
+
+gradient = createGradient (cfg.gradient, dataset.maxiter);
+
+prior = createPrior(cfg.prior, dataset.dim);
 
 
-[Model, fitPar, dataPar] = loadConfig (modelId);
+Model.prior = prior;
+Model.A = dataset.Aguess;
+Model.cfgId = cfgid;
+Model.name = cfgid;
 
 Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
-
-
-%% Prepare image data
-
-if isempty (ds_path)
-
-  images = prepareImages (dataPar);
-
-  tstart = tic;
-  fprintf('\nGenerating dataset...\n');
-  dataset = createDataSet (images, fitPar, dataPar);
-  fprintf('   done in %f\n', toc(tstart));
-  
-else
-  dataset = loadDataSet (ds_path, '/ds');
-  Model.A = dataset.Ainit;
-end
-
-
-%% prepare gradient
-gradient = createGradient (fitPar, dataset.maxiter);
 
 
 %% check if we are just creating the PIC
@@ -62,8 +50,6 @@ if options.createpic
   fprintf ('Created PIC (%s)\n', datapath);
   return
 end
-
-
 
 
 %% create state dir if necessary
@@ -96,7 +82,6 @@ tDuration = toc (tStart);
 % time reporting
 Result.tDuration = tDuration;
 
-Model.dataPar = dataPar;
 Model.onGPU = 0;
 Model.dataset = dataset;
 
@@ -112,10 +97,9 @@ end
 end
 
 
-function [options, dataset] = parse_varargs(options, varargin)
+function [options] = parse_varargs(options, varargin)
 
 args = size (varargin{1});
-dataset = '';
 for cur = 1:2:args(2)
   opt = char (varargin{1}(cur));
   arg = char (varargin{1}(cur + 1));
@@ -133,8 +117,6 @@ for cur = 1:2:args(2)
       options.progress = str2num (arg);
     case 'plotfreq'
       options.plotfreq = str2num (arg);
-    case 'dataset'
-      dataset = arg;
     otherwise
       fprintf ('[W] Unkown option %s [%s]\n', opt, arg);
   end

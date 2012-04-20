@@ -1,22 +1,26 @@
-function [ dataset ] = createDataSet (images, fitPar, dataPar)
+function [ dataset ] = createDataSet (images, cfg)
 %GENERATEDATASET generate a dataset from a set of images
+%                A dataset is supposed to contain all *generated* data
+%                neccessary to instannciate a analysis and run it
 
-npats     = fitPar.npats;
+dcfg = cfg.data;
+
+npats     = dcfg.npats;
+patchsize = dcfg.patchsize;
+blocksize = dcfg.blocksize;
+nclusters = dcfg.ncluster;
 nimages   = length(images);
-patchsize = dataPar.patchSize;
-blocksize = fitPar.blocksize;
-
-nblocks = npats / blocksize;
-nclusters = fitPar.maxIters / nblocks;
-Tperimg = npats / nimages;
+nblocks   = npats / blocksize;
+Tperimg   = npats / nimages;
+maxiter   = nblocks*nclusters;
 
 indicies = zeros(Tperimg, 2, nclusters, nimages, 'uint16');
 
-[z, x, y] = size (images(1).imgData);
+[z, x, y] = size (images{1}.imgData);
 imgdata = zeros(z, x, y, nimages);
 
 for n = 1:nimages
-  img = images(n);
+  img = images{n};
   refBase = calcRefBase(img, patchsize);
   idx = generatePatchIndices(refBase, Tperimg, nclusters);
   indicies(:,:,:,n) = idx;
@@ -30,15 +34,21 @@ for n = 1:nclusters
   patsperm(:,n) = randperm(npats);
 end
 
+dim = patchsize * patchsize * z;
+Aguess = createMixingMatrix (cfg, dim);
+
+dataset.dim       = dim;
+dataset.Aguess    = Aguess;
 dataset.images    = images;
-dataset.imgdata = imgdata;
+dataset.imgdata   = imgdata;
 dataset.patchsize = patchsize;
 dataset.npats     = npats;
 dataset.blocksize = blocksize;
 dataset.nclusters = nclusters;
 dataset.indicies  = indicies;
 dataset.patsperm  = patsperm;
-dataset.maxiter   = fitPar.maxIters;
+dataset.maxiter   = maxiter;
+
 
 end
 
@@ -75,3 +85,4 @@ validIdx = l(:, ~((l(1,:) > refa & l(1,:) < refb) & ...
 
 refBase = permute (validIdx, [2 1]);
 end
+
