@@ -1,18 +1,42 @@
-function [ filter ] = CSRect( )
+function [ filter ] = CSRect(cfg)
 %CSRECT Summary of this function goes here
 %   Detailed explanation goes here
 
+if ~isfield(cfg, 'log')
+  cfg.log = '0';
+end
+
 filter.name = 'CSRect';
 filter.function = @CSRectFilterImage;
-filter.kernel = mhat(7, 0.5, 3, 1.785, 0, 0);
-filter.log = 0;
-filter.center = [1, 2, 3];
-filter.surround = [2, 3];
+filter.log = str2double(cfg.log);
+filter.center = chanlist2idx(cfg.center);
+filter.surround = chanlist2idx(cfg.surround);
+kernFactoryFunc = [cfg.kernel.type 'Kernel'];
+filter.kernel = feval (kernFactoryFunc, cfg.kernel);
+
+smlcfg.log = 0;
+filter.sml = SML(smlcfg);
+
+end
+
+function [idx] = chanlist2idx (chanlist)
+
+N = length(chanlist);
+idx = zeros (1, N);
+for n = 1:length(chanlist)
+  ch = chanlist(n);
+  idx(n) = str2chan(ch);
+end
 
 end
 
 
-function [out] = CSRectFilterImage (this, img)
+function [img] = CSRectFilterImage (this, img)
+
+if isfield (this, 'sml')
+  sml_filter = this.sml;
+  img = sml_filter.function (sml_filter, img);
+end
 
 ft = this.kernel;
 
@@ -68,8 +92,11 @@ for n=1:length(this.center)
   data(n*2,:,:) = off;
 end
 
+
+
 % (f,r,c) -> (f,c,r)
-out = permute (data, [1 3 2]);
+img.imgData = permute (data, [1 3 2]);
+img.filtered = 1;
 
 fprintf ('\t stats after filtering: Min: %f, Max: %f,\n\t\t Mean: %f, Std: %f \n', ...
   min (data(:)), max (data(:)), mean (data(:)), std (data(:)));
@@ -95,3 +122,27 @@ end
 
 end
 
+% Not needed due to conv (,, 'same')
+%
+% function [refkoos] = adjustRefKoos (img)
+% s = zeros(2, 3);
+% s(2,:) = size (img.SML);
+% s(1,:) = size (img.imgData);
+% 
+% sizeDiff = s(1,:) - s(2,:);
+% 
+% edgeN = s(2,2);
+% 
+% if edgeN ~= round (edgeN)
+%     warning ('ica:adjust_refkoos', 'Image after filtering not square!');
+% end
+% 
+% Img.edgeN = edgeN;
+% 
+% deltaM = sizeDiff(2);
+% deltaN = sizeDiff(3);
+% 
+% refkoos(1) = Img.refkoos(1) - deltaM;
+% refkoos(2) = Img.refkoos(2) - deltaN;
+% 
+% end
