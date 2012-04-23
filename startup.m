@@ -2,7 +2,6 @@ path('core/', path);
 path('filter/', path);
 path('filter/kernel', path);
 path('filter/sml', path);
-path('sml/', path);
 path('utils/', path);
 path('plot/', path);
 path('report/', path);
