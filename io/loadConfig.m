@@ -16,7 +16,7 @@ cfg = setfield_idx (cfg, 'creator', creator, 'version');
 
 
 id = createCfgId (cfg);
-setfield_idx (cfg, 'id', id, 1);
+cfg = setfield_idx (cfg, 'id', id, 1);
 
 id_check =  createCfgId (cfg);
 
