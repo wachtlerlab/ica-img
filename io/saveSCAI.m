@@ -47,7 +47,9 @@ group.set ('patchsize', int32(dataset.patchsize));
 group.set ('npats', int32(dataset.npats));
 group.set ('blocksize', int32(dataset.blocksize));
 group.set ('nclusters', int32(dataset.nclusters));
-group.set ('maxiter', int32(dataset.maxiter))
+group.set ('maxiter', int32(dataset.maxiter));
+group.set ('rng', dataset.rng);
+
 group.close();
 
 fd.write ([loc '/indicies'], dataset.indicies);
@@ -72,7 +74,7 @@ if isfield (Model, 'onGPU')
 end
 
 if isfield (Model, 'fit_time')
-  group.set ('fit_time', (Model.fit_time);
+  group.set ('fit_time', Model.fit_time);
 end
 
 group.close();
