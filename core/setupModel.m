@@ -9,10 +9,12 @@ prior = createPrior(cfg.prior, dim);
 model.ds = dataset.id;
 model.cfg = cfgid;
 model.creator = genCreatorId();
+
+id = DataHash (model, struct ('Method', 'SHA-1'));
+
 model.prior = prior;
 model.A = dataset.Aguess;
 
-id = DataHash (model, struct ('Method', 'SHA-1'));
 model = setfield_idx(model, 'id', id, 1);
 
 
