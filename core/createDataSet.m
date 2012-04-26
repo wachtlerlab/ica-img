@@ -3,6 +3,12 @@ function [ dataset ] = createDataSet (images, cfg)
 %                A dataset is supposed to contain all *generated* data
 %                neccessary to instannciate a analysis and run it
 
+creator = genCreatorId();
+cfgid   = cfg.id;
+
+rng_save = rng;
+id       = generateId (cfgid, rng_save);
+
 dcfg = cfg.data;
 
 npats     = dcfg.npats;
@@ -37,6 +43,11 @@ end
 dim = patchsize * patchsize * z;
 Aguess = createMixingMatrix (cfg, dim);
 
+
+dataset.id        = id;
+dataset.cfg       = cfgid;
+dataset.creator   = creator;
+dataset.rng       = rng_save;
 dataset.dim       = dim;
 dataset.Aguess    = Aguess;
 dataset.images    = images;
@@ -86,3 +97,9 @@ validIdx = l(:, ~((l(1,:) > refa & l(1,:) < refb) & ...
 refBase = permute (validIdx, [2 1]);
 end
 
+function [id] = generateId (cfgid, rng_settings)
+s.cfgid = cfgid;
+s.rng = rng_settings;
+
+id = DataHash (s, struct ('Method', 'SHA-1'));
+end
