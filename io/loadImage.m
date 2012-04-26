@@ -43,37 +43,6 @@ Img.hs_data = data;
 telapsed = toc;
 fprintf (['\n\t Total time to load data: ', num2str(telapsed), '\n']);
 
-%% Reshaping data
-fprintf ('\tConverting images to SML');
-tic;
-
-[~, T] = size (data);
-edgeN = sqrt (T);
-
-if edgeN ~= round (edgeN)
-    error ('Image data to square!');
-end
-
-Img.edgeN = edgeN;
-
-datamx = feval ('toSML', data);
-% datamx2 = log(datamx2+0.01*max(datamx2(:)));
-datamx2 = log (datamx); % offset not necessary - value 0 should not occur after SML trafo
-
-% reshape to 256x256 pixels
-datamxtmp = reshape (datamx2, 3, edgeN, edgeN);
-datamx2 = datamxtmp;
-
-% for k=1:31,
-%  datamx(k,:,:)=datamx(k,:,:)-mean(datamx(k,:));
-% end
-
-telapsed = toc;
-fprintf ([' (',num2str(telapsed),')\n']);
-
-Img.imgData = datamx2;
-Img.SML = permute (reshape (datamx, 3, edgeN, edgeN), [3 2 1]);
-
 Img.filtered = 0;
 
 end

@@ -22,7 +22,7 @@ maxiter   = nblocks*nclusters;
 
 indicies = zeros(Tperimg, 2, nclusters, nimages, 'uint16');
 
-[z, x, y] = size (images{1}.imgData);
+[z, x, y] = size (images{1}.data);
 imgdata = zeros(z, x, y, nimages);
 
 for n = 1:nimages
@@ -31,8 +31,7 @@ for n = 1:nimages
   idx = generatePatchIndices(refBase, Tperimg, nclusters);
   indicies(:,:,:,n) = idx;
   
-  data = reshape (img.imgData, z, x, y);
-  imgdata(:,:,:,n) = data;
+  imgdata(:,:,:,n) = img.data;
 end
 
 patsperm = zeros(npats, nclusters, 'int32');
@@ -81,7 +80,7 @@ function [refBase] = calcRefBase(img, patchSize)
 
 % generate posible combinations of patch indices
 patchsize = patchSize;
-[~, N, ~] = size (img.imgData);
+[~, N, ~] = size (img.data);
 N = N - patchsize;
 reps = repmat (1:N, 1, N);
 l = [sort(reps); reps];

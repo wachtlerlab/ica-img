@@ -51,8 +51,8 @@ surs = sum (ft(:));
 fprintf ('Filter: S: %f, C: %f; %f\n', surs, wc, wc/abs (surs));
 %ft(mp,mp) = wc;
 
-%SML is 256x256x3 (r,c,f) wysiwyg :-> 3x256x256 (f,c,r)
-input = permute (img.SML, [3 2 1]); 
+%img.data is 3x256x256 (c,x,y) [f,c,r] of the image 
+input = img.data;
 
 % normalize S to the same std as the surround
 
@@ -108,7 +108,7 @@ rk([2,4]) = rk([2,4]) - sb(1);
 img.refkoos = rk;
 
 % (f,r,c) -> (f,c,r) [c <-> x, r <-> y]
-img.imgData = permute (data, [1 3 2]);
+img.data = permute (data, [1 3 2]);
 img.filtered = 1;
 
 fprintf ('\t stats after filtering: Min: %f, Max: %f,\n\t\t Mean: %f, Std: %f \n', ...

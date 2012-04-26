@@ -32,11 +32,7 @@ if this.log
   smlflat = log (smlflat);
 end
 
-tmp = reshape (smlflat, 3, edgeN, edgeN);
-sml = permute (tmp, [3 2 1]);
-
-%compat field
-img.SML = sml;
-img.data = sml;
+img.data  = reshape (smlflat, 3, edgeN, edgeN); %(c,x,y) [f,c,r]
+img.sml = permute (img.data, [3 2 1]); % compat (y,x,c) [f, c, r]
 
 end
