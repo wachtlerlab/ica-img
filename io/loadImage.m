@@ -23,6 +23,10 @@ fprintf (['\n\t [ref data] from ', refpath]);
 
 % load coordinates of gray reference reflectance card
 % from directory "ref/" next to data directory
+
+% the format of the refcard is 
+% x_start y_start x_end y_end
+
 eval (['load ', refpath, ' -ascii']);
 Img.refkoos = eval (flnm);
 

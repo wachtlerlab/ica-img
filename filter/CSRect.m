@@ -107,7 +107,7 @@ rk([1,3]) = rk([1,3]) - sb(1);
 rk([2,4]) = rk([2,4]) - sb(1);
 img.refkoos = rk;
 
-% (f,r,c) -> (f,c,r)
+% (f,r,c) -> (f,c,r) [c <-> x, r <-> y]
 img.imgData = permute (data, [1 3 2]);
 img.filtered = 1;
 

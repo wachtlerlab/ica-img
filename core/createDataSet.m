@@ -96,6 +96,11 @@ validIdx = l(:, ~((l(1,:) > refa & l(1,:) < refb) & ...
   (l(2,:) > refc & l(2,:) < refd)));
 
 refBase = permute (validIdx, [2 1]);
+
+%refBase format is now
+% [x, y; 
+%  x, y]
+
 end
 
 function [id] = generateId (cfgid, rng_settings)
