@@ -73,26 +73,39 @@ input(1,:,:) = (stdsr / stds) * input(1,:,:);
 % (f,c,r) -> (r,c,f)
 input = permute (input, [3 2 1]);
 
-shape = size (input);
-surround = zeros (shape(1), shape(2));
+si = size (input);
+si = si(1:2);
+
+sk = size (ft);
+sn = si-sk+1;
+sb = (si-sn)/2;
+sv = [1+sb(1):si(1)-sb(1); 1+sb(2):si(2)-sb(2)]';
+
+surround = zeros (sn(1), sn(2));
+
 for n=1:length(this.surround)
   chan = this.surround(n);
-  surround = surround + conv2 (input(:,:,chan), ft, 'same');
+  surround = surround + conv2 (input(:,:,chan), ft, 'valid');
 end
 
 surround = abs(surround./length(this.surround));
 
 N = length(this.center);
-data = zeros(2*N, shape(1), shape(2));
+data = zeros(2*N, sn(1), sn(2));
+
 for n=1:length(this.center)
   chan = this.center(n);
-  x = (wc * input(:,:,chan)) - surround;
+  x = (wc * input(sv(:,1),sv(:,1),chan)) - surround;
   [on, off] = rectifyData (x, this.log);
   data((n*2-1),:,:) = on;
   data(n*2,:,:) = off;
 end
 
-
+%adjust the refcoos
+rk = img.refkoos;
+rk([1,3]) = rk([1,3]) - sb(1);
+rk([2,4]) = rk([2,4]) - sb(1);
+img.refkoos = rk;
 
 % (f,r,c) -> (f,c,r)
 img.imgData = permute (data, [1 3 2]);
@@ -122,27 +135,4 @@ end
 
 end
 
-% Not needed due to conv (,, 'same')
-%
-% function [refkoos] = adjustRefKoos (img)
-% s = zeros(2, 3);
-% s(2,:) = size (img.SML);
-% s(1,:) = size (img.imgData);
-% 
-% sizeDiff = s(1,:) - s(2,:);
-% 
-% edgeN = s(2,2);
-% 
-% if edgeN ~= round (edgeN)
-%     warning ('ica:adjust_refkoos', 'Image after filtering not square!');
-% end
-% 
-% Img.edgeN = edgeN;
-% 
-% deltaM = sizeDiff(2);
-% deltaN = sizeDiff(3);
-% 
-% refkoos(1) = Img.refkoos(1) - deltaM;
-% refkoos(2) = Img.refkoos(2) - deltaN;
-% 
-% end
+
