@@ -81,7 +81,8 @@ function [refBase] = calcRefBase(img, patchSize)
 
 % generate posible combinations of patch indices
 patchsize = patchSize;
-N = img.edgeN - patchsize;
+[~, N, ~] = size (img.imgData);
+N = N - patchsize;
 reps = repmat (1:N, 1, N);
 l = [sort(reps); reps];
 
