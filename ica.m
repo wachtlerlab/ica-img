@@ -4,7 +4,7 @@ if nargin < 1
   error('Need configuration identifer')
 end;
 
-options = struct('createpic', 0, ...
+options = struct('nofit', 0, ...
                  'autosave', 1, ...
                  'savestate', 1, ...
                  'savefreq', 100, ...
@@ -18,7 +18,11 @@ end
 
 currev = getCurRev ();
 
-fprintf ('Starting simulation for %s [code: %s]', cfgid, currev);
+fprintf ('Starting simulation for %s [code: %s]\n', cfgid, currev);
+
+%%
+fprintf ('Configuration: \n');
+disp(options);
 
 %% laod config and prepare dataset, prior, model
 
@@ -37,9 +41,9 @@ Model = setupModel(cfg, dataset);
 
 
 %% check if we are just creating the PIC
-if options.createpic
-  datapath = savePIC (modelId, Model, dataset, gradient);
-  fprintf ('Created PIC (%s)\n', datapath);
+if options.nofit
+  datapath = saveSCAI (cfg, dataset);
+  fprintf ('Created SCAI (%s)\n', datapath);
   return
 end
 
@@ -75,14 +79,14 @@ tDuration = toc (tStart);
 Result.tDuration = tDuration;
 
 Model.onGPU = 0;
-Model.dataset = dataset;
+Model.fit_time = tDuration;
 
 fprintf (['Total time: (',num2str(Result.tDuration),')\n']);
-Model.Result = Result;
-Model.codeVersion = currev;
+%Model.Result = Result;
+%Model.codeVersion = currev;
 
 if options.autosave
-  filename = saveResult (Model);
+  filename = saveSCAI (cfg, dataset, Model);
   fprintf ('Saved results to %s\n', filename);
 end
 
@@ -97,8 +101,8 @@ for cur = 1:2:args(2)
   arg = char (varargin{1}(cur + 1));
   
   switch opt
-    case 'createpic'
-      options.createpic = str2num (arg);
+    case 'nofit'
+      options.nofit = str2num (arg);
     case 'autosave'
       options.autosave = str2num (arg);
     case 'savestate'

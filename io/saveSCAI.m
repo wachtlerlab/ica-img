@@ -66,6 +66,15 @@ group.set ('id', Model.id);
 group.set ('cfg', Model.cfg);
 group.set ('ds', Model.ds);
 group.set ('creator', Model.creator);
+
+if isfield (Model, 'onGPU')
+  group.set ('gpu', uint16(Model.onGPU));
+end
+
+if isfield (Model, 'fit_time')
+  group.set ('fit_time', (Model.fit_time);
+end
+
 group.close();
 
 ds = fd.write([loc '/A'], Model.A);
