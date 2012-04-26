@@ -20,12 +20,14 @@ Result.S = [];
 Result.priorS = [];
 
 nick = Model.id(1:7);
+cfgid = Model.cfg(1:7);
+
 stateDir = fullfile ('..', 'state', nick);
 if exist (stateDir, 'dir') ~= 7
   mkdir (stateDir);
 end
 
-stateFileName = sprintf ('%s-%s-i%d', Model.name, nick, Result.iter);
+stateFileName = sprintf ('%s-%s-i%d', cfgid, nick, Result.iter);
 stateFile = fullfile (stateDir, stateFileName);
 
 fprintf('%5d: Saving state to %s\n', Result.iter, stateFile);
@@ -34,7 +36,7 @@ eval(['save ',stateFile,' Model Result']);
 % save state with minimum number of bits/pixel in separate file
 if ( Result.bits(Result.plotIter) == min(Result.bits(1:Result.plotIter)) )
   
- optFileName = sprintf('%s-%s-minbits', Model.name, nick);
+ optFileName = sprintf('%s-%s-minbits', cfgid, nick);
  optFile = fullfile (stateDir, optFileName);
  eval(['save ',optFile,' Model Result']);
 end
@@ -48,7 +50,7 @@ else
   % delete the previous state file.
   prevIter = max( 1, Result.iter - saveFreq );
   if (rem(prevIter, 10000) ~= 0)
-    prevStateFileName = sprintf ('%s-%s-i%d.mat', Model.name, nick, prevIter);
+    prevStateFileName = sprintf ('%s-%s-i%d.mat', cfgid, nick, prevIter);
     prevStateFile = fullfile (stateDir, prevStateFileName);
    
    if exist( prevStateFile, 'file' ) ~= 0

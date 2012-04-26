@@ -1,4 +1,4 @@
-function [Model] = ica (cfgid, varargin)
+function [Model, cfg, dataset] = ica (cfgid, varargin)
 
 if nargin < 1
   error('Need configuration identifer')
@@ -33,15 +33,7 @@ fprintf('   done in %f\n', toc(tstart));
 
 gradient = createGradient (cfg.gradient, dataset.maxiter);
 
-prior = createPrior(cfg.prior, dataset.dim);
-
-
-Model.prior = prior;
-Model.A = dataset.Aguess;
-Model.cfgId = cfgid;
-Model.name = cfgid;
-
-Model.id = DataHash (Model, struct ('Method', 'SHA-1'));
+Model = setupModel(cfg, dataset);
 
 
 %% check if we are just creating the PIC
@@ -70,7 +62,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Infer the Model
 fprintf ('\nFitting %s for config %s [%s]\n',...
-  Model.id(1:7), Model.cfgId(1:7), datestr (clock (), 'yyyymmddHHMM'));
+  Model.id(1:7), Model.cfg(1:7), datestr (clock (), 'yyyymmddHHMM'));
 tStart = tic;
 
 [Model, Result] = fitModel (Model, gradient, dataset, options);
