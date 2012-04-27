@@ -8,10 +8,13 @@ filename = [id '.sca.h5'];
 fd = H5File(filename);
 
 cfg = rmfield (cfg, 'id');
+ctime = cfg.ctime;
+cfg = rmfield (cfg, 'ctime');
 
 root = ['/ICA/' id];
 group = fd.createGroup(root);
 group.set('id', cfgid);
+group.set('ctime', ctime);
 group.close()
 
 txt = savejson('', cfg);

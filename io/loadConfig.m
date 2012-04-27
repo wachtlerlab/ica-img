@@ -11,14 +11,15 @@ cfg = loadjson(configFile);
 git_rev = getCurRev();
 mat_ver = regexprep(version, ' \(.+\)', '');
 
-creator = ['MATLAB ' mat_ver ' [' git_rev(1:7) ']'];
-cfg = setfield_idx (cfg, 'creator', creator, 'version');
-
 
 id = createCfgId (cfg);
 cfg = setfield_idx (cfg, 'id', id, 1);
 
 id_check =  createCfgId (cfg);
+
+creator = ['MATLAB ' mat_ver ' [' git_rev(1:7) ']'];
+cfg = setfield_idx (cfg, 'creator', creator, 'version');
+cfg = setfield_idx (cfg, 'ctime', gen_ctime(), 'creator');
 
 if ~strcmpi (id, id_check)
   warning ('ica:config_id', 'config id (SHA-1) is not stable');
@@ -30,6 +31,10 @@ function [id] = createCfgId (cfg)
 
 if isfield (cfg, 'id')
   cfg = rmfield (cfg, 'id');
+end
+
+if isfield (cfg, 'name')
+  cfg = rmfield (cfg, 'name');
 end
 
 %canonicalize the (textual) config

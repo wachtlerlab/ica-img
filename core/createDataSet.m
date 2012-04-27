@@ -46,6 +46,7 @@ Aguess = createMixingMatrix (cfg, dim);
 dataset.id        = id;
 dataset.cfg       = cfgid;
 dataset.creator   = creator;
+dataset.ctime     = gen_ctime();
 dataset.rng       = rng_save;
 dataset.dim       = dim;
 dataset.Aguess    = Aguess;

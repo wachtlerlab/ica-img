@@ -9,6 +9,7 @@ prior = createPrior(cfg.prior, dim);
 model.ds = dataset.id;
 model.cfg = cfgid;
 model.creator = genCreatorId();
+model.ctime = gen_ctime();
 
 id = DataHash (model, struct ('Method', 'SHA-1'));
 
