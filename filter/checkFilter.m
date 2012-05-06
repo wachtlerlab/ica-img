@@ -1,18 +1,12 @@
-function checkFilter (modelId)
+function checkFilter (cfg)
 
-if nargin < 1
-modelId = 'color_cs_rect';
-end
+fprintf ('Checking filter for [%s]\n', cfg.id);
 
-fprintf ('Checking filter for [%s]\n', modelId);
-
-clear Model fitPar dispPar Result;
-
-[ Model, FitParam, DataParam ] = loadConfig (modelId);
-
-fprintf ('Config Id: %s\n', Model.cfgId(1:7));
-
-images = prepareImages (DataParam);
-displayImages (images, DataParam);
+fcfg = cfg.data.filter;
+  
+filterFunc = [fcfg.class];
+filter = feval (filterFunc, fcfg);
+disp (filter.kernel);
+plotFilterKernel (filter.kernel);
 
 end
