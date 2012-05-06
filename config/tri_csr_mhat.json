@@ -13,14 +13,14 @@
         {
             "class": "CSRect",
             "center": ["S", "M", "L"],
-            "surround": ["S", "M", "L"],
+            "surround": ["M", "L"],
             "kernel":
             {
                 "type": "mhat",
-                "size": 7,
-                "s_inner": 0.5,
-                "s_outer": 3,
-                "ratio_io": 1.785,
+                "size":     5,
+                "s_inner":  0.4,
+                "s_outer":  3,
+                "ratio_io": 3.3,
                 "mu": 0
             }
         },
