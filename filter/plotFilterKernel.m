@@ -21,7 +21,7 @@ subplot(1,3,3);
 mesh (X, Y, Z);
 center = Z(n,n);
 Z(n,n) = 0;
-fprintf ('sum: %f; ratio: %f\n', sum(Z(:)), center/sum(Z(:)));
+fprintf ('sum: %f; ratio: %f\n', sum(Z(:)), center/abs(sum(Z(:))));
 
 
 end
