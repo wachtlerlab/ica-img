@@ -1,4 +1,4 @@
-function [ dataset ] = createDataSet (images, cfg)
+function [ dataset ] = createDataSet (imageset, cfg)
 %GENERATEDATASET generate a dataset from a set of images
 %                A dataset is supposed to contain all *generated* data
 %                neccessary to instannciate a analysis and run it
@@ -15,18 +15,16 @@ npats     = dcfg.npats;
 patchsize = dcfg.patchsize;
 blocksize = dcfg.blocksize;
 nclusters = dcfg.ncluster;
-nimages   = length(images);
+nimages   = length(imageset.images);
 nblocks   = npats / blocksize;
 Tperimg   = npats / nimages;
 maxiter   = nblocks*nclusters;
 
 indicies = zeros(Tperimg, 2, nclusters, nimages, 'uint16');
-
-[z, x, y] = size (images{1}.data);
-imgdata = zeros(z, x, y, nimages);
+imgdata = zeros(imageset.shape);
 
 for n = 1:nimages
-  img = images{n};
+  img = imageset.images{n};
   refBase = calcRefBase(img, patchsize);
   idx = generatePatchIndices(refBase, Tperimg, nclusters);
   indicies(:,:,:,n) = idx;
@@ -39,7 +37,7 @@ for n = 1:nclusters
   patsperm(:,n) = randperm(npats);
 end
 
-dim = patchsize * patchsize * z;
+dim = patchsize * patchsize * imageset.shape(1);
 Aguess = createMixingMatrix (cfg, dim);
 
 
@@ -50,7 +48,7 @@ dataset.ctime     = gen_ctime();
 dataset.rng       = rng_save;
 dataset.dim       = dim;
 dataset.Aguess    = Aguess;
-dataset.images    = images;
+dataset.imageset  = imageset;
 dataset.imgdata   = imgdata;
 dataset.patchsize = patchsize;
 dataset.npats     = npats;

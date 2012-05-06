@@ -28,11 +28,11 @@ disp(options);
 
 cfg = loadConfig (cfgid);
 
-images = prepareImages (cfg.data);
+imageset = createImageSet (cfg.data);
 
 tstart = tic;
 fprintf('\nGenerating dataset...\n');
-dataset = createDataSet (images, cfg);
+dataset = createDataSet (imageset, cfg);
 fprintf('   done in %f\n', toc(tstart));
 
 gradient = createGradient (cfg.gradient, dataset.maxiter);
