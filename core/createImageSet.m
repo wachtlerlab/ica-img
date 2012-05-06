@@ -35,6 +35,9 @@ imageset.shape = [size(images{1}.data), length(images)];
 
 %shape is [z, x, y, n] with z begin the channel, x, y the image axis and
 %      n the number of images
+if isstruct(filter)
+  imageset.channels = uint8(filter.channels);
+end
 
 end
 

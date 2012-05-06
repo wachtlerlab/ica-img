@@ -47,6 +47,7 @@ group.set ('cfg', dataset.cfg);
 group.set ('creator', dataset.creator);
 group.set ('dim', int32(dataset.dim));
 group.set ('patchsize', int32(dataset.patchsize));
+group.set ('channels', dataset.channels);
 group.set ('npats', int32(dataset.npats));
 group.set ('blocksize', int32(dataset.blocksize));
 group.set ('nclusters', int32(dataset.nclusters));

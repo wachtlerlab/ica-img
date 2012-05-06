@@ -17,6 +17,7 @@ filter.kernel = feval (kernFactoryFunc, cfg.kernel);
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
 
+filter.channels = mapChannel (cfg.center);
 end
 
 function [idx] = chanlist2idx (chanlist)
@@ -30,6 +31,18 @@ end
 
 end
 
+function [channels] = mapChannel (chanlist)
+
+N = length (chanlist);
+channels = zeros (1, N*2);
+
+for n = 1:N
+  ch = chanlist(n);
+  channels(1, (n*2-1)) = str2chan (ch, 'on');
+  channels(1, n*2) = str2chan (ch, 'off');
+end
+
+end
 
 function [img] = CSRectFilterImage (this, img)
 

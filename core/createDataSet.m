@@ -50,6 +50,7 @@ dataset.dim       = dim;
 dataset.Aguess    = Aguess;
 dataset.imageset  = imageset;
 dataset.imgdata   = imgdata;
+dataset.channels  = imageset.channels;
 dataset.patchsize = patchsize;
 dataset.npats     = npats;
 dataset.blocksize = blocksize;

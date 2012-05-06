@@ -13,6 +13,8 @@ filter.log = log;
 SMHIJL = load('sml/SMHIJL.dat');
 filter.SMLmx = SMHIJL([1 2 6],:);
 
+filter.channels = [str2chan('S') str2chan('M') str2chan('L')];
+
 end
 
 function [img] = SMLFilterImage (this, img)
