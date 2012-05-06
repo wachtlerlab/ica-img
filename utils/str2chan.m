@@ -17,7 +17,7 @@ if chanNum < 1 || chanNum > 3
   warning ('ICA:invalid_channel_id', 'Invalid channel id')
 end
 
-id = chanNum;
+id = uint8(chanNum);
 
 if ~isempty(onoff) 
   
