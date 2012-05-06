@@ -27,8 +27,7 @@ classdef H5Loc
     function setNumeric(loc, name, value)
       
       dtype = H5T.copy (class2h5(value));
-      dims = fliplr (size (value));
-      space = H5S.create_simple (length(dims), dims, []);
+      space = array2space (value);
       attr = H5A.create (loc.handle, name, dtype, space, 'H5P_DEFAULT');
       H5A.write (attr, 'H5ML_DEFAULT', value);
       H5A.close (attr);
@@ -56,12 +55,27 @@ classdef H5Loc
   
 end
 
+function [space] = array2space(A)
+dims = fliplr (size (A));
+isscalar = all (arrayfun(@(x) isequal(x, 1), dims));
+
+if isscalar
+  space = H5S.create('H5S_SCALAR');
+else
+  space = H5S.create_simple (length(dims), dims, []);
+end
+
+end
 
 function [dtype] = class2h5 (data)
 
 k = class(data);
 
 switch (k)
+  
+  case 'uint8'
+    dtype = 'H5T_NATIVE_UCHAR';
+  
   case 'uint16'
     dtype = 'H5T_NATIVE_USHORT';
     
