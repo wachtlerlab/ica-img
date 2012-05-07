@@ -33,14 +33,14 @@ for c = 1:size (combs, 1)
    
 end
 
-[Xica, A, W] = fastica (X);
-
-colors = lines(nchan);
+%[Xica, A, W] = fastica (X);
+N = 6;
+A = find_directions (X, N);
+colors = lines(N);
 
 for c = 1:size (combs, 1)
- 
   
- for n = 1:4
+ for n = 1:N
    l = A([combs(c, 1), combs(c, 2)], n);
    plot_direction (l, ax{c}, colors(n, :))
  end
@@ -66,4 +66,5 @@ xlim ([-1, 1])
 ylim ([-1, 1])
 
 end
+
 
