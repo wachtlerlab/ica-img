@@ -2,15 +2,18 @@ classdef H5File < handle
   %H5FILE HDF5 I/O class
   %   
   
-  properties
+  properties(Access = protected)
     fd = NaN;
   end
   
   methods
-    
+   
     function fh = H5File(filename)
-      fh.fd = H5F.create (filename, ...
-        'H5F_ACC_TRUNC', 'H5P_DEFAULT', 'H5P_DEFAULT');
+      if length (filename) > 0
+        fh.fd = H5F.create (filename, ...
+          'H5F_ACC_TRUNC', 'H5P_DEFAULT', 'H5P_DEFAULT');
+      end
+      
     end
     
     function close(fh)
@@ -22,6 +25,16 @@ classdef H5File < handle
       H5P.set_create_intermediate_group (gcpl, 1);
       gh = H5G.create (fh.fd, location, gcpl,'H5P_DEFAULT', 'H5P_DEFAULT');
       group = H5Group(gh);
+    end
+    
+    function [group] = openGroup(fh, location)
+      gh = H5G.open (fh.fd, location);
+      group = H5Group(gh);
+    end
+    
+    function [dset] = openDataSet(fh, location)
+      dsid = H5D.open(fh.fd , name);
+      dset = H5DataSet (dsid);
     end
     
     function [dsid] = write(fh, loc, data)
@@ -90,7 +103,12 @@ classdef H5File < handle
       H5T.close(dtype);
     end
     
-    
+    function [value] = read(fh, name)
+      dset = H5D.open(fh.fd , name);
+      value = H5D.read(dset);
+      H5D.close (dset);
+    end  
+      
   end
   
 end

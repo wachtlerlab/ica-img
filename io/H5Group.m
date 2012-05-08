@@ -10,7 +10,6 @@ classdef H5Group < H5Loc
       group.handle = NaN;
     end
     
-    
   end
   
 end

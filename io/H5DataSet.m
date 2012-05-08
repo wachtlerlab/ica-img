@@ -10,6 +10,10 @@ classdef H5DataSet < H5Loc
       ds.handle = NaN;
     end
     
+    function [value] = read(ds)
+      value = H5D.read (ds.handle);
+    end
+    
   end
   
 end

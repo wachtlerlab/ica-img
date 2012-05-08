@@ -24,6 +24,12 @@ classdef H5Loc
       
     end
     
+    function [value] = get(loc, name)
+       attr = H5A.open (loc.handle, name);
+       value = H5A.read (attr)';
+       H5A.close(attr);
+    end
+    
     function setNumeric(loc, name, value)
       
       dtype = H5T.copy (class2h5(value));
@@ -49,6 +55,15 @@ classdef H5Loc
       loc.set ([name '.type'], rng_state.Type)
       loc.set ([name '.seed'], rng_state.Seed)
       loc.set ([name '.state'], rng_state.State)
+    end
+    
+    function [names, idx] = listChildren(loc)
+      function [status, out] = collect_names (~, name, data_in)
+        status = 0;
+        out = horzcat (data_in, name);
+      end
+      
+      [~, idx, names] = H5L.iterate(loc.handle, 'H5_INDEX_NAME', 'H5_ITER_INC', 0, @collect_names, {});
     end
     
   end
