@@ -3,12 +3,12 @@ function [ filter ] = CSRect(cfg)
 %   Detailed explanation goes here
 
 if ~isfield(cfg, 'log')
-  cfg.log = '0';
+  cfg.log = 0;
 end
 
 filter.name = 'CSRect';
 filter.function = @CSRectFilterImage;
-filter.log = str2double(cfg.log);
+filter.log = cfg.log;
 filter.center = chanlist2idx(cfg.center);
 filter.surround = chanlist2idx(cfg.surround);
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
