@@ -1,4 +1,4 @@
-function displayImages (images, dataPar, figNum)
+function displayImages (imageset, figNum)
 %displayImages ...
 
 if nargin < 3
@@ -11,29 +11,21 @@ set (figNum, 'Color', [1 1 1]);
 
 colormap (gray)
 
+images = imageset.images;
+dataDim = imageset.shape(1);
+
 nx = length (images);
-ny = dataPar.dataDim + 2;
+ny = dataDim + 2;
 ha = tight_subplot (nx, ny, [.01 .03], [.01 .01]);
 
 refxs = [1, 3, 3, 1, 1];
 refys = [2, 2, 4, 4, 2];
 
-if isfield(dataPar, 'chanMap')
-  chanMap = dataPar.chanMap;
-else
-  dataDim = dataPar.dataDim;
-  if dataDim == 6
-    chanMap = [49 17 50 18 51 19];
-  elseif dataDim == 3
-    chanMap = [1 2 3];
-  elseif dataDim == 4
-    chanMap = [0 0 0 0];
-  end
-end
+chanMap = imageset.channels;
 
 for idx=1:nx
-  fprintf ('\nImage %s\n', images(idx).filename);
-  curImg = images(idx);
+  fprintf ('\nImage %s\n', images{idx}.filename);
+  curImg = images{idx};
   img = getImgData (curImg, 0);
   d = img(:);
   fprintf ('min: %.5f max: %.5f std: %.5f\n', ...
@@ -42,7 +34,7 @@ for idx=1:nx
   d = img(:);
   fprintf ('min: %.5f max: %.5f std: %.5f\n', ...
     min (d), max (d), std (d));
-  refkoos = images(idx).refkoos;
+  refkoos = images{idx}.refkoos;
   
   for n = 1:(ny - 2)
       
@@ -67,7 +59,7 @@ for idx=1:nx
     rotate (fk, [0 0 1], 180);
   end
   
-  if dataPar.dataDim == 6
+  if dataDim == 6
     set (gcf, 'CurrentAxes', ha((idx - 1) * ny + (ny - 1)));
     d = getImgData (curImg, 1, [5 3 1]);
     p = permute (d, [3 2 1]);
@@ -79,7 +71,7 @@ for idx=1:nx
     p = permute (d, [3 2 1]);
     imagesc (p);
     axis off;
-  elseif dataPar.dataDim == 4
+  elseif dataDim == 4
     s = size (curImg);
     set (gcf, 'CurrentAxes', ha((idx - 1) * ny + (ny - 1)));
     d = getImgData (curImg, 1, [3 1]);
@@ -95,7 +87,7 @@ for idx=1:nx
     imagesc (p);
     axis off;
     
-  elseif dataPar.dataDim == 3
+  elseif dataDim == 3
     s = size (curImg);
     set (gcf, 'CurrentAxes', ha((idx - 1) * ny + ny));
     d = getImgData (curImg, 1);
@@ -112,7 +104,7 @@ drawnow;
 end
 
 function [data] = getImgData (img, doNorm, channels)
-data = img.imgData;
+data = img.data;
 
 if doNorm
   C = num2cell (data, 1);
