@@ -1,4 +1,4 @@
-function [ pcs ] = plotDiDirs3D (A)
+function [ pcs, idx ] = plotDiDirs3D (A)
 
 
 chmap{1} = 'S+';
@@ -38,7 +38,11 @@ for c = 1:length(combs)
   zlabel([chmap{combs(c, 3)} ' (z)'])
 end
 
+ncluster = 6;
+[idx, C] = kmeans (pcs', ncluster, 'Replicates', 5, 'Distance','city');
+colors = lines(ncluster);
 %lts = lts/max(lts(:));
+
 fig = figure();
 for c = 1:length(combs)
   subplot (2,2,c)
@@ -54,6 +58,16 @@ for c = 1:length(combs)
     %plot3(t, p, 1.0,'.');
     hold on;
   end
+  
+  for k = 1:ncluster
+    cc = num2cell (C (k, combi));
+    [x,y,z] = cc{:};
+    [t, p, r] = cart2sph (x,y,z);
+    tc = (t/pi)*180;
+    phic = (p/pi)*180;
+    plot (tc, phic, '+r', 'Color', colors(k, :));
+  end
+  
   xlabel(['Theta ||' [chmap{combi}]])
   ylabel('Phi');
 end
