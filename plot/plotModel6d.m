@@ -6,11 +6,33 @@ X = [ 0,  0,  0,  0,  1, -1;    % L
       0,  0,  1, -1,  0,  0;    % M 
       1,  -1, 0,  0,  0,  0];   % S
 
+D = [ 0,  0,  0,  0;    % L
+      0,  0,  1, -1;    % M 
+      1,  -1, 0,  0];   % S
+
+LMS = [   0,   -1,  1;  % X (L-M)
+       1, -0.5,  -0.5;  % Y
+          0,    1,  1]; % Z
+      
 [~,M] = size (Model.A);
 Model = sortModelA(Model);
 A = Model.A;
-bfs = reshape (A, 6, 7*7*M);
-imgx = permute (reshape (X*bfs, 3, 7, 7, M), [3 2 1 4]);
+
+nchan = M/49;
+
+if nchan == 6
+  bfs = reshape (A, 6, 7*7*M);
+  Y = X*bfs;
+elseif nchan == 4
+  bfs = reshape (A, 4, 7*7*M);
+  Y = D*bfs;
+elseif nchan == 3
+  bfs = reshape (A, 3, 7*7*M);
+  
+  Y = flipdim(bfs, 1);
+end
+
+imgx = permute (reshape (Y, 3, 7, 7, M), [3 2 1 4]);
 
 ha = tight_subplot(18, 17, [.01 .03], [.01 .01]);
 
