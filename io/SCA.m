@@ -13,6 +13,21 @@ classdef SCA < H5File
     end
     
     function model = readModel (fh, cfgid, modelid)
+      
+      if nargin < 2
+        g = fh.openGroup (['/ICA/']);
+        l = g.listChildren();
+        cfgid = l{1};
+        g.close()
+      end
+      
+      if nargin < 3
+        g = fh.openGroup (['/ICA/' cfgid '/model']);
+        l = g.listChildren();
+        modelid = l{1};
+        g.close()
+      end
+      
       path = ['/ICA/' cfgid '/model/' modelid];
       group = fh.openGroup (path);
       model.id = group.get ('id');
@@ -29,6 +44,14 @@ classdef SCA < H5File
     end
     
     function cfg = readConfig (fh, cfgid)
+      
+      if nargin < 2
+        g = fh.openGroup (['/ICA/']);
+        l = g.listChildren();
+        cfgid = l{1};
+        g.close()
+      end
+      
       path = ['/ICA/' cfgid];
       group = fh.openGroup (path);
       text = fh.read ([path '/config']);
@@ -40,7 +63,17 @@ classdef SCA < H5File
     end
     
     function [models] = listModel(fh, cfgid)
-      models = '';
+      
+      if nargin < 2
+        g = fh.openGroup (['/ICA/']);
+        l = g.listChildren();
+        cfgid = l{1};
+        g.close()
+      end
+      
+      g = fh.openGroup (['/ICA/' cfgid '/model/']);
+      models = g.listChildren();
+      g.close()
     end
     
   end
