@@ -1,6 +1,6 @@
-function plotModel6d( Model)
+function plotModel6d (Model, do_print)
 
-hf = figure('Name', ['Basis Functions: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
+hf_bf = figure('Name', ['Basis Functions: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
 
 X = [ 0,  0,  0,  0,  1, -1;    % L
       0,  0,  1, -1,  0,  0;    % M 
@@ -20,15 +20,13 @@ A = Model.A;
 
 nchan = M/49;
 
+bfs = reshape (A, nchan, 7*7*M);
+
 if nchan == 6
-  bfs = reshape (A, 6, 7*7*M);
   Y = X*bfs;
 elseif nchan == 4
-  bfs = reshape (A, 4, 7*7*M);
   Y = D*bfs;
 elseif nchan == 3
-  bfs = reshape (A, 3, 7*7*M);
-  
   Y = flipdim(bfs, 1);
 end
 
@@ -51,8 +49,8 @@ for idx=1:M
 end
 
 hold off;
-hf = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
-set(0,'CurrentFigure', hf);
+hf_chrom = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
+set(0,'CurrentFigure', hf_chrom);
 hb = tight_subplot(nrows, ncols, [.01 .03], [.01 .01]);
 
 pcs = zeros (2, M);
@@ -83,7 +81,7 @@ for idx=1:M
 end
 
 
-figure('Name', ['Directions of Chrom BF: ', Model.id(1:7)], 'Position', [0, 0, 800, 800]);
+hf_dir = figure('Name', ['Directions of Chrom BF: ', Model.id(1:7)], 'Position', [0, 0, 800, 800]);
 
 tt = atan2(pcs(2,:), pcs(1,:));
 rr = sqrt (pcs(1,:).^2 + pcs(2,:).^2);
@@ -101,7 +99,7 @@ polar (cat (1, tt, zeros (1, length (tt))),... %theta
        '-k');
      
 %%     
-figure('Name', ['Directions (Flat) of Chrom BF: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
+hf_dir_flat = figure('Name', ['Directions (Flat) of Chrom BF: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
 tt = atan2(pcs(2,:), pcs(1,:));
 rr = sqrt (pcs(1,:).^2 + pcs(2,:).^2);
 
@@ -147,6 +145,41 @@ plot (0:(1/scale):(360-1/scale),xpp, 'black');
 axes ('Position', [.20 .65 .2 .2], 'Layer','top');
 plot (kernel_x, kernel);
 title ('kernel');
+
+if nargin > 1 && do_print
+  nick = [Model.cfg(1:7) '-' Model.id(1:7)];
+
+  reportDir = fullfile ('..', 'reports');
+
+  if exist (reportDir, 'dir') == 0
+    mkdir (reportDir);
+  end
+
+  filePath = fullfile (reportDir, [nick '.ps']);
+
+  do_print_fig (hf_bf, filePath);
+  do_print_fig (hf_chrom, filePath);
+  do_print_fig (hf_dir, filePath);
+  do_print_fig (hf_dir_flat, filePath);
+
+
+end
+
+end
+
+function do_print_fig (hf, filePath, res, renderer)
+
+if nargin < 3
+  res = '300';
+end
+
+if nargin < 4
+  re = [];
+else
+  re = ['-' renderer];
+end
+
+  print (hf, '-dpsc2', '-append', ['-r' res], re, filePath);
 
 end
 
