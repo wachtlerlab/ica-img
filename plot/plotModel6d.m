@@ -34,7 +34,10 @@ end
 
 imgx = permute (reshape (Y, 3, 7, 7, M), [3 2 1 4]);
 
-ha = tight_subplot(18, 17, [.01 .03], [.01 .01]);
+root = sqrt (M);
+nrows = ceil(root);
+ncols = floor(root);
+ha = tight_subplot(nrows, ncols, [.01 .03], [.01 .01]);
 
 for idx=1:M
   p = imgx(:,:,:,idx);
@@ -50,7 +53,7 @@ end
 hold off;
 hf = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1600, 800]);
 set(0,'CurrentFigure', hf);
-hb = tight_subplot(18, 17, [.01 .03], [.01 .01]);
+hb = tight_subplot(nrows, ncols, [.01 .03], [.01 .01]);
 
 pcs = zeros (2, M);
 for idx=1:M
