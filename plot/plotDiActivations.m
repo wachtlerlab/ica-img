@@ -1,6 +1,12 @@
 function [ activation ] = plotDiActivations( A, idx )
-
+ 
 A = sortAbf(A);
+ 
+if nargin > 1
+  A = A(:, idx);
+else
+ 
+end
 
 res = 21;
 [phi, r] = meshgrid(linspace(0, 2*pi, res), linspace (-1.0, 1.0, res));
@@ -36,20 +42,9 @@ L = length(A);
 
 activation = zeros (res, res, L);
 
-if nargin > 1
-  [~, sidx] = sort (idx);
-end
-
 A = normA(A);
 for bfidx = 1:L
-  
-  if nargin > 1
-    cbf = sidx(bfidx);
-  else
-    cbf = bfidx;
-  end
-  
-  bf = A(:,cbf);
+  bf = A(:,bfidx);
   for m = 1:res
     for n = 1:res
       patch = genPatch(S(m, n), X(m, n), 49);
@@ -61,12 +56,19 @@ end
 %activation = 0.5 + 0.5*activation/(max(abs(activation(:))));
 activation = cell2mat (cellfun (@(x) x/max(abs(x(:))), num2cell (activation,[1:2]), 'UniformOutput', false));
 
-figure()
+%if nargin > 1
+%  activation = activation(:, :, idx);
+%end
+
+fig = figure();
 for bfidx=1:L
   subplot (14, 14, bfidx);
   imagesc (activation(:,:,bfidx), [-1 1]);
   axis off;
 end
+
+load ('brcmap.mat')
+set(fig, 'Colormap', mycmp2)
 
 if debug
 figure;
@@ -92,11 +94,24 @@ end
 
 end
 
+function [x] = rectify(x, on)
+if x < 0 && ~on
+  x = abs(x);
+elseif x > 0 && ~on
+    x = -x;
+end
+
+end
+
 function [patch] = genPatch (S, X, N)
 
 strip = zeros(4,1);
-strip(2 - (S > 0)) = S;
-strip(4 - (X > 0)) = X;
+%strip(1) = rectify (S, 1);
+%strip(2) = rectify (S, 0);
+%strip(3) = rectify (X, 1);
+%strip(4) = rectify (X, 0);
+strip(2 - (S > 0)) = abs(S);
+strip(4 - (X > 0)) = abs(X);
 patch = repmat (strip, [N, 1]);
 
 end

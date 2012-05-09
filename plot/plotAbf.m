@@ -1,7 +1,11 @@
 function [hf] = plotAbf (Model, fh)
 
 if isa (Model, 'struct')
+  if ~isfield (Model, 'name')
+    name = [Model.id(1:7) '-' Model.cfg(1:7)];
+  else
     name = Model.name;
+  end
 else
     error ('Need model');
 end
