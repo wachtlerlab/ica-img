@@ -14,6 +14,8 @@
             "class": "CSRect",
             "center": ["S", "M", "L"],
             "surround": ["S", "M", "L"],
+            "scale_s": 0,
+            "log": 0.0001,
             "kernel":
             {
                 "type": "direct",
@@ -32,7 +34,7 @@
         "type": "interp_points",
         "iter_points": [   1,  1000,   5000,  10000,  30000,  60000,   90000],
         "epsilon":     [0.02,  0.01,  0.005,  0.001, 0.0005, 0.0001, 0.00005],
-        "eps_scale": 20
+        "eps_scale": 10
     },
     "prior":
     {
@@ -48,6 +50,7 @@
     "init_guess":
     {
         "type": "randn",
-        "bias": 0.5
+        "bias": 1.0,
+        "norm": 1
     }
 }
