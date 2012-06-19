@@ -1,4 +1,4 @@
-function [ output_args ] = plotFilterKernel(kernel)
+function [ figid ] = plotFilterKernel(kernel)
 %PLOTFILTERKERNEL Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,7 +9,12 @@ n = floor (nvals/2.0);
 Z = kernel;
 
 n = floor (length(X)/2)+1;
-figure ('Name', 'Kernel', 'Position', [0, 0, 1200, 300]);
+
+center = Z(n,n);
+Z=-1*abs(Z);
+Z(n,n) = center;
+
+figid = figure ('Name', 'Kernel', 'Position', [0, 0, 1200, 300]);
 subplot(1,3,1);
 imagesc(Z);
 colorbar();
