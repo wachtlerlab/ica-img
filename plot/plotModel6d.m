@@ -11,9 +11,14 @@ D = [ 0,  0,  0,  0;    % L
       1,  -1, 0,  0];   % S
 
 LMS = [   0,   -1,  1;  % X (L-M)
-       1, -0.5,  -0.5;  % Y
-          0,    1,  1]; % Z
+       1, -0.5,  -0.5;  % Y (S - L+M)
+          0,    1,  1]; % Z (L+M)
       
+      %   X         Y      Z    
+D2R = [ 1.0000,  0.1462, 1.0;    % R
+       -0.3900, -0.2094, 1.0;    % G
+        0.0180,  1.0000, 1.0;];  % B
+        
 [~,M] = size (Model.A);
 Model = sortModelA(Model);
 A = Model.A;
@@ -24,13 +29,20 @@ bfs = reshape (A, nchan, 7*7*M);
 
 if nchan == 6
   Y = X*bfs;
+  rgb = Y;
 elseif nchan == 4
   Y = D*bfs;
+  %dkl = LMS*Y;
+  %rgb = D2R*dkl;
+  rgb = Y;
 elseif nchan == 3
-  Y = flipdim(bfs, 1);
+  bfs = reshape (A, 3, 7*7*M);
+  Y = flipdim(bfs, 1); % SML -> LMS
+  rgb = Y;
 end
 
 imgx = permute (reshape (Y, 3, 7, 7, M), [3 2 1 4]);
+img_rgb = permute (reshape (rgb, 3, 7, 7, M), [3 2 1 4]);
 
 root = sqrt (M);
 nrows = ceil(root);
@@ -38,7 +50,7 @@ ncols = floor(root);
 ha = tight_subplot(nrows, ncols, [.01 .03], [.01 .01]);
 
 for idx=1:M
-  p = imgx(:,:,:,idx);
+  p = img_rgb(:,:,:,idx);
   bf = 0.5+0.5*p/max(abs(p(:)));
   set (gcf, 'CurrentAxes', ha(idx));
   %title (num2str (idx));
@@ -77,7 +89,9 @@ for idx=1:M
     hold on
     scatter (x, y, 20, slice, 'filled');
     axis ([-1 1 -1 1])
-    axis off;
+    %axis off;
+    axis equal;
+    axis image;
 end
 
 
