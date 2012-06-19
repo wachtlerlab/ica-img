@@ -13,5 +13,11 @@ elseif strcmpi(mcfg.type, 'identity')
     A = eye (dim, dim);
 end
 
+if isfield (mcfg, 'norm') && mcfg.norm
+  for n = 1:dim
+    A(:,n) = A(:,n)/abs(max(A(:,n)));
+  end
+end
+
 end
 
