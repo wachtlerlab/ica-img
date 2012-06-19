@@ -12,16 +12,16 @@ classdef SCA < H5File
         'H5F_ACC_RDWR','H5P_DEFAULT');
     end
     
-    function model = readModel (fh, cfgid, modelid)
+    function model = readModel (fh, modelid, cfgid)
       
-      if nargin < 2
+      if nargin < 3
         g = fh.openGroup (['/ICA/']);
         l = g.listChildren();
         cfgid = l{1};
         g.close()
       end
       
-      if nargin < 3
+      if nargin < 2
         g = fh.openGroup (['/ICA/' cfgid '/model']);
         l = g.listChildren();
         modelid = l{1};

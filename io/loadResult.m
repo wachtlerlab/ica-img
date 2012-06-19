@@ -1,4 +1,4 @@
-function [ Model, cfg ] = loadResult(id)
+function [ Model, cfg ] = loadResult(id, mid)
 
 cfg = [];
 
@@ -26,6 +26,7 @@ else
     Model = [];
     return
   elseif length(files) > 1
+    fprintf ('Input not unique');
     idx = input_choose_file (files);
   end
   
@@ -45,7 +46,12 @@ if hassuffix(filename, 'h5')
     Model.A = h5read (filepath, '/A');
   else
     sca = SCA(filepath);
-    Model = sca.readModel ();
+    if nargin > 1
+      Model = sca.readModel (mid);
+    else
+      Model = sca.readModel ();
+    end
+    
     if nargout > 1
       cfg = sca.readConfig ();
     end
