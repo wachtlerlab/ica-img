@@ -11,6 +11,13 @@ filter.function = @CSRectFilterImage;
 filter.log = cfg.log;
 filter.center = chanlist2idx(cfg.center);
 filter.surround = chanlist2idx(cfg.surround);
+
+if isfield (cfg, 'scale_s')
+  filter.scale_s = cfg.scale_s;
+else
+  filter.scale_s = 1;
+end
+
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
 filter.kernel = feval (kernFactoryFunc, cfg.kernel);
 
@@ -69,15 +76,18 @@ input = img.data;
 
 % normalize S to the same std as the surround
 
-stdsr = 0;
-for n=1:length(this.surround)
-   chan = this.surround(n);
-  stdsr = stdsr + std (input(chan,:));
-end
-stdsr = stdsr / length(this.surround);
-stds = std (input(1,:));
+if this.scale_s == 1
+  stdsr = 0;
+  for n=1:length(this.surround)
+    chan = this.surround(n);
+    stdsr = stdsr + std (input(chan,:));
+  end
+  stdsr = stdsr / length(this.surround);
+  stds = std (input(1,:));
 
-input(1,:,:) = (stdsr / stds) * input(1,:,:);
+  input(1,:,:) = (stdsr / stds) * input(1,:,:);
+  fprintf ('Filter: stdsr : stds-> %f \n', stdsr / stds);
+end
 
 %stds = std (input(1,:));
 %stdml = (std (input(2,:)) + std (input(3,:))) * 0.5;
