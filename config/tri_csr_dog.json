@@ -14,7 +14,6 @@
             "class": "CSRect",
             "center": ["S", "M", "L"],
             "surround": ["S", "M", "L"],
-            "log": 0.0001,
             "scale_s": 1,
             "kernel":
             {
@@ -22,7 +21,7 @@
                 "size": 5,
                 "s_inner": 0.3,
                 "s_outer": 1.5,
-                "ratio_io": 2.1,
+                "ratio_io": 1.8,
                 "mu": 0
             }
         },
