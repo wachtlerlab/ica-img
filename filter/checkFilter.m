@@ -1,12 +1,14 @@
 function checkFilter (cfg)
 
-fprintf ('Checking filter for [%s]\n', cfg.id);
-
 fcfg = cfg.data.filter;
+fprintf ('Checking filter for [%s] -> %s\n', cfg.id, fcfg.class);
   
 filterFunc = [fcfg.class];
 filter = feval (filterFunc, fcfg);
-disp (filter.kernel);
-plotFilterKernel (filter.kernel);
+
+if isfield (filter, 'kernel')
+  disp (filter.kernel);
+  plotFilterKernel (filter.kernel);
+end
 
 end
