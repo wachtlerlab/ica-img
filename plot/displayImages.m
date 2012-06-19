@@ -1,7 +1,7 @@
 function displayImages (imageset, figNum)
 %displayImages ...
 
-if nargin < 3
+if nargin < 2
   figNum = figure;
 else
   set (0, 'CurrentFigure', figNum);
@@ -107,9 +107,11 @@ function [data] = getImgData (img, doNorm, channels)
 data = img.data;
 
 if doNorm
-  C = num2cell (data, 1);
-  C = cellfun (@normA, C, 'UniformOutput', false);
-  data = cell2mat (C);
+  %C = num2cell (data, 1);
+  %C = cellfun (@normA, C, 'UniformOutput', false);
+  %data = cell2mat (C);
+  
+  data = 0.5 + 0.5 * (data / max(abs(data(:))));
   
   if nargin > 2
     data = data(channels, :,:);
