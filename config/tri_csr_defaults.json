@@ -38,14 +38,7 @@
     },
     "prior":
     {
-        "type": "expwr",
-        "mu":    0,
-        "sigma": 1,
-        "beta":  0.5,
-        "a":     2,
-        "b":     2,
-        "tol":   0.1,
-        "adapt_size": 5000
+        "#import": "prior_expwr_5k"
     },
     "init_guess":
     {
