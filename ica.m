@@ -1,4 +1,4 @@
-function [Model, cfg, dataset] = ica (cfgid, varargin)
+function [Model, cfg, dataset] = ica (cfg, varargin)
 
 if nargin < 1
   error('Need configuration identifer')
@@ -26,7 +26,9 @@ disp(options);
 
 %% laod config and prepare dataset, prior, model
 
-cfg = loadConfig (cfgid);
+if (ischar (cfg))
+  cfg = loadConfig (cfg);
+end
 
 imageset = createImageSet (cfg.data);
 
