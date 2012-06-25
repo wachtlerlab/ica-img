@@ -15,6 +15,7 @@
             "center": ["S", "M", "L"],
             "surround": ["S", "M", "L"],
             "scale_s": 1,
+            "normstd": 1,
             "log": 0,
             "kernel":
             {
