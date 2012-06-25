@@ -18,8 +18,6 @@ end
 
 currev = getCurRev ();
 
-fprintf ('Starting simulation for %s [code: %s]\n', cfgid, currev);
-
 %%
 fprintf ('Configuration: \n');
 disp(options);
@@ -29,6 +27,8 @@ disp(options);
 if (ischar (cfg))
   cfg = loadConfig (cfg);
 end
+
+fprintf ('Starting simulation for %s [code: %s]\n', cfg.id, currev);
 
 imageset = createImageSet (cfg.data);
 
