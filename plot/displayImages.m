@@ -107,11 +107,11 @@ function [data] = getImgData (img, doNorm, channels)
 data = img.data;
 
 if doNorm
-  %C = num2cell (data, 1);
-  %C = cellfun (@normA, C, 'UniformOutput', false);
-  %data = cell2mat (C);
+  C = num2cell (data, 1);
+  C = cellfun (@normA, C, 'UniformOutput', false);
+  data = cell2mat (C);
   
-  data = 0.5 + 0.5 * (data / max(abs(data(:))));
+  %data = 0.5 + 0.5 * (data / max(abs(data(:))));
   
   if nargin > 2
     data = data(channels, :,:);
