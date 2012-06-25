@@ -18,6 +18,12 @@ else
   filter.scale_s = 1;
 end
 
+if isfield (cfg, 'normstd')
+  filter.normstd = 1;
+else
+  filter.normstd = 0;
+end
+
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
 filter.kernel = feval (kernFactoryFunc, cfg.kernel);
 
@@ -73,6 +79,15 @@ fprintf ('Filter: S: %f, C: %f; %f\n', surs, wc, wc/abs (surs));
 
 %img.data is 3x256x256 (c,x,y) [f,c,r] of the image 
 input = img.data;
+
+%  norm every channel's std
+if this.normstd == 1
+  for n = 1:3
+    s = std (input(n,:));
+    input(n, :,:) = input(n, :, :)/s;
+    fprintf ('STD: %f\n', s);
+  end
+end
 
 % normalize S to the same std as the surround
 
