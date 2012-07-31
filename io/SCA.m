@@ -52,12 +52,12 @@ classdef SCA < H5File
         g.close()
       end
       
-      path = ['/ICA/' cfgid];
+      path = sprintf ('/ICA/%.7s', cfgid)
       group = fh.openGroup (path);
       text = fh.read ([path '/config']);
       cfg = loadjson(text');
       id = group.get ('id');
-      setfield_idx (cfg, 'id', id, 1);
+      cfg = setfield_idx (cfg, 'id', id, 1);
       group.close()
       
     end
