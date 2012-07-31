@@ -16,8 +16,8 @@ smlcfg.log = 0;
 filter.sml = SML(smlcfg);
 
 if filter.rectify
-  filter.channels = [str2chan('S+') str2chan('S-')
-                     str2chan('M+') str2chan('M-')
+  filter.channels = [str2chan('S+') str2chan('S-') ...
+                     str2chan('M+') str2chan('M-') ...
                      str2chan('L+') str2chan('L-')];
 else
     
