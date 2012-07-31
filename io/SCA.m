@@ -76,6 +76,35 @@ classdef SCA < H5File
       g.close()
     end
     
+    
+    function saveDataSet(fd, dataset)
+                 
+      ds_id = dataset.id;
+      loc = sprintf ('/ICA/%.7s/dataset/%.7s', dataset.cfg, ds_id);
+      
+      group = fd.createGroup(loc);
+      group.set ('id', ds_id);
+      group.set ('cfg', dataset.cfg);
+      group.set ('creator', dataset.creator);
+      group.set ('dim', int32(dataset.dim));
+      group.set ('patchsize', int32(dataset.patchsize));
+      group.set ('channels', dataset.channels);
+      group.set ('npats', int32(dataset.npats));
+      group.set ('blocksize', int32(dataset.blocksize));
+      group.set ('nclusters', int32(dataset.nclusters));
+      group.set ('maxiter', int32(dataset.maxiter));
+      group.set ('rng', dataset.rng);
+      
+      group.close();
+      
+      fd.write ([loc '/indicies'], dataset.indicies);
+      fd.write ([loc '/patsperm'], dataset.patsperm);
+      fd.write ([loc '/imgdata'], dataset.imgdata);
+      fd.write ([loc '/A_guess'], dataset.Aguess);
+      
+    end
+    
+    
   end
   
 end
