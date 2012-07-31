@@ -9,7 +9,8 @@ options = struct('nofit', 0, ...
                  'savestate', 1, ...
                  'savefreq', 100, ...
                  'progress', 0, ...
-                 'plotfreq', 50);
+                 'plotfreq', 50, ...
+                 'shuffle', 0);
 
 if nargin > 1
   options = parse_varargs (options, varargin);
@@ -94,27 +95,36 @@ end
 
 end
 
+function [arg] = arg2num(arg)
+
+if ischar(arg)
+  arg = str2double(arg);
+end
+
+end
 
 function [options] = parse_varargs(options, varargin)
 
 args = size (varargin{1});
 for cur = 1:2:args(2)
   opt = char (varargin{1}(cur));
-  arg = char (varargin{1}(cur + 1));
+  arg = varargin{1}{cur + 1};
   
   switch opt
     case 'nofit'
-      options.nofit = str2num (arg);
+      options.nofit = arg2num (arg);
     case 'autosave'
-      options.autosave = str2num (arg);
+      options.autosave = arg2num (arg);
     case 'savestate'
-      options.savestate = str2num (arg);
+      options.savestate = arg2num (arg);
     case 'savefreq'
-      options.savefreq = str2num (arg);
+      options.savefreq = arg2num (arg);
     case 'progress'
-      options.progress = str2num (arg);
+      options.progress = arg2num (arg);
     case 'plotfreq'
-      options.plotfreq = str2num (arg);
+      options.plotfreq = arg2num (arg);
+    case 'shuffle'
+      options.shuffle = arg2num (arg);
     otherwise
       fprintf ('[W] Unkown option %s [%s]\n', opt, arg);
   end

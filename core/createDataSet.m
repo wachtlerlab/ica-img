@@ -1,7 +1,11 @@
-function [ dataset ] = createDataSet (imageset, cfg)
+function [ dataset ] = createDataSet (imageset, cfg, shuffle)
 %GENERATEDATASET generate a dataset from a set of images
 %                A dataset is supposed to contain all *generated* data
 %                neccessary to instannciate a analysis and run it
+
+if nargin > 2 && shuffle 
+  rng('shuffle');
+end
 
 creator = genCreatorId();
 cfgid   = cfg.id;
