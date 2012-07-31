@@ -3,7 +3,7 @@ function [ imageset ] = createImageSet (cfg)
 source = cfg.source;
 
 % compat hack
-dataDir = fullfile ('..', 'data', source.database);
+dataDir = fullfile ('..', 'images', 'hyperspectral', source.database);
 
 nimages = length(source.images);
 images = cell(nimages, 1);
