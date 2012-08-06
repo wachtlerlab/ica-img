@@ -4,24 +4,24 @@ if ~isfield(cfg, 'log')
   cfg.log = 0;
 end
 
+if ~isfield(cfg, 'channel')
+   cfg.channel = [str2chan('S') str2chan('M') str2chan('L')]; 
+end
+
 filter.name = 'Whitening';
 filter.setup = @WhiteningFilterSetup;
 filter.function = @WhiteningFilterImage;
 filter.log = cfg.log;
 filter.rectify = cfg.rectify;
-
+filter.chans = cfg.channel;
 filter.patchsize = cfg.patchsize;
 
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
+filter.channels = filter.sml.channels;
 
 if filter.rectify
-  filter.channels = [str2chan('S+') str2chan('S-') ...
-                     str2chan('M+') str2chan('M-') ...
-                     str2chan('L+') str2chan('L-')];
-else
-    
-  filter.channels = filter.sml.channels;
+  filter.channels = mapChannel (filter.channels);
 end
 
 end
@@ -32,12 +32,12 @@ nimages = length(images);
 
 smlcfg.log = 0;
 smlfilter = SML(smlcfg);
-
+channel = chanlist2idx(this.chans);
 data = [];
 for n=1:nimages
   fprintf ('\t%s\n', images{n}.filename);
   img = smlfilter.function (smlfilter, images{n});
-  imgdata = imgallpatches(img.sml, this.patchsize);
+  imgdata = imgallpatches(img.sml(:,:,channel), this.patchsize);
   data = horzcat (data, imgdata);
 end
 
@@ -52,8 +52,9 @@ sml_filter = this.sml;
 img = sml_filter.function (sml_filter, img);
 
 patchsize = this.patchsize;
-
-[n, m, c] = size (img.sml);
+channel = chanlist2idx(this.chans);
+input = img.sml(:,:, channel);
+[n, m, c] = size (input);
 
 cr = repmat (1:this.patchsize:m, 1, n/patchsize);
 cc = sort (cr);
@@ -63,7 +64,7 @@ data = zeros(n, m, c);
 
 samplesize = patchsize^2 * c;
 for k=1:npats
-  patch = img.sml(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :);
+  patch = input(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :);
   X = reshape (patch, samplesize, 1);
   Y = this.W*X;
   wtnpatch = reshape (Y, patchsize, patchsize, c);
