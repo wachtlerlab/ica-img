@@ -62,6 +62,33 @@ classdef SCA < H5File
       
     end
     
+    function ds = readDataset (fh, cfgid, dsid)
+        
+      path = sprintf ('/ICA/%.7s/dataset/%.7s', cfgid, dsid);
+      group = fh.openGroup (path);
+      
+      ds.id = group.get ('id');
+      ds.cfg = group.get ('cfg');
+      ds.creator = group.get ('creator');
+      ds.channels = group.get('channels');
+      ds.blocksize = group.get('blocksize');
+      ds.dim = group.get('dim');
+      ds.npats = group.get('npats');
+      ds.patchsize = group.get('patchsize');
+      ds.nclusters = group.get('nclusters');
+      ds.rng.seed = group.get('rng.seed');
+      ds.rng.state = group.get('rng.state');
+      ds.rng.type = group.get('rng.type');
+      
+      ds.indicies = fh.read([path '/indicies']);
+      ds.patsperm = fh.read([path '/patsperm']);
+      ds.imgdata = fh.read([path '/imgdata']);
+      ds.Aguess = fh.read([path '/A_guess']);
+      
+      group.close()
+        
+    end
+    
     function [models] = listModel(fh, cfgid)
       
       if nargin < 2
