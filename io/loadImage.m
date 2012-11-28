@@ -1,5 +1,9 @@
-function [ Img ] = loadImage (filename, dataDir)
+function [ Img ] = loadImage (filename, dataDir, imageType)
 %loadImage Load an image (and it's ref card) from a file
+
+if nargin < 3
+    imageType = 'rad';
+end
 
 if exist (dataDir, 'dir') ~= 7
   error ('dataDir non existent or not a directory');
@@ -8,7 +12,7 @@ end
 flnm = strtrim (filename);
 Img.filename = flnm;
 
-imgpath = fullfile (dataDir, 'rad', flnm);
+imgpath = fullfile (dataDir, imageType, flnm);
 refpath = fullfile (dataDir, 'ref', [flnm '.ref']);
 
 

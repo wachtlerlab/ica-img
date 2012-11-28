@@ -8,9 +8,15 @@ dataDir = fullfile ('..', 'images', 'hyperspectral', source.database);
 nimages = length(source.images);
 images = cell(nimages, 1);
 
+if isfield (source, 'type')
+    imageType = source.type;
+else
+    imageType = 'rad';
+end
+
 for n=1:nimages
   filename = source.images{n};
-  images{n} = loadImage (filename, dataDir);  
+  images{n} = loadImage (filename, dataDir, imageType);  
 end
 
 imageset.database = source.database;
