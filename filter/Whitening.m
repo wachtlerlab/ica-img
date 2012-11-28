@@ -18,11 +18,7 @@ filter.patchsize = cfg.patchsize;
 
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
-filter.channels = filter.sml.channels;
-
-if filter.rectify
-  filter.channels = mapChannel (filter.channels);
-end
+filter.channels = mapChannel (filter.chans, filter.rectify);
 
 end
 
