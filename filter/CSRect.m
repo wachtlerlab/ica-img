@@ -1,6 +1,6 @@
 function [ filter ] = CSRect(cfg)
-%CSRECT Summary of this function goes here
-%   Detailed explanation goes here
+%CSRECT Center-Surround Filter with optional rectification
+
 
 if ~isfield(cfg, 'log')
   cfg.log = 0;
@@ -24,13 +24,25 @@ else
   filter.normstd = 0;
 end
 
+if isfield (cfg, 'rectify')
+    filter.rectify = cfg.rectify;
+else
+    filter.rectify = 1;
+end
+
+if isfield(cfg, 'center_img')
+    filter.center_img = cfg.center_img;
+else
+    filter.center_img = 0;
+end
+
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
-filter.kernel = feval (kernFactoryFunc, cfg.kernel);
+filter.kernel = feval(kernFactoryFunc, cfg.kernel);
 
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
 
-filter.channels = mapChannel (cfg.center);
+filter.channels = mapChannel (cfg.center, filter.rectify);
 end
 
 
@@ -64,13 +76,13 @@ if this.normstd == 1
   for n = 1:3
     s = std (input(n,:));
     input(n, :,:) = input(n, :, :)/s;
-    fprintf ('STD: %f\n', s);
+    fprintf ('Filter: STD: [%d] %f\n', n, s);
   end
 end
 
 % normalize S to the same std as the surround
 
-if this.scale_s == 1
+if this.scale_s ~= 0
   stdsr = 0;
   for n=1:length(this.surround)
     chan = this.surround(n);
@@ -79,9 +91,18 @@ if this.scale_s == 1
   stdsr = stdsr / length(this.surround);
   stds = std (input(1,:));
 
-  input(1,:,:) = (stdsr / stds) * input(1,:,:);
+  input(1,:,:) = (stdsr / this.scale_s*stds) * input(1,:,:);
   fprintf ('Filter: stdsr : stds-> %f \n', stdsr / stds);
 end
+
+if this.center_img == 1
+    fprintf('Filter: Centering images\n');
+    m = mean(input(:));
+  for n = 1:3
+    input(n, :, :) = input(n, :, :) - m;
+  end
+end
+
 
 %stds = std (input(1,:));
 %stdml = (std (input(2,:)) + std (input(3,:))) * 0.5;
@@ -108,14 +129,28 @@ end
 surround = abs(surround./length(this.surround));
 
 N = length(this.center);
-data = zeros(2*N, sn(1), sn(2));
+
+if this.rectify
+   N = 2*N; 
+end
+
+data = zeros(N, sn(1), sn(2));
 
 for n=1:length(this.center)
   chan = this.center(n);
   x = (wc * input(sv(:,1),sv(:,1),chan)) - surround;
-  [on, off] = rectifyData (x, this.log);
-  data((n*2-1),:,:) = on;
-  data(n*2,:,:) = off;
+  
+  if this.rectify
+    [on, off] = rectifyData (x, this.log);
+    data((n*2-1),:,:) = on;
+    data(n*2,:,:) = off;
+  else
+    if this.log
+      x = log(x + this.log * max(x(:)));
+    end
+    
+    data(n,:,:) = x;
+  end
 end
 
 %adjust the refcoos
