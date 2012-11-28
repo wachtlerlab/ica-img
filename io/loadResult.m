@@ -1,8 +1,8 @@
-function [ Model, cfg ] = loadResult(id, mid)
+function [ Model, cfg, ds ] = loadResult(id, mid)
 
 cfg = [];
 
-path = fullfile('~','Coding','ICA','results');
+path = fullfile('~','Coding','ICA','data');
   
 if (nargin < 1)
 
@@ -54,6 +54,10 @@ if hassuffix(filename, 'h5')
     
     if nargout > 1
       cfg = sca.readConfig ();
+    end
+    
+    if nargout > 2 
+      ds = sca.readDataset(Model.cfg, Model.ds);
     end
     
     sca.close()
