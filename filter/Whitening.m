@@ -52,20 +52,40 @@ channel = chanlist2idx(this.chans);
 input = img.sml(:,:, channel);
 [n, m, c] = size (input);
 
-cr = repmat (1:this.patchsize:m, 1, n/patchsize);
-cc = sort (cr);
-npats = length(cc);
+n = n - mod(n, patchsize);
+m = m - mod(m, patchsize);
+input = input(1:n,1:m,:);
 
-data = zeros(n, m, c);
+% cr = repmat (1:this.patchsize:m, 1, n/patchsize);
+% cc = sort (cr);
+% npats = length(cc);
+% 
+% data = zeros(n, m, c);
+% 
+% samplesize = patchsize^2 * c;
+% for k=1:npats
+%   patch = input(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :);
+%   X = reshape (patch, samplesize, 1);
+%   Y = this.W*X;
+%   wtnpatch = reshape (Y, patchsize, patchsize, c);
+%   data(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :) = wtnpatch;
+% end
 
-samplesize = patchsize^2 * c;
-for k=1:npats
-  patch = input(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :);
-  X = reshape (patch, samplesize, 1);
-  Y = this.W*X;
-  wtnpatch = reshape (Y, patchsize, patchsize, c);
-  data(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :) = wtnpatch;
+[patches, pos] = imgallpatches(input, patchsize, patchsize);
+X = this.W * patches;
+android = zeros(n, m, c);
+Y = reshape(X, patchsize, patchsize, c, length(pos));
+
+for idx = 1:length(pos)
+   cr = pos(1, idx);
+   cc = pos(2, idx);
+   android(cr:cr+patchsize-1, cc:cc+patchsize-1, :) = Y(:,:,:,idx); %reshape(X(:, idx), patchsize, patchsize, c);  
 end
+
+data = android;
+%di = data-android;
+%max(di(:))
+
 
 if this.rectify
   
@@ -77,6 +97,7 @@ if this.rectify
   end
   img.data = permute (rdata, [1 3 2]);
 else
+    
   img.data = permute (data, [3 2 1]);
 end
 
