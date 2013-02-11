@@ -19,11 +19,11 @@ D2R = [ 1.0000,  0.1462, 1.0;    % R
        -0.3900, -0.2094, 1.0;    % G
         0.0180,  1.0000, 1.0;];  % B
         
-[~,M] = size (Model.A);
+[L,M] = size (Model.A);
 Model = sortModelA(Model);
 A = Model.A;
 
-nchan = M/49;
+nchan = L/49;
 
 bfs = reshape (A, nchan, 7*7*M);
 
@@ -89,9 +89,9 @@ for idx=1:M
     hold on
     scatter (x, y, 20, slice, 'filled');
     axis ([-1 1 -1 1])
-    %axis off;
-    axis equal;
-    axis image;
+    axis off;
+    %axis equal;
+    %axis image;
 end
 
 
