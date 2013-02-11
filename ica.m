@@ -25,9 +25,7 @@ disp(options);
 
 %% laod config and prepare dataset, prior, model
 
-if (ischar (cfg))
-  cfg = loadConfig (cfg);
-end
+cfg = icaConfigLoad(cfg);
 
 fprintf ('Starting simulation for %s [code: %s]\n', cfg.id, currev);
 
