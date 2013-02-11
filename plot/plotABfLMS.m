@@ -1,4 +1,4 @@
-function [hf] = plotAbfLMS (Model, fh)
+function [hf] = plotABfLMS (Model, fh)
 
 if isa (Model, 'struct')
     A = Model.A;
@@ -19,7 +19,10 @@ else
   set (0, 'CurrentFigure', fh);
 end
 
-ha = tight_subplot(15, 10, [.01 .03], [.01 .01]);
+root = sqrt (M);
+nrows = ceil(root);
+ncols = floor(root);
+ha = tight_subplot(nrows, ncols, [.01 .03], [.01 .01]);
 
 for idx=1:M
 
