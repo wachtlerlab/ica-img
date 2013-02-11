@@ -1,14 +1,14 @@
-function [cfg] = loadConfig(base, varargin)
+function [cfg] = loadConfig(base, basepath, varargin)
 
 if isempty(base)
   cfg = struct();
 elseif isstruct(base)
   cfg = base;
 elseif ischar(base)
-  cfg = loadjson (['config/' base '.json']);
+  cfg = loadjson (fullfile(basepath, [base '.json']));
 end
 
-cfg = processImports(cfg);
+cfg = processImports(cfg, basepath);
 
 args = size (varargin);
 for kv = 1:2:args(2)
@@ -51,7 +51,7 @@ end
 
 end
 
-function [S] = processImports (S)
+function [S] = processImports (S, basepath)
 
 %process nested structs first
 names = fieldnames (S);
@@ -59,7 +59,7 @@ for n = 1:length(names)
   key = char (names(n));
   
   if isstruct (S.(key))
-    S.(key) = processImports (S.(key));
+    S.(key) = processImports (S.(key), basepath);
   end
   
 end
@@ -68,7 +68,7 @@ if isfield (S, 'x_0x23_import')
   import = S.x_0x23_import;
   idx = findfield(S, 'x_0x23_import');
   S = rmfield (S, 'x_0x23_import');
-  merge = loadjson(['config/' import '.json']);
+  merge = loadjson(fullfile(basepath, [import '.json']));
   N = length(fieldnames(S));
   M = length(fieldnames(merge));
   S = mergeStructs (S, merge);
@@ -77,7 +77,7 @@ if isfield (S, 'x_0x23_import')
   seq = [cols(1:idx-1), cols(N+1:(N+M)), cols(idx:N)];
   S = orderfields (S, seq);
   
-  S = processImports (S);  % we might have imported a new import
+  S = processImports (S, basepath);  % we might have imported a new import
 end
 
 end
