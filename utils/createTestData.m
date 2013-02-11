@@ -63,7 +63,7 @@ saveData (fd, [gt '/Ai'], Ai);
 H5G.close (group);
 
 %% ---- dataset ---
-[Model, fitPar, dataPar] = loadConfig ('tri_csr_0');
+[Model, fitPar, dataPar] = loadConfig ('tri_csr_0', getDefaults('ica.configdir'));
 
 
 %% Prepare image data

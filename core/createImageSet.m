@@ -1,9 +1,10 @@
 function [ imageset ] = createImageSet (cfg)
 
 source = cfg.source;
+basepath = '~/Coding/ICA/'; %FIXME load from config file
 
 % compat hack
-dataDir = fullfile ('..', 'images', 'hyperspectral', source.database);
+dataDir = fullfile (basepath, 'images', 'hyperspectral', source.database);
 
 nimages = length(source.images);
 images = cell(nimages, 1);
@@ -38,10 +39,12 @@ if isfield (cfg, 'filter')
   end
   
   imageset.channels = uint8(filter.channels);
+  imageset.filter = filter;
 end
 
 imageset.images = images;
 imageset.shape = [size(images{1}.data), length(images)];
+
 
 %shape is [z, x, y, n] with z begin the channel, x, y the image axis and
 %      n the number of images

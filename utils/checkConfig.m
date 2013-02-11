@@ -1,7 +1,7 @@
 function checkConfig(cfg)
 
 if (ischar (cfg))
-  cfg = loadConfig (cfg);
+  cfg = loadConfig (cfg, getDefaults('ica.configdir'));
 end
 
 checkGradient (cfg);
