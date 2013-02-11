@@ -10,7 +10,9 @@ filter.name = 'SML';
 filter.function = @SMLFilterImage;
 filter.log = log;
 
-SMHIJL = load('sml/SMHIJL.dat');
+basepath = '~/Coding/ICA/matlab/filter/';
+
+SMHIJL = load([ basepath 'sml/SMHIJL.dat']);
 filter.SMLmx = SMHIJL([1 2 6],:);
 
 filter.channels = [str2chan('S') str2chan('M') str2chan('L')];
