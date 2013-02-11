@@ -72,6 +72,11 @@ group.set ('id', Model.id);
 group.set ('cfg', Model.cfg);
 group.set ('ds', Model.ds);
 group.set ('creator', Model.creator);
+group.set ('ctime', Model.ctime);
+
+if isfield (Model, 'algorithm')
+    group.set ('algorithm', Model.algorithm);
+end
 
 if isfield (Model, 'onGPU')
   group.set ('gpu', uint16(Model.onGPU));
@@ -84,9 +89,15 @@ end
 group.close();
 
 ds = fd.write([loc '/A'], Model.A);
-
 ds.close();
 
-fd.write ([loc '/beta'], Model.prior.beta);
+
+if isfield (Model, 'prior')
+    fd.write ([loc '/beta'], Model.prior.beta);
+end
+
+if isfield (Model, 'logE')
+    fd.write ([loc '/logE'], Model.logE);
+end
 
 end
