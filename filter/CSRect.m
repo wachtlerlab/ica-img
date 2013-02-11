@@ -10,7 +10,7 @@ filter.name = 'CSRect';
 filter.function = @CSRectFilterImage;
 filter.log = cfg.log;
 filter.center = chanlist2idx(cfg.center);
-filter.surround = chanlist2idx(cfg.surround);
+filter.surround = mapSurround(cfg.surround, cfg.center);
 
 if isfield (cfg, 'scale_s')
   filter.scale_s = cfg.scale_s;
@@ -45,8 +45,27 @@ filter.sml = SML(smlcfg);
 filter.channels = mapChannel (cfg.center, filter.rectify);
 end
 
+function [surround] = mapSurround(surround, center)
 
+if isstruct(surround)
+    names = fieldnames(surround);
+    idx = cell(length(names), 1);
+    for n = 1:length(names)
+        ch = char(names(n));
+        val = surround.(ch);
+        idx{str2chan(ch)} = chanlist2idx(val);
+    end
+    surround = idx;
+else
+    S = cell(length(center), 1);
+    for n = 1:length(center)
+        ch = center(n);
+        S{str2chan(ch)} = chanlist2idx(surround);
+    end
+    surround = S;
+end
 
+end
 
 function [img] = CSRectFilterImage (this, img)
 
@@ -84,11 +103,12 @@ end
 
 if this.scale_s ~= 0
   stdsr = 0;
-  for n=1:length(this.surround)
-    chan = this.surround(n);
+  S_surround = this.surround{str2chan('S')};
+  for n=1:length(S_surround)
+    chan = S_surround(n);
     stdsr = stdsr + std (input(chan,:));
   end
-  stdsr = stdsr / length(this.surround);
+  stdsr = stdsr / length(S_surround);
   stds = std (input(1,:));
 
   input(1,:,:) = (stdsr / this.scale_s*stds) * input(1,:,:);
@@ -119,15 +139,15 @@ sn = si-sk+1;
 sb = (si-sn)/2;
 sv = [1+sb(1):si(1)-sb(1); 1+sb(2):si(2)-sb(2)]';
 
-surround = zeros (sn(1), sn(2));
-
-for n=1:length(this.surround)
-  chan = this.surround(n);
-  surround = surround + conv2 (input(:,:,chan), ft, 'valid');
-end
-
-surround = abs(surround./length(this.surround));
-
+% surround = zeros (sn(1), sn(2));
+% 
+% for n=1:length(this.surround)
+%   chan = this.surround(n);
+%   surround = surround + conv2 (input(:,:,chan), ft, 'valid');
+% end
+% 
+% surround = abs(surround./length(this.surround));
+surround = createSurround(this, input, ft, sn);
 N = length(this.center);
 
 if this.rectify
@@ -138,7 +158,7 @@ data = zeros(N, sn(1), sn(2));
 
 for n=1:length(this.center)
   chan = this.center(n);
-  x = (wc * input(sv(:,1),sv(:,1),chan)) - surround;
+  x = (wc * input(sv(:,1),sv(:,1),chan)) - surround{chan};
   
   if this.rectify
     [on, off] = rectifyData (x, this.log);
@@ -187,4 +207,26 @@ end
 
 end
 
+function [surround] = createSurround(this, input, ft, sn)
+N = length(this.surround);
+surround = cell(N, 1);
+
+for ch = 1:length(this.surround)
+    channels = this.surround{ch};
+    
+    if isempty(channels)
+        continue;
+    end
+    
+    S = zeros (sn(1), sn(2)); 
+    for n=1:length(channels)
+        chan = channels(n);
+        S = S + conv2 (input(:,:,chan), ft, 'valid');
+    end
+
+    S = abs(S./length(channels));
+    surround{ch} = S;
+end
+
+end
 
