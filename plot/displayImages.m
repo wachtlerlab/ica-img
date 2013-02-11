@@ -63,13 +63,13 @@ for idx=1:nx
     set (gcf, 'CurrentAxes', ha((idx - 1) * ny + (ny - 1)));
     d = getImgData (curImg, 1, [5 3 1]);
     p = permute (d, [3 2 1]);
-    imagesc (p);
+    image (p);
     axis off;
   
     set (gcf, 'CurrentAxes', ha((idx - 1) * ny + ny));
     d = getImgData (curImg, 1, [6 4 2]);
     p = permute (d, [3 2 1]);
-    imagesc (p);
+    image (p);
     axis off;
   elseif dataDim == 4
     s = size (curImg);
@@ -107,12 +107,12 @@ function [data] = getImgData (img, doNorm, channels)
 data = img.data;
 
 if doNorm
-  C = num2cell (data, 1);
-  C = cellfun (@normA, C, 'UniformOutput', false);
-  data = cell2mat (C);
+  %C = num2cell (data, 1);
+  %C = cellfun (@normA, C, 'UniformOutput', false);
+  %data = cell2mat (C);
   
   %data = 0.5 + 0.5 * (data / max(abs(data(:))));
-  
+  data = normA(data);
   if nargin > 2
     data = data(channels, :,:);
   end
@@ -123,7 +123,7 @@ end
 
 
 function [normed] = normA (A)
-A = A - min (A);
+A = A - min (A(:));
 normed =  A / max(abs(A(:)));
 %normed = normed * 255;
 end
