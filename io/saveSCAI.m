@@ -1,4 +1,8 @@
-function [ id ] = saveSCAI (cfg, dataset, Model)
+function [ id ] = saveSCAI (Model)
+
+cfg = Model.cfg;
+dataset = Model.ds;
+
 
 cfgid = cfg.id;
 id = cfgid(1:7);

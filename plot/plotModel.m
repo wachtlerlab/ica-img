@@ -2,8 +2,8 @@ function plotModel (Model, W, do_print)
 
 if ~exist('W', 'var'); W = []; end
 
-ps = 7;
-A = convertAtoLMS(Model, ps, W);
+ps = Model.ds.patchsize;
+A = convertAtoLMS(Model, W);
 [L, M] = size(A.rgb);
 
 [nrows, ncols] = plotCreateGrid(M);
@@ -118,7 +118,7 @@ plot (kernel_x, kernel);
 title ('kernel');
 
 if nargin > 2 && do_print
-  nick = [Model.cfg(1:7) '-' Model.id(1:7)];
+  nick = [Model.cfg.id(1:7) '-' Model.id(1:7)];
 
   reportDir = fullfile ('..', 'reports');
 

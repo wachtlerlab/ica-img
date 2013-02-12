@@ -161,7 +161,7 @@ plot (kernel_x, kernel);
 title ('kernel');
 
 if nargin > 1 && do_print
-  nick = [Model.cfg(1:7) '-' Model.id(1:7)];
+  nick = [Model.cfg.id(1:7) '-' Model.id(1:7)];
 
   reportDir = fullfile ('..', 'reports');
 

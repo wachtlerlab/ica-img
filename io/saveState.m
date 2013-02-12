@@ -20,7 +20,7 @@ Result.S = [];
 Result.priorS = [];
 
 nick = Model.id(1:7);
-cfgid = Model.cfg(1:7);
+cfgid = Model.cfg.id(1:7);
 
 stateDir = fullfile ('..', 'state', nick);
 if exist (stateDir, 'dir') ~= 7

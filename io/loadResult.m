@@ -1,4 +1,4 @@
-function [ Model, cfg, ds ] = loadResult(id, mid)
+function [ Model] = loadResult(id, mid)
 
 cfg = [];
 
@@ -35,38 +35,21 @@ else
 end
 
 filepath = fullfile (path, filename);
-
-if hassuffix(filename, 'h5')
   
-  if ~hassuffix(filename, 'sca.h5')
-    Model.name = filename(end-9:end-3);
-    Model.id = filename(end-9:end-3);
-    Model.name = filename(1:(strfind(filename, Model.id)-2));
-  
-    Model.A = h5read (filepath, '/A');
-  else
-    sca = SCA(filepath);
-    if nargin > 1
-      Model = sca.readModel (mid);
-    else
-      Model = sca.readModel ();
-    end
-    
-    if nargout > 1
-      cfg = sca.readConfig ();
-    end
-    
-    if nargout > 2 
-      ds = sca.readDataset(Model.cfg, Model.ds);
-    end
-    
-    sca.close()
-  end
-  
-elseif hassuffix(filename, 'mat')
-    load (filepath)
+sca = SCA(filepath);
+if nargin > 1
+  Model = sca.readModel (mid);
+else
+  Model = sca.readModel ();
 end
 
+cfg = sca.readConfig ();
+ds = sca.readDataset(Model.cfg, Model.ds);
+
+Model.cfg = cfg;
+Model.ds = sca.readDataset(cfg.id, ds.id);
+
+sca.close()
 
 end
 

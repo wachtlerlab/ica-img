@@ -1,10 +1,10 @@
-function [A] = convertAtoLMS(Model, patchsize, W)
+function [A] = convertAtoLMS(Model, W)
 
 [L,M] = size (Model.A);
 Model = sortModelA(Model);
 A = Model.A;
 
-ps  = patchsize;
+ps  = Model.ds.patchsize;
 ps2 = ps^2;
 
 nchan = L/ps2;
@@ -45,7 +45,7 @@ if dewhiten
 end
 
 A = struct();
-A.name    = [Model.cfg(1:7) '-' Model.id(1:7)];
+A.name    = [Model.cfg.id(1:7) '-' Model.id(1:7)];
 A.id      = Model.id;
 A.nchan   = 3;
 A.lms     = reshape (Y, 3*ps2, M);

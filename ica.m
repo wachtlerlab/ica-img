@@ -40,7 +40,6 @@ gradient = createGradient (cfg.gradient, dataset.maxiter);
 
 Model = setupModel(cfg, dataset);
 
-
 %% check if we are just creating the PIC
 if options.nofit
   datapath = saveSCAI (cfg, dataset);
@@ -67,7 +66,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Infer the Model
 fprintf ('\nFitting %s for config %s [%s]\n',...
-  Model.id(1:7), Model.cfg(1:7), datestr (clock (), 'yyyymmddHHMM'));
+  Model.id(1:7), Model.cfg.id(1:7), datestr (clock (), 'yyyymmddHHMM'));
 tStart = tic;
 
 [Model, Result] = fitModel (Model, gradient, dataset, options);

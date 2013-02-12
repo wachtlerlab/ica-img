@@ -4,7 +4,7 @@ ps    = 7;
 nchan = 3;
 
 A = struct();
-A.name    = [Model.cfg(1:7) '-' Model.id(1:7)];
+A.name    = [Model.cfg.id(1:7) '-' Model.id(1:7)];
 A.id      = Model.id;
 A.nchan   = nchan;
 

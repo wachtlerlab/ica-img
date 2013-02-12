@@ -13,6 +13,8 @@ model.ctime = gen_ctime();
 
 id = DataHash (model, struct ('Method', 'SHA-1'));
 
+model.cfg = cfg;
+model.ds = dataset;
 model.prior = prior;
 model.A = dataset.Aguess;
 

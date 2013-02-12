@@ -1,4 +1,9 @@
-function [totalact] =  calcImgActivations(Model, ds, imgset)
+function [totalact] =  calcImgActivations(Model)
+
+ds  = Model.ds;
+cfg = Model.cfg;
+
+imgset = createImageSet(cfg.data);
 
 M = sortModelA(Model);
 
