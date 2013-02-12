@@ -12,23 +12,28 @@ W = pinv(M.A);
 
 patchsize = double(ds.patchsize);
 
-nimg = 8;
+nimg = 8; %8;
 %per image
 
 patchset = cell(nimg, 1);
 imgset_img = imgset.images;
 imgdata_ds = ds.imgdata;
 
-parfor imgnr=1:nimg
+fprintf('Generating patchset\n');
+for imgnr=1:nimg
     %imgnr = 2;
+    fprintf('\t img %d\n', imgnr);
     imgdata = imgdata_ds(:,:,:,imgnr);
     
     [~, m, n] = size(imgdata);
     idx = imgallindicies(m, n, patchsize, 1);
     spatch_ = patchesFromImg(imgdata, idx, patchsize);
+    
     spatch_ = spatch_ - mean(spatch_(:));
     spatch_ = spatch_ / sqrt(var(spatch_(:)));
-    
+    spatch_ = spatch_ - (mean(spatch_,2) * ones(1, size(spatch_,2)));
+    spatch_ = spatch_ / sqrt(var(spatch_(:)));
+
     patchset{imgnr}.spatch = spatch_;
     
     imgsml = permute(imgset_img{imgnr}.sml, [3 2 1]);
@@ -43,6 +48,9 @@ parfor imgnr=1:nimg
     opatch_ = opatch_ - mean(opatch_(:));
     opatch_ = opatch_ / sqrt(var(opatch_(:)));
     
+    opatch_ = opatch_ - (mean(opatch_,2) * ones(1, size(opatch_,2)));
+    opatch_ = opatch_ / sqrt(var(opatch_(:)));
+    
     patchset{imgnr}.opatch = opatch_;
 end
 
@@ -50,7 +58,7 @@ end
 imgact = cell(nimg, 1);
 fprintf('Calc patch activations\n');
 
-parfor imgnr=1:nimg
+for imgnr=1:nimg
     fprintf('\t img %d\n', imgnr);
 
     spatch = patchset{imgnr}.spatch;
@@ -61,11 +69,19 @@ parfor imgnr=1:nimg
     for bfi=1:L
         bf = W(bfi,:);
         
+        if mod(bfi, 10) == 0; fprintf('\n'); end
+        fprintf('[%d]', bfi);
+        
         bfr = repmat(bf', 1, k);        
         act = dot(bfr, spatch);
         
+        fprintf('.');
+        
         smraw = calcpatchact(act, spatch);
+        fprintf('_');
         omraw = calcpatchact(act, opatch);
+        
+        fprintf('-');
         
         imgact{imgnr}.bf{bfi}.smraw = smraw;
         imgact{imgnr}.bf{bfi}.omraw = omraw;
