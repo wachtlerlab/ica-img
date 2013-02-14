@@ -1,4 +1,4 @@
-function [totalact] =  calcImgActivations(Model)
+function [Act] =  calcImgActivations(Model)
 
 ds  = Model.ds;
 cfg = Model.cfg;
@@ -12,89 +12,88 @@ W = pinv(M.A);
 
 patchsize = double(ds.patchsize);
 
-nimg = 8; %8;
-%per image
+nimg = 8;
+
+icapatch = cell(nimg, 1);
+orgpatch = cell(nimg, 1);
 
 patchset = cell(nimg, 1);
+
 imgset_img = imgset.images;
 imgdata_ds = ds.imgdata;
+
 
 fprintf('Generating patchset\n');
 for imgnr=1:nimg
     %imgnr = 2;
-    fprintf('\t img %d\n', imgnr);
+    fprintf(' %02d', imgnr);
     imgdata = imgdata_ds(:,:,:,imgnr);
     
     [~, m, n] = size(imgdata);
     idx = imgallindicies(m, n, patchsize, 1);
-    spatch_ = patchesFromImg(imgdata, idx, patchsize);
-    
-    spatch_ = spatch_ - mean(spatch_(:));
-    spatch_ = spatch_ / sqrt(var(spatch_(:)));
-    spatch_ = spatch_ - (mean(spatch_,2) * ones(1, size(spatch_,2)));
-    spatch_ = spatch_ / sqrt(var(spatch_(:)));
+    icapatch{imgnr} = getpatches (imgdata, idx, patchsize)';
+    fprintf('.');
 
-    patchset{imgnr}.spatch = spatch_;
-    
+    fprintf(':');
     imgsml = permute(imgset_img{imgnr}.sml, [3 2 1]);
-    [~, mo, no] = size(imgsml);
     
+    [~, mo, no] = size(imgsml);
     dm = (mo - m) / 2;
     dn = (no - n) / 2;
     idx(:, 1) = idx(:, 1) + dm;
     idx(:, 2) = idx(:, 2) + dn;
-     
-    opatch_ = patchesFromImg(imgsml, idx, patchsize);
-    opatch_ = opatch_ - mean(opatch_(:));
-    opatch_ = opatch_ / sqrt(var(opatch_(:)));
     
-    opatch_ = opatch_ - (mean(opatch_,2) * ones(1, size(opatch_,2)));
-    opatch_ = opatch_ / sqrt(var(opatch_(:)));
-    
-    patchset{imgnr}.opatch = opatch_;
+    orgpatch{imgnr} = getpatches (imgsml, idx, patchsize)';
+    fprintf('\b\b\b\b\b');
 end
 
-%per img and bf
-imgact = cell(nimg, 1);
+npatches = cellfun(@(x) size(x, 1), icapatch);
+sumpatch = cumsum(npatches);
+ioffsets = [sumpatch - (npatches(1)-1), sumpatch];
+
+icaall = cell2mat(icapatch);
+orgall = cell2mat(orgpatch);
+
+clear icapatch orgpatch;
+oL   = size(orgall, 2);
+kall = size(icaall, 1);
+
+icaall = icaall - repmat(mean(icaall), kall,  1);
+%orgall = orgall - repmat(mean(orgall, 2), 1, oL);
+
+icaall = icaall / std(icaall(:));
+%orgall = orgall / std(orgall(:));
+
+perimg = @(data, idx, func) cell2mat(arrayfun(...
+    @(cimg) func(data(idx(cimg, 1):idx(cimg, 2), :))', 1:length(idx), ...
+    'UniformOutput', false));
+
+bf_w = zeros(kall, L);
+bf_mact = zeros(oL, L, nimg);
+
 fprintf('Calc patch activations\n');
 
-for imgnr=1:nimg
-    fprintf('\t img %d\n', imgnr);
+for bfi=1:L
+    bf = W(bfi,:);
 
-    spatch = patchset{imgnr}.spatch;
-    opatch = patchset{imgnr}.opatch;
-
-    [~, k] = size(opatch);
-
-    for bfi=1:L
-        bf = W(bfi,:);
-        
-        if mod(bfi, 10) == 0; fprintf('\n'); end
-        fprintf('[%d]', bfi);
-        
-        bfr = repmat(bf', 1, k);        
-        act = dot(bfr, spatch);
-        
-        fprintf('.');
-        
-        smraw = calcpatchact(act, spatch);
-        fprintf('_');
-        omraw = calcpatchact(act, opatch);
-        
-        fprintf('-');
-        
-        imgact{imgnr}.bf{bfi}.smraw = smraw;
-        imgact{imgnr}.bf{bfi}.omraw = omraw;
-        imgact{imgnr}.bf{bfi}.w     = act;
-        
-    end
+    fprintf(' %03d', bfi);
     
-    imgact{imgnr}.spatches = spatch;
-    imgact{imgnr}.opatches = opatch;
-    
+    w = sum(bf(ones(kall, 1),:) .* icaall, 2);
+
+    fprintf('.');
+    wpatch  = w(:, ones(oL, 1)) .* orgall;
+    fprintf(':');
+    mact = perimg(wpatch, ioffsets, @mean);
+    fprintf('\b\b\b\b\b\b');
+    %bfact{bfi} = struct('w', w, 'mop', mact);
+    bf_w(:, bfi) = w;
+    bf_mact(:, bfi, :) = mact;
 end
 
-totalact = imgact;
+Act.w = bf_w;
+Act.mact = bf_mact;
+Act.Model = Model;
+Act.offset = ioffsets;
 
 end
 
@@ -108,4 +107,10 @@ mraw = mean(raw, 2);
 end
 
 
+function [patches] = getpatches(data, idx, patchsize)
 
+ patches = patchesFromImg(data, idx, patchsize);
+ patches = patches - mean(patches(:));
+ patches = patches / sqrt(var(patches(:)));
+    
+end

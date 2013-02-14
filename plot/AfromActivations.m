@@ -1,5 +1,6 @@
-function [A] = AfromActivations(Model, Act, imgnr)
+function [A] = AfromActivations(Act)
 
+Model = Act.Model;
 ps    = 7;
 nchan = 3;
 
@@ -8,7 +9,7 @@ A.name    = [Model.cfg.id(1:7) '-' Model.id(1:7)];
 A.id      = Model.id;
 A.nchan   = nchan;
 
-nbf = length(Act{1}.bf);
+nbf = size(Act.w, 2);
 
 Ainit = zeros(ps*ps*nchan, nbf);
 A.sml = Ainit;
@@ -18,20 +19,7 @@ A.rgb = Ainit;
 A.dkl = zeros(ps*ps, 3, nbf);
 A.pcs = zeros(2, nbf);
 
-bfact = zeros(ps*ps*nchan, nbf, length(imgnr));
-
-for imn=1:length(imgnr)
-    ix = imgnr(imn);
-    asm = cell2mat(Act{ix}.bf);
-    for ibf=1:nbf
-        omraw = asm(ibf).omraw;
-        %omraw = omraw - mean(omraw(:));
-        %omraw = omraw / sqrt(var(omraw(:)));
-        bfact(:, ibf, imn) = omraw;
-    end
-end
-
-meanact = mean(bfact, 3);
+meanact = mean(Act.mact, 3);
 
 for n=1:nbf
     ompatch = meanact(:, n);
