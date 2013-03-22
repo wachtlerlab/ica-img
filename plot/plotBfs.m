@@ -31,10 +31,11 @@ if exist('h','var')
   set (h,'CData',array);
 else
   fig = figure ('Name', ['Basis Functions: ', A.name], ...
-    'Position', [0, 0, 800, 1000], 'Color', 'w', 'PaperType', 'A4');
+    'Position', [0, 0, 900, 600], 'Color', 'w', 'PaperType', 'A4');
   h = imagesc (array, 'EraseMode', 'none',  [-1 1]);
   
   axis tight image off
+  set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
 end
 
 
