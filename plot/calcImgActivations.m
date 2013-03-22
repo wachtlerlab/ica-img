@@ -11,9 +11,11 @@ patchsize = double(ds.patchsize);
 nimg = size(ds.imgdata, 4);
 
 icapatch = cell(nimg, 1);
+iidx = cell(nimg, 1);
 
 imgdata_ds = ds.imgdata;
 isize = zeros(2, nimg);
+
 
 fprintf('Generating patchset\n');
 for imgnr=1:nimg
@@ -24,6 +26,7 @@ for imgnr=1:nimg
     [~, m, n] = size(imgdata);
     idx = imgallindicies(m, n, patchsize, 1);
     icapatch{imgnr} = getpatches (imgdata, idx, patchsize)';
+    iidx{imgnr} = idx;
     isize(:, imgnr) = [m; n];
     
     fprintf('\b\b\b');
@@ -34,8 +37,9 @@ sumpatch = cumsum(npatches);
 ioffsets = [sumpatch - (npatches(1)-1), sumpatch];
 
 icaall = cell2mat(icapatch);
+idx = cell2mat(iidx);
 
-clear icapatch orgpatch;
+clear icapatch orgpatch iidx;
 kall = size(icaall, 1);
 
 icaall = icaall - repmat(mean(icaall), kall,  1);
@@ -57,6 +61,7 @@ Act.Model = Model;
 Act.w = bf_w;
 Act.offset = ioffsets;
 Act.isize = isize;
+Act.idx = idx;
 
 end
 
