@@ -1,32 +1,32 @@
-function [bfact_fig] = showSingleBfAct(Model, Act, bfnr)
+function [bfact_fig] = showSingleBfAct(Act, bfnr)
 
-nimg = length(Act);
+Model = Act.Model;
 
-nrows = 2;
-ps    = 7;
-nchan = 3;
+ds     = Model.ds;
+ps     = double(ds.patchsize);
+cfg    = Model.cfg;
+nimg   = size(ds.imgdata, 4);
+nchan  = 3;
+wall   = Act.w(:, bfnr);
+offset = Act.offset;
 
+nrows  = 3 + isfield(Act, 'mact') + isfield(Act, 'wfilter');
 ncols = nimg;
 
 bfact_fig = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1200, 400]);
 
 load('colormaps_ck')
 
-snorm = 1.0;
+snorm = max(abs(wall(:)));
 
 for n=1:nimg
-    w=Act{n}.bf{bfnr}.w;
-    snorm = max(snorm, max(abs(w)));
-end
-
-for n=1:nimg
-    bfact=Act{n}.bf{bfnr};
-
+    
+    w = wall(offset(n,1):offset(n,2), :);
+    
     pidx = getplotidx(ncols, 1, n);
     subplot(nrows, ncols, pidx);
     
-    edge = sqrt(length(bfact.w));
-    w = bfact.w;
+    edge = sqrt(length(w));
     bfw = reshape(w, edge, edge);
     bfwn = 0.5 * (bfw/snorm);
     
@@ -39,12 +39,45 @@ for n=1:nimg
     
     pidx = getplotidx(ncols, 2, n);
     subplot(nrows, ncols, pidx);
+    hist(w, 20)
     
-    lms = flipdim(reshape(bfact.omraw, nchan, ps, ps), 1);
-    rgb = permute(0.5 + 0.5 * (lms/max(abs(lms(:)))), [2 3 1]);
-    imagesc(rgb);
-    axis image off;
+    crow = 3;
+    
+    if isfield(Act, 'wfilter')
+        pidx = getplotidx(ncols, crow, n);
+        subplot(nrows, ncols, pidx);
+        wfilter = Act.wfilter(offset(n,1):offset(n,2), bfnr);
+        
+        wfiltered = w(wfilter);
+        hist(wfiltered, 20)
+        crow = crow + 1;
+    end
+    
+    if isfield(Act, 'mact')
+        pidx = getplotidx(ncols, crow, n);
+        subplot(nrows, ncols, pidx);
+        
+        omraw = Act.mact(:, bfnr, n);
+        lms = flipdim(reshape(omraw, nchan, ps, ps), 1);
+        rgb = permute(0.5 + 0.5 * (lms/max(abs(lms(:)))), [2 3 1]);
+        imagesc(rgb);
+        axis image off;
+    
+    end
+    
 end
+
+pidx = getplotidx(ncols, nrows, 1);
+pend = pidx+(nimg-(nimg/2));
+subplot(nrows, ncols, pidx:pend);
+hist(wall, 100)
+
+subplot(nrows, ncols, pend+2);
+omraw = mean(Act.mact(:, bfnr, :), 3);
+lms = flipdim(reshape(omraw, nchan, ps, ps), 1);
+rgb = permute(0.5 + 0.5 * (lms/max(abs(lms(:)))), [2 3 1]);
+imagesc(rgb);
+axis image off;
 
 end
 
