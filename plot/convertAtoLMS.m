@@ -44,18 +44,17 @@ if dewhiten
 %    rgb = reshape(flipdim(permute(reshape(Z, ps2, 3, M), [2 1 3]), 1), 3*ps2, M);
 end
 
-A = struct();
-A.name    = [Model.cfg.id(1:7) '-' Model.id(1:7)];
-A.id      = Model.id;
-A.nchan   = 3;
+A = prepareAfromModel(Model, 3);
 A.lms     = reshape (Y, 3*ps2, M);
 A.rgb_raw = reshape (rgb, 3*ps2, M);
-
 A.rgb = zeros(size(A.rgb_raw));
 
 for idx=1:M
       p = A.rgb_raw(:,idx);
-      A.rgb(:,idx) = 0.5+0.5*p/max(abs(p(:))); 
+      A.rgb(:,idx) = 0.5+0.5*p/max(abs(p(:)));
 end
+
+A.dkl = calcAdkl(A);
+A.pcs = calcApcs(A);
 
 end
