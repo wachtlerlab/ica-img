@@ -45,7 +45,12 @@ for n=1:nbf
     fprintf(' %03d', n);
     
     w = Act.w(:, n);
+    if isfield(Act, 'wfilter')
+       w = w .* Act.wfilter(:, n); 
+    end
+    
     wpatch  = w(:, ones(oL, 1)) .* orgall;
+   
     mact = perimg(wpatch, offset, @mean);
     bf_mact(:, n, :) = mact;
     
