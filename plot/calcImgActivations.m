@@ -1,10 +1,10 @@
 function [Act] = calcImgActivations(Model)
 
 ds  = Model.ds;
-M = sortModelA(Model);
+A = sortAbf (Model.A);
 
-[~, L] = size(M.A);
-W = pinv(M.A);
+[~, L] = size(A);
+W = pinv(A);
 
 patchsize = double(ds.patchsize);
 

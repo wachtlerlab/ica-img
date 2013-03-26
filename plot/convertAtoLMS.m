@@ -1,15 +1,16 @@
 function [A] = convertAtoLMS(Model, W)
 
-[L,M] = size (Model.A);
-Model = sortModelA(Model);
-A = Model.A;
+A = prepareAfromModel(Model, 3);
+data = A.sorted;
 
-ps  = Model.ds.patchsize;
+[L,M] = size (data);
+
+ps  = A.ps;
 ps2 = ps^2;
 
 nchan = L/ps2;
 
-bfs = reshape (A, nchan, ps2*M);
+bfs = reshape (data, nchan, ps2*M);
 
 if nchan == 6
   X = [ 0,  0,  0,  0,  1, -1;    % L
@@ -26,7 +27,7 @@ elseif nchan == 4
   Y = D*bfs;
   rgb = Y;
 elseif nchan == 3
-  bfs = reshape (A, 3, ps2*M);
+  bfs = reshape (data, 3, ps2*M);
   Y = flipdim(bfs, 1); % SML -> LMS
   rgb = Y;
 end
@@ -44,7 +45,7 @@ if dewhiten
 %    rgb = reshape(flipdim(permute(reshape(Z, ps2, 3, M), [2 1 3]), 1), 3*ps2, M);
 end
 
-A = prepareAfromModel(Model, 3);
+
 A.lms     = reshape (Y, 3*ps2, M);
 A.rgb_raw = reshape (rgb, 3*ps2, M);
 A.rgb = zeros(size(A.rgb_raw));

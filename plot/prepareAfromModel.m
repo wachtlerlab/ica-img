@@ -9,5 +9,8 @@ A.nchan   = nchan;
 A.nbf     = size(Model.A, 2);
 A.ps      = ps;
 
+A.data    = Model.A;
+A.sorted  = sortAbf (Model.A);
+
 end
 
