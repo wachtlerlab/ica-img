@@ -1,7 +1,8 @@
-function [ Result ] = plotStats(Model, ds)
+function [ Result ] = plotStats(Model)
 
 %addpath('functions/home/tewon/Matlab/Lewicki/expwrcode/stats')
 %addpath('functions/home/lewicki/matlab/oc')
+ds = Model.ds;
 Result.iter = (ds.npats / ds.blocksize) * (ds.nclusters-2) + 1;
 Result = samplePats(Result, ds)
 Result.S = pinv(Model.A)*Result.D;
