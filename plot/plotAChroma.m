@@ -1,12 +1,13 @@
-function [ hf_chrom ] = plotAChroma(A)
+function [ hf_chrom ] = plotAChroma(A, landscape)
 
-ps = 7;
+if ~exist('landscape','var'); landscape = 0; end;
+
+ps = A.ps;
 [L, M] = size(A.rgb);
 [nrows, ncols] = plotCreateGrid(M);
 
-hold off;
-hf_chrom = figure('Name', ['Chrom: ', A.name], 'Position', [0, 0, 1200, 800]);
-set(0,'CurrentFigure', hf_chrom);
+
+hf_chrom = plotACreateFig(A, 'Chroma', landscape, [1200, 800]);
 hb = tight_subplot(nrows, ncols, [.01 .01], [.01 .01]);
 
 %pcs = zeros (2, M);
@@ -30,6 +31,11 @@ for idx=1:M
     axis equal;
     axis ([-1 1 -1 1])
     %axis image;
+end
+
+for idx=M+1:length(hb)
+    set (gcf, 'CurrentAxes', hb(idx));
+    axis image off;
 end
 
 end

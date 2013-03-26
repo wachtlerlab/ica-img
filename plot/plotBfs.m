@@ -1,16 +1,12 @@
-function [fig, h] = plotBfs (A, h)
+function [fig, h] = plotBfs (A, h, landscape)
+
+if ~exist('landscape','var'); landscape = 0; end;
 
 buf   = 1;
 [L, M] = size(A.rgb);
 sz = sqrt(L/A.nchan);
 
-if floor(sqrt(M))^2 ~= M
-  m = ceil(sqrt(M/2));
-  n = ceil(M/m);
-else
-  m = sqrt(M);
-  n = m;
-end
+[m,n] = plotCreateGrid(M, landscape);
 
 array = ones(buf+m*(sz+buf),buf+n*(sz+buf), A.nchan);
 
@@ -27,15 +23,23 @@ for i=1:m
   end
 end
 
-if exist('h','var')
+if exist('h','var') && ~isempty(h)
   set (h,'CData',array);
 else
-  fig = figure ('Name', ['Basis Functions: ', A.name], ...
-    'Position', [0, 0, 900, 600], 'Color', 'w', 'PaperType', 'A4');
-  h = imagesc (array, 'EraseMode', 'none',  [-1 1]);
+%   fs = [900, 600];
+%   if landscape
+%       fs = sort(fs);
+%   end
   
-  axis tight image off
-  set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+ % fig = figure ('Name', ['Basis Functions: ', A.name], ...
+ %   'Position', horzcat([0, 0], fs), 'Color', 'w', 'PaperType', 'A4');
+
+ fig = plotACreateFig(A, 'Basis Functions', landscape, [900, 600]);
+ h = imagesc (array, 'EraseMode', 'none',  [-1 1]);
+ title(['Basis Functions  ' A.name]);
+ 
+ axis tight image off
+ set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
 end
 
 
