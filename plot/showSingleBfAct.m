@@ -10,7 +10,10 @@ nchan  = 3;
 wall   = Act.w(:, bfnr);
 offset = Act.offset;
 
+
 nrows  = 3 + isfield(Act, 'mact') + isfield(Act, 'wfilter');
+nrows  = nrows + isfield(Act, 'epp');
+
 ncols = nimg;
 
 bfact_fig = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1200, 400]);
@@ -40,8 +43,27 @@ for n=1:nimg
     pidx = getplotidx(ncols, 2, n);
     subplot(nrows, ncols, pidx);
     hist(w, 20)
-    
-    crow = 3;
+    xlim([min(w), max(w)])
+    crow = 3;  
+        
+    if isfield(Act, 'epp')
+        pidx = getplotidx(ncols, crow, n);
+        subplot(nrows, ncols, pidx);
+        hold on;
+        
+        epp = Act.epp(bfnr, n, :);
+        xrange = min(w):0.1:max(w);
+        y = expwrpdf(xrange, epp(1), epp(2), epp(3));
+        
+        [nelm, xcnt] = hist(w, 20);
+        [ax, h1, h2] = plotyy(xcnt, nelm, xrange, y, 'bar', 'plot');
+       
+        set(h1,'FaceColor',[0 .5 .5],'EdgeColor',[0 .5 .5])
+        set(h2, 'LineWidth', 1, 'Color', 'r');
+        
+        crow = crow + 1;
+        
+    end
     
     if isfield(Act, 'wfilter')
         pidx = getplotidx(ncols, crow, n);
@@ -51,9 +73,11 @@ for n=1:nimg
         wfiltered = w(wfilter);
         hist(wfiltered, 20)
         crow = crow + 1;
+        xlim([min(w), max(w)])
     end
-    
+
     if isfield(Act, 'mact')
+
         pidx = getplotidx(ncols, crow, n);
         subplot(nrows, ncols, pidx);
         
@@ -72,12 +96,14 @@ pend = pidx+(nimg-(nimg/2));
 subplot(nrows, ncols, pidx:pend);
 hist(wall, 100)
 
-subplot(nrows, ncols, pend+2);
-omraw = mean(Act.mact(:, bfnr, :), 3);
-lms = flipdim(reshape(omraw, nchan, ps, ps), 1);
-rgb = permute(0.5 + 0.5 * (lms/max(abs(lms(:)))), [2 3 1]);
-imagesc(rgb);
-axis image off;
+if isfield(Act, 'mact')
+    subplot(nrows, ncols, pend+2);
+    omraw = mean(Act.mact(:, bfnr, :), 3);
+    lms = flipdim(reshape(omraw, nchan, ps, ps), 1);
+    rgb = permute(0.5 + 0.5 * (lms/max(abs(lms(:)))), [2 3 1]);
+    imagesc(rgb);
+    axis image off;
+end
 
 end
 
