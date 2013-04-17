@@ -1,6 +1,4 @@
-function [ sortedA ] = sortAbf (A)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [ sortedA, idx, nA ] = sortAbf (A)
 
 if isa (A, 'struct')
     A = A.A;

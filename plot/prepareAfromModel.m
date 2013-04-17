@@ -10,7 +10,17 @@ A.nbf     = size(Model.A, 2);
 A.ps      = ps;
 
 A.data    = Model.A;
-A.sorted  = sortAbf (Model.A);
+
+
+[sortedA, idx, nA] = sortAbf(Model.A);
+
+A.sorted  = sortedA;
+A.norm    = nA(idx);
+
+if isfield(Model, 'beta')
+    A.beta    = Model.beta(idx);
+end
+
 
 end
 
