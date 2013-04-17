@@ -15,8 +15,9 @@ end
 
 stwide = 0.05;
 intwidth = 6;
-
+ 
 x = (mu-intwidth):stwide:(mu+intwidth);
+
 intx = @(b) integral(@(x) expwrpdf(x, mu, sigma, beta), -Inf, b);
 yf = arrayfun(intx, x);
 
