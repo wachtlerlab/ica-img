@@ -1,4 +1,4 @@
-function [A] = convertAtoLMS(Model, W)
+function [A] = AfromModel(Model, W)
 
 A = prepareAfromModel(Model, 3);
 data = A.sorted;
