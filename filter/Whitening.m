@@ -4,8 +4,8 @@ if ~isfield(cfg, 'log')
   cfg.log = 0;
 end
 
-if ~isfield(cfg, 'channel')
-   cfg.channel = [str2chan('S') str2chan('M') str2chan('L')]; 
+if ~isfield(cfg, 'gray')
+   cfg.gray  = 0;
 end
 
 filter.name = 'Whitening';
@@ -13,8 +13,9 @@ filter.setup = @WhiteningFilterSetup;
 filter.function = @WhiteningFilterImage;
 filter.log = cfg.log;
 filter.rectify = cfg.rectify;
-filter.chans = cfg.channel;
+filter.chans = [str2chan('S') str2chan('M') str2chan('L')]; ;
 filter.patchsize = cfg.patchsize;
+filter.gray = cfg.gray;
 
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
@@ -28,12 +29,21 @@ nimages = length(images);
 
 smlcfg.log = 0;
 smlfilter = SML(smlcfg);
-channel = chanlist2idx(this.chans);
+channel = this.chans;
 data = [];
 for n=1:nimages
   fprintf ('\t%s\n', images{n}.filename);
   img = smlfilter.function (smlfilter, images{n});
-  imgdata = imgallpatches(img.sml(:,:,channel), this.patchsize);
+  if this.gray
+      imgdata = [];
+      for ch = channel
+         chdata = imgallpatches(img.sml(:,:,ch), this.patchsize);
+         imgdata = horzcat (imgdata, chdata);
+      end
+  else
+      imgdata = imgallpatches(img.sml(:,:,channel), this.patchsize);
+  end
+  
   data = horzcat (data, imgdata);
 end
 
@@ -56,11 +66,26 @@ n = n - mod(n, patchsize);
 m = m - mod(m, patchsize);
 input = input(1:n,1:m,:);
 
-[patches, pos] = imgallpatches(input, patchsize, patchsize);
-X = this.W * patches;
-android = zeros(n, m, c);
-Y = reshape(X, patchsize, patchsize, c, length(pos));
 
+pos = imggencoords(n, m, patchsize, patchsize);
+
+if this.gray
+    Y = zeros(patchsize, patchsize, c, length(pos));
+    
+    for ch = 1:c
+        patches = imgallpatches(input(:,:,ch), patchsize, patchsize);
+        X = this.W * patches;
+        Y(:, :, ch, :) = reshape(X, patchsize, patchsize, length(pos));
+    end
+    
+else
+    
+    patches = imgallpatches(input, patchsize, patchsize);
+    X = this.W * patches;
+    Y = reshape(X, patchsize, patchsize, c, length(pos));
+end
+
+android = zeros(n, m, c);
 for idx = 1:length(pos)
    cr = pos(1, idx);
    cc = pos(2, idx);
