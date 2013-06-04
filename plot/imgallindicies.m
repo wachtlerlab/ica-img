@@ -1,4 +1,6 @@
 function [indicies] = imgallindicies(m, n, patchsize, tiling)
+%imgallindicies generate all indicies for an m by n image
+
 
 if ~exist('tiling', 'var'); tiling = 1; end
 

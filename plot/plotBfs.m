@@ -36,7 +36,6 @@ else
 
  fig = plotACreateFig(A, 'Basis Functions', landscape, [900, 600]);
  h = imagesc (array, 'EraseMode', 'none',  [-1 1]);
- title(['Basis Functions  ' A.name]);
  
  axis tight image off
  set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])

@@ -26,10 +26,13 @@ for idx=1:M
     % pcs(:,idx) = pc;
     
     hold on
-    scatter (x, y, 20, slice, 'filled');
+    line([0, 0], [-0.8 0.8], 'Color', [.8 .8 .8]); 
+    line([-0.8, 0.8], [0 0], 'Color', [.8 .8 .8]);
+    scatter (x, y, 10, slice, 'filled');
     %axis equal off;
-    axis equal;
-    axis ([-1 1 -1 1])
+    axis equal off;
+    axis ([-0.8 0.8 -0.8 0.8])
+
     %axis image;
 end
 

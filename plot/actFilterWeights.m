@@ -16,7 +16,7 @@ epp = zeros([nbf, nimg, 3]);
 wall = Act.w;
 
 tic;
-parfor n=1:nbf
+for n=1:nbf
     
     fprintf(' %03d', n);
     

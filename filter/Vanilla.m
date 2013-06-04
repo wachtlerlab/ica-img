@@ -28,15 +28,26 @@ end
 
 function [img] = VanillaFilterImage (this, img)
 
-[~, T] = size (img.hs_data);
-edgeN = sqrt (T);
+si = size(img.hs_data);
 
-if edgeN ~= round (edgeN)
-    error ('Image data to square!');
+if length(si) < 3
+    [~, T] = size (img.hs_data);
+    edgeN = sqrt (T);
+    
+    if edgeN ~= round (edgeN)
+        error ('Image data to square!');
+    end
+    
+    img.edgeN = edgeN;
+    sx = edgeN;
+    sy = edgeN;
+    raw = img.hs_data;
+else
+    sx = si(2);
+    sy = si(3);
+    img.edgeN = [sx, sy];
+    raw = img.hs_data(:,:); 
 end
-
-img.edgeN = edgeN;
-raw = img.hs_data;
 
 N = length(this.input);
 if this.rectify
@@ -60,11 +71,15 @@ if this.rectify
         data(n*2,:,:) = off;  
     end
 else
-    data = raw;
+    if this.log
+        data = log(raw);
+    else
+        data = raw;
+    end
 end
 
-img.data  = reshape (data, N, edgeN, edgeN); %(c,x,y) [f,c,r]
-img.sml = permute (raw, [3 2 1]); % compat (y,x,c) [f, c, r]
+img.data  = reshape (data, N, sx, sy); %(c,x,y) [f,c,r]
+img.sml = squeeze(permute (raw, [3 2 1])); % compat (y,x,c) [f, c, r]
 
 end
 

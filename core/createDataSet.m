@@ -29,7 +29,13 @@ imgdata = zeros(imageset.shape);
 
 for n = 1:nimages
   img = imageset.images{n};
-  refBase = calcRefBase(img, patchsize);
+  if isfield(img, 'refkoos')
+      refBase = calcRefBase(img, patchsize);
+  else
+      [~, im, in] = size(img.data);
+      refBase = imgallindicies(im, in, patchsize, 1);
+  end
+
   idx = generatePatchIndices(refBase, Tperimg, nclusters);
   indicies(:,:,:,n) = idx;
   

@@ -1,5 +1,7 @@
 function [ y ] = dog (x, mu, s_i, s_o, ratio)
-%DOG Differance of Gaussions
+%DOG Differance of Gaussians
+%   (c) Christian Kellner <kellner@bio.lmu.de>
+%       License: BSD-3 clause
 
 if nargin < 5
   ratio = 1.0;

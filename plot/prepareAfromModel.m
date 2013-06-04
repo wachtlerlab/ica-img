@@ -16,9 +16,11 @@ A.data    = Model.A;
 
 A.sorted  = sortedA;
 A.norm    = nA(idx);
+A.bfidx   = idx;
 
 if isfield(Model, 'beta')
     A.beta    = Model.beta(idx);
+    A.kurt    = expwrkur(A.beta);
 end
 
 

@@ -53,7 +53,20 @@ if isstruct(surround)
     for n = 1:length(names)
         ch = char(names(n));
         val = surround.(ch);
-        idx{str2chan(ch)} = chanlist2idx(val);
+        
+        if isstruct(val)
+            keys = fieldnames(val);
+            weights = cell(3, 1);
+            for ki = 1:length(keys)
+                surr_ch = char(keys(ki));
+                surr_idx = str2chan(surr_ch);
+                weights{surr_idx} = val.(surr_ch);
+            end
+            idx{str2chan(ch)} = weights;
+        else
+            idx{str2chan(ch)} = chanlist2idx(val);
+        end
+        
     end
     surround = idx;
 else
@@ -104,11 +117,12 @@ end
 if this.scale_s ~= 0
   stdsr = 0;
   S_surround = this.surround{str2chan('S')};
-  for n=1:length(S_surround)
-    chan = S_surround(n);
-    stdsr = stdsr + std (input(chan,:));
+  [channels, weights] = surroundGetChannel(S_surround);
+  
+  for n=1:length(channels)
+    chan = channels(n);
+    stdsr = stdsr + weights(n) * std (input(chan,:));
   end
-  stdsr = stdsr / length(S_surround);
   stds = std (input(1,:));
 
   input(1,:,:) = (stdsr / this.scale_s*stds) * input(1,:,:);
@@ -207,6 +221,32 @@ end
 
 end
 
+function [channels, weights] = surroundGetChannel(channels)
+
+if isempty(channels)
+    channels = [];
+    weights = [];
+    return;
+end
+
+if iscell(channels)
+    % cant use cell2mat since that ignores leading zeros
+    new_channels = zeros(length(channels),1);
+    for idx=1:length(channels)
+        new_channels(idx) = channels{idx};
+    end
+    channels = new_channels;
+    valid_channels = channels ~= 0;
+    pos = find(valid_channels);
+    weights = channels(pos);
+    channels = pos;
+else
+    nch = length(channels);
+    weights = ones(nch, 1) / nch;
+end
+
+end
+
 function [surround] = createSurround(this, input, ft, sn)
 N = length(this.surround);
 surround = cell(N, 1);
@@ -218,14 +258,15 @@ for ch = 1:length(this.surround)
         continue;
     end
     
+    [channels, weights] = surroundGetChannel(channels);
+    
     S = zeros (sn(1), sn(2)); 
     for n=1:length(channels)
         chan = channels(n);
-        S = S + conv2 (input(:,:,chan), ft, 'valid');
+        S = S + weights(n) * conv2 (input(:,:,chan), ft, 'valid');
     end
 
-    S = abs(S./length(channels));
-    surround{ch} = S;
+    surround{ch} = abs(S);
 end
 
 end

@@ -8,7 +8,12 @@ if landscape
 end
 pos = [300, 300];
 
-figtitle = [name ' ' A.name];
+if isstruct(A)
+    figtitle = [name ' ' A.name];
+else
+    figtitle = A;
+end
+
 curfig = figure('Name', figtitle, 'Position', horzcat(pos, fs), ...
     'Color', 'w', 'PaperType', 'A4');
 set(0,'CurrentFigure', curfig);

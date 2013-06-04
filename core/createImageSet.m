@@ -1,12 +1,26 @@
-function [ imageset ] = createImageSet (cfg)
+function [ imageset, filter ] = createImageSet (cfg)
 
 source = cfg.source;
 basepath = '~/Coding/ICA/'; %FIXME load from config file
 
-% compat hack
-dataDir = fullfile (basepath, 'images', 'hyperspectral', source.database);
+dataType = cfg.type;
+fprintf('Data Type: %s', dataType);
 
-nimages = length(source.images);
+if strcmp(cfg.type, 'hs_images')
+    db_prefix = 'hyperspectral';
+else
+    db_prefix = cfg.type;
+end
+
+% compat hack
+dataDir = fullfile (basepath, 'images', db_prefix, source.database);
+
+if iscell(source.images)
+    nimages = length(source.images);
+else
+    nimages = size(source.images, 1);
+end
+
 images = cell(nimages, 1);
 
 if isfield (source, 'type')
@@ -16,7 +30,12 @@ else
 end
 
 for n=1:nimages
-  filename = source.images{n};
+  if iscell(source.images)
+      filename = source.images{n};
+  else
+      filename = source.images(n,:);
+  end
+  
   images{n} = loadImage (filename, dataDir, imageType);  
 end
 

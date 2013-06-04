@@ -1,7 +1,7 @@
 function [filter] = checkFilter (cfg)
 
 if (ischar (cfg))
-  cfg = loadConfig (cfg);
+  cfg = icaConfigLoad (cfg);
 end
 
 
