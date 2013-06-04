@@ -56,21 +56,6 @@ n = n - mod(n, patchsize);
 m = m - mod(m, patchsize);
 input = input(1:n,1:m,:);
 
-% cr = repmat (1:this.patchsize:m, 1, n/patchsize);
-% cc = sort (cr);
-% npats = length(cc);
-% 
-% data = zeros(n, m, c);
-% 
-% samplesize = patchsize^2 * c;
-% for k=1:npats
-%   patch = input(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :);
-%   X = reshape (patch, samplesize, 1);
-%   Y = this.W*X;
-%   wtnpatch = reshape (Y, patchsize, patchsize, c);
-%   data(cr(k):cr(k)+patchsize-1, cc(k):cc(k)+patchsize-1, :) = wtnpatch;
-% end
-
 [patches, pos] = imgallpatches(input, patchsize, patchsize);
 X = this.W * patches;
 android = zeros(n, m, c);
