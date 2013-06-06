@@ -2,37 +2,65 @@ function [ ] = plotWhitenFilter(filter, doprint)
 
 if ~exist('doprint', 'var') || isempty(doprint); doprint = 0; end;
 
+patchsize = filter.patchsize;
+M = size(filter.W, 1);
+nchan = M/patchsize^2;
+
 pos = [400, 400];
 fsize = [300, 300];
 
-data = filter.W(25,:);
-data = processData(data);
-fhS1 = plotImg(data, pos, fsize, 'L');
-fhS2 = plotSlice(data, pos, fsize, 'L');
-
-data = filter.W(25+49,:);
-data = processData(data);
-fhM1 = plotImg(data, pos, fsize, 'M');
-fhM2 = plotSlice(data, pos, fsize, 'M');
-
-
-data = filter.W(25+2*49,:);
-data = processData(data);
-fhL1 = plotImg(data, pos, fsize, 'S');
-fhL2 = plotSlice(data, pos, fsize, 'S');
-
-if doprint
-    figname = 'whiten-filter-';
-    
-    printFig(fhS1, [figname 'L']);
-    printFig(fhS2, [figname 'Lcut']);
-    
-    printFig(fhM1, [figname 'M']);
-    printFig(fhM2, [figname 'Mcut']);
-    
-    printFig(fhL1, [figname 'S']);
-    printFig(fhL2, [figname 'Scut']);
+if nchan == 1
+    chanid = 'A';
+else
+    chanid = ['L', 'M', 'S'];
 end
+
+figs = zeros(nchan, 2);
+
+figname = 'whiten-filter-';
+
+for ch = 1:nchan
+
+    data = filter.W(25+(ch-1)*49,:);
+    data = processData(data, nchan);
+    chid = chanid(ch);
+    figs(ch, 1) = plotImg(data, pos, fsize, chid, nchan);
+    figs(ch, 2) = plotSlice(data, pos, fsize, chid, nchan);
+    if doprint
+        printFig(figs(ch, 1), [figname chid]);
+        printFig(figs(ch, 2), [figname chid 'cut']);
+    end
+end
+
+
+% data = filter.W(25,:);
+% data = processData(data, nchan);
+% fhS1 = plotImg(data, pos, fsize, 'L');
+% fhS2 = plotSlice(data, pos, fsize, 'L', nchan);
+% 
+% data = filter.W(25+49,:);
+% data = processData(data, nchan);
+% fhM1 = plotImg(data, pos, fsize, 'M');
+% fhM2 = plotSlice(data, pos, fsize, 'M', nchan);
+% 
+% 
+% data = filter.W(25+2*49,:);
+% data = processData(data, nchan);
+% fhL1 = plotImg(data, pos, fsize, 'S');
+% fhL2 = plotSlice(data, pos, fsize, 'S', nchan);
+
+% if doprint
+%     figname = 'whiten-filter-';
+%     
+%     printFig(fhS1, [figname 'L']);
+%     printFig(fhS2, [figname 'Lcut']);
+%     
+%     printFig(fhM1, [figname 'M']);
+%     printFig(fhM2, [figname 'Mcut']);
+%     
+%     printFig(fhL1, [figname 'S']);
+%     printFig(fhL2, [figname 'Scut']);
+% end
 
 end
 
@@ -44,29 +72,38 @@ print(fh, '-depsc2', '-r300', '-loose', figname)
 
 end
 
-function [X] = processData(data)
+function [X] = processData(data, nchan)
 data = data/max(abs(data(:)));
-X = reshape(data, 7, 7, 3);
+X = reshape(data, 7, 7, nchan);
 end
 
-function [fh] = plotSlice(data, pos, fsize, title)
+function [fh] = plotSlice(data, pos, fsize, title, nchan)
 fh = figure('Name', title, 'Color', 'w', 'Position', horzcat(pos, fsize));
 hold on;
-plot(data(4,:,1), 'r')
-plot(data(4,:,2), 'g')
-plot(data(4,:,3), 'b')
+
+if nchan == 1
+    colors = ['k'];
+else
+    colors = ['r', 'g', 'b'];
+end
+
+for ch = 1:nchan
+    plot(data(4,:,ch), colors(ch))
+end
 
 xlim([1 7])
 ylim([-1 1])
 
 end
 
-function [fh] = plotImg(data, pos, fsize, title)
+function [fh] = plotImg(data, pos, fsize, title, nchan)
 
 fh = figure('Name', title, 'Color', 'w', 'Position', horzcat(pos, fsize));
 data = 0.5+0.5*data;
-X = reshape(data, 7, 7, 3);
-imagesc(X)
+imagesc(data)
+if nchan == 1
+   colormap('gray'); 
+end
 axis equal tight image off
 set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
 
