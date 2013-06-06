@@ -1,10 +1,10 @@
-function checkImages (cfg)
+function [imgset, filter] = checkImages (cfg)
 
 if ischar(cfg)
   cfg = loadConfig (cfg, getDefaults('ica.configdir'));
 end
 
-imgset = createImageSet (cfg.data);
+[imgset, filter] = createImageSet (cfg.data);
 
 displayImages(imgset);
 
