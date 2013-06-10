@@ -36,6 +36,13 @@ else
     filter.center_img = 0;
 end
 
+
+if ~isfield(cfg, 'lomode')
+  cfg.lomode = 0;
+end
+filter.lomode = cfg.lomode;
+
+
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
 filter.kernel = feval(kernFactoryFunc, cfg.kernel);
 
@@ -138,6 +145,10 @@ if this.center_img == 1
 end
 
 
+if this.log && this.lomode == 3
+   input = log(input);
+end
+
 %stds = std (input(1,:));
 %stdml = (std (input(2,:)) + std (input(3,:))) * 0.5;
 %input(1,:,:) = (stdml / stds) * input(1,:,:);
@@ -179,12 +190,23 @@ for n=1:length(this.center)
     data((n*2-1),:,:) = on;
     data(n*2,:,:) = off;
   else
-    if this.log
-      x = log(x + this.log * max(x(:)));
-    end
-    
     data(n,:,:) = x;
   end
+end
+
+if this.log && this.lomode ~= 3
+    if this.lomode == 1
+        offset = this.log * max(data(:));
+    end
+    
+    for n=1:N
+        x = data(n, :, :);
+        if this.lomode == 0
+            offset = this.log * max(x(:));
+        end
+        x = log(x + offset);
+        data(n, :, :) = x;
+    end
 end
 
 %adjust the refcoos
@@ -213,11 +235,6 @@ off = data;
 on(on < 0) = 0;
 off(off > 0) = 0;
 off = -1 * off;
-
-if doLog
-  on = log (on + doLog * max (on(:)));
-  off = log (off + doLog * max (off(:)));
-end
 
 end
 
