@@ -42,6 +42,9 @@ if ~isfield(cfg, 'lomode')
 end
 filter.lomode = cfg.lomode;
 
+if isfield(cfg, 'rectify_mpoint')
+   filter.rmpoint = cfg.rectify_mpoint;
+end
 
 kernFactoryFunc = [cfg.kernel.type 'Kernel'];
 filter.kernel = feval(kernFactoryFunc, cfg.kernel);
@@ -181,20 +184,35 @@ end
 
 data = zeros(N, sn(1), sn(2));
 
+
+rectifier = cell(N, 1);
+
 for n=1:length(this.center)
   chan = this.center(n);
   x = (wc * input(sv(:,1),sv(:,1),chan)) - surround{chan};
   
-  if this.rectify
-    [on, off] = rectifyData (x, this.log);
-    data((n*2-1),:,:) = on;
-    data(n*2,:,:) = off;
+  if this.rectify == 1
+     [on, off] = rectifyData (x);
+     data((n*2-1),:,:) = on;
+     data(n*2,:,:) = off;
+  elseif this.rectify == 2
+      [on, off] = rectifyDataExp (x, this.rmpoint);
+      data((n*2-1),:,:) = on(x);
+      data(n*2,:,:) = off(x);
+      
+      rectifier{n*2-1} = on;
+      rectifier{n*2}   = off;
+  elseif this.rectify == 3
+      [on, off] = rectifyDataExpEq (x, this.rmpoint);
+      data((n*2-1),:,:) = on(x);
+      data(n*2,:,:) = off(x);
   else
-    data(n,:,:) = x;
+      data(n,:,:) = x;
   end
 end
 
-if this.log && this.lomode ~= 3
+
+if this.log && this.lomode < 3
     if this.lomode == 1
         offset = this.log * max(data(:));
     end
@@ -207,6 +225,14 @@ if this.log && this.lomode ~= 3
         x = log(x + offset);
         data(n, :, :) = x;
     end
+end
+
+if this.log && this.lomode == 4
+   data = log(data); 
+end
+
+if this.log && this.lomode == 5
+   data = log(1 + data); 
 end
 
 %adjust the refcoos
@@ -223,11 +249,7 @@ fprintf ('\t stats after filtering: Min: %f, Max: %f,\n\t\t Mean: %f, Std: %f \n
   min (data(:)), max (data(:)), mean (data(:)), std (data(:)));
 end
 
-function [on, off] = rectifyData(data, doLog)
-
-if nargin < 2
-  doLog = 0;
-end
+function [on, off] = rectifyData(data)
 
 on = data;
 off = data;
@@ -236,6 +258,25 @@ on(on < 0) = 0;
 off(off > 0) = 0;
 off = -1 * off;
 
+end
+
+
+function [on, off] = rectifyDataExp(x, rmpoint)
+ma = max(abs(x(:)));
+s = log(1/rmpoint)/ma;
+on  = @(data) ma/exp(s*ma) * exp(s*data);
+off = @(data) ma/exp(s*ma) * exp(s*-data);
+end
+
+function [on, off] = rectifyDataExpEq(x, rmpoint)
+
+ma = max(x(:));
+s = log(1/rmpoint)/ma;
+on  = @(data) ma/exp(s*ma) * exp(s*data);
+
+ma = abs(min(x(:)));
+s = log(1/rmpoint)/ma;
+off = @(data) ma/exp(s*ma) * exp(s*-data);
 end
 
 function [channels, weights] = surroundGetChannel(channels)

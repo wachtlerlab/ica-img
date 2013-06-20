@@ -69,8 +69,8 @@ mcog = mean(cog);
 ccog = cog - repmat(mcog, M, 1);
 
 [pc,~,latent,~] = princomp(ccog);
-pc = pc(:,1) * latent (1)
-tt = atan2(pc(2,:), pc(1,:))
+pc = pc(:,1) * latent (1);
+tt = atan2(pc(2,:), pc(1,:));
 
 ttx = atan2(y(1) - y(2), x(1) - x(2));
 ttdeg = tt * 180/pi;

@@ -4,8 +4,13 @@ if ~isfield(cfg, 'log')
   cfg.log = 0;
 end
 
-if ~isfield(cfg, 'gray')
-   cfg.gray  = 0;
+
+if isfield(cfg, 'gray')
+   error('legacy config file detected')
+end
+
+if ~isfield(cfg, 'perchan')
+   cfg.perchan  = 0;
 end
 
 filter.name = 'Whitening';
@@ -13,9 +18,9 @@ filter.setup = @WhiteningFilterSetup;
 filter.function = @WhiteningFilterImage;
 filter.log = cfg.log;
 filter.rectify = cfg.rectify;
-filter.chans = [str2chan('S') str2chan('M') str2chan('L')]; ;
+filter.chans = [str2chan('S') str2chan('M') str2chan('L')];
 filter.patchsize = cfg.patchsize;
-filter.gray = cfg.gray;
+filter.perchan = cfg.perchan;
 
 smlcfg.log = 0;
 filter.sml = SML(smlcfg);
@@ -31,24 +36,57 @@ smlcfg.log = 0;
 smlfilter = SML(smlcfg);
 channel = this.chans;
 data = [];
+patchsize = this.patchsize;
+psq = patchsize^2;
+
+img = cell(nimages, 1);
+for n=1:nimages
+    fprintf ('\t%s\n', images{n}.filename);
+    img{n} = smlfilter.function (smlfilter, images{n});
+end
+
+n = img{1}.edgeN;
+m = img{1}.edgeN;
+
+pos =  imggencoords(n, m, patchsize, 1);
+
+npats = length(pos);
+nchan = length(channel);
+
+if this.perchan
+    data = zeros(psq, nimages*npats, nchan);
+else
+    data = zeros(psq*nchan, nimages*npats);
+end
+
 for n=1:nimages
   fprintf ('\t%s\n', images{n}.filename);
-  img = smlfilter.function (smlfilter, images{n});
-  if this.gray
-      imgdata = [];
+  
+  st = (n-1)*npats + 1;
+  ed = n*npats;
+  
+  if this.perchan
       for ch = channel
-         chdata = imgallpatches(img.sml(:,:,ch), this.patchsize);
-         imgdata = horzcat (imgdata, chdata);
+         chdata = imgallpatches(img{n}.sml(:,:,ch), patchsize);
+         data(:, st:ed, ch) = chdata;
       end
   else
-      imgdata = imgallpatches(img.sml(:,:,channel), this.patchsize);
+      imgdata = imgallpatches(img{n}.sml(:,:,channel), patchsize);
+      data(:, st:ed) = imgdata;
   end
   
-  data = horzcat (data, imgdata);
 end
 
 fprintf ('\n\t[W]\n');
-this.W = whiten_filter(data);
+if this.perchan
+    W = zeros(psq, psq, length(channel));
+    for ch = channel
+        W(:,:,ch) = whiten_filter(data(:, :, ch));
+    end
+    this.W = W;
+else
+    this.W = whiten_filter(data);
+end
 fprintf ('done.\n');
 end
 
@@ -69,12 +107,12 @@ input = input(1:n,1:m,:);
 
 pos = imggencoords(n, m, patchsize, patchsize);
 
-if this.gray
+if this.perchan
     Y = zeros(patchsize, patchsize, c, length(pos));
     
     for ch = 1:c
         patches = imgallpatches(input(:,:,ch), patchsize, patchsize);
-        X = this.W * patches;
+        X = this.W(:,:,ch) * patches;
         Y(:, :, ch, :) = reshape(X, patchsize, patchsize, length(pos));
     end
     

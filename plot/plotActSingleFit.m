@@ -11,7 +11,13 @@ curfig = figure('Name', figtitle, 'Position', horzcat(pos, fs), ...
     'Color', 'w', 'PaperType', 'A4');
 set(0,'CurrentFigure', curfig);
 
-color = [0.121569 0.427451 0.658824];
+colors = [
+       0.988235 0.603922 0.568627;
+       0.431373 0.709804 0.988235;
+       0.792157 0.878431 0.474510;
+    ];
+
+color = [0.2 0.2 0.2];%[0.121569 0.427451 0.658824];
 
 epp = Act.epp(bfnr, imgnr, :);
 w = wall(offset(imgnr,1):offset(imgnr,2), :);
@@ -34,8 +40,8 @@ box off
 
 yticks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
 %set(h1,'FaceColor', color,'EdgeColor', color)
-set(h1,'FaceColor', 'black','EdgeColor', 'black')
-set(h2, 'LineWidth', 1.2, 'Color', 'red'); %[0.752941 0.211765 0.168627]
+set(h1,'FaceColor', color,'EdgeColor', color)
+set(h2, 'LineWidth', 1.2, 'Color', colors(1,:)); %[0.752941 0.211765 0.168627]
 
 set(ax(2), 'YTick', yticks)
 
@@ -46,10 +52,11 @@ intx = @(b) integral(@(x) expwrpdf(x, mu, sigma, beta), -Inf, b);
 yf = arrayfun(intx, x);
 set (gcf, 'CurrentAxes', ax(2));
 hold on;
-plot(x, yf, 'Color', 'blue', 'LineWidth', 1.1); %[0.505882 0.847059 0.815686]
+plot(x, yf, 'Color', colors(2,:), 'LineWidth', 1.1); %[0.505882 0.847059 0.815686]
 xlim([-6 6])
 ylim([0 1.1])
-
+% xticks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+% set(ax(2), 'YTick', yticks)
 
 %idx_a = find(yf > (border*0.5), 1);
 %idx_b = find(yf > 1 - (border*0.5), 1);

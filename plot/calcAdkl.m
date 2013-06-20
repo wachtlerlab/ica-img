@@ -18,6 +18,8 @@ for n=1:nbf
     y = S-((L+M)/2);
     z = L+M;
     
+    %x = x * 3.125;
+    
     dkl(:, :, n) = [x, y, z];
 end
 

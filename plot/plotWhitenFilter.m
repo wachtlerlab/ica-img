@@ -3,14 +3,19 @@ function [ ] = plotWhitenFilter(filter, doprint)
 if ~exist('doprint', 'var') || isempty(doprint); doprint = 0; end;
 
 patchsize = filter.patchsize;
-M = size(filter.W, 1);
-nchan = M/patchsize^2;
+sn = size(filter.W);
+
+if filter.perchan
+    nchan = 1;
+else
+    nchan = 3;
+end
 
 pos = [400, 400];
 fsize = [300, 300];
 
-if nchan == 1
-    chanid = 'A';
+if filter.perchan
+    chanid = ['S', 'M', 'L'];
 else
     chanid = ['L', 'M', 'S'];
 end
@@ -18,15 +23,27 @@ end
 figs = zeros(nchan, 2);
 
 figname = 'whiten-filter-';
+if ischar(doprint)
+    figname = [doprint figname];
+end
+        
+for ch = 1:3
 
-for ch = 1:nchan
-
-    data = filter.W(25+(ch-1)*49,:);
-    data = processData(data, nchan);
+    if filter.perchan
+        data = filter.W(25, :, ch);
+        data = data/max(filter.W(25, :));
+    else
+        data = filter.W(25+(ch-1)*49,:);
+        data = data/max(abs(data(:)));
+    end
+    
+    
+    data = reshape(data, 7, 7, nchan);
     chid = chanid(ch);
     figs(ch, 1) = plotImg(data, pos, fsize, chid, nchan);
     figs(ch, 2) = plotSlice(data, pos, fsize, chid, nchan);
     if doprint
+
         printFig(figs(ch, 1), [figname chid]);
         printFig(figs(ch, 2), [figname chid 'cut']);
     end
@@ -72,10 +89,6 @@ print(fh, '-depsc2', '-r300', '-loose', figname)
 
 end
 
-function [X] = processData(data, nchan)
-data = data/max(abs(data(:)));
-X = reshape(data, 7, 7, nchan);
-end
 
 function [fh] = plotSlice(data, pos, fsize, title, nchan)
 fh = figure('Name', title, 'Color', 'w', 'Position', horzcat(pos, fsize));

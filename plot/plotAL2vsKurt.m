@@ -1,13 +1,13 @@
-function [ fh ] = plotAL2vsKurt(A)
+function [ fig ] = plotAL2vsKurt(A)
 
 pos = [300, 300];
 fs = [500, 500];
-figtitle = ['Fit ' num2str(bfnr) ' ' num2str(imgnr)];
-curfig = figure('Name', figtitle, 'Position', horzcat(pos, fs), ...
+fig = figure('Name', 'L2 versus kurtosis', 'Position', horzcat(pos, fs), ...
     'Color', 'w', 'PaperType', 'A4');
-set(0,'CurrentFigure', curfig);
+set(0,'CurrentFigure', fig);
 
-scatter(A.norm, A.beta, 20, 'k', 'filled');
-
+scatter(A.norm, A.kurt, 20, 'k', 'filled');
+xlabel('L^2 norm')
+ylabel('kurtosis')
 
 end

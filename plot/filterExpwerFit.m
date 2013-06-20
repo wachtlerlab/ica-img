@@ -14,7 +14,7 @@ if (abs(mu) > 0.01) || beta < 0
 end
 
 stwide = 0.05;
-intwidth = 10; % was 7 (27.5)
+intwidth = 15; % was 7 (27.5)
  
 x = (mu-intwidth):stwide:(mu+intwidth);
 

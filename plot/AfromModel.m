@@ -57,5 +57,6 @@ end
 
 A.dkl = calcAdkl(A);
 A.pcs = calcApcs(A);
+A.dirs = calcAdirs(A);
 
 end

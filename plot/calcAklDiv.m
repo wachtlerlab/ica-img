@@ -1,8 +1,8 @@
-function [ kest ] = calcAklDiv(A, plotData)
+function [ kest, ui ] = calcAklDiv(A, plotData)
 
 if ~exist('plotData', 'var') || isempty(plotData); plotData = 0; end;
 
-L = 49;
+L = 20;  % was 49
 
 pcs = A.pcs;
 tt = atan2(pcs(2,:), pcs(1,:));
@@ -26,5 +26,9 @@ if plotData
     
     xlim([0 pi])
 end
+
+gain = 0.5;
+
+ui =  2 - (2./(1+(exp(-0.1*kest))));
 
 end
