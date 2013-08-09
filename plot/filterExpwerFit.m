@@ -14,7 +14,7 @@ if (abs(mu) > 0.01) || beta < 0
 end
 
 stwide = 0.05;
-intwidth = 15; % was 7 (27.5)
+intwidth = 15; % was 7 (27.5) or 15
  
 x = (mu-intwidth):stwide:(mu+intwidth);
 
@@ -26,6 +26,11 @@ idx_b = find(yf > 1 - (border*0.5), 1);
 
 lowerb = x(idx_a);
 upperb = x(idx_b);
+
+if isempty(lowerb) || isempty(upperb)
+    wfilter = zeros(size(wi));
+    return;
+end
 
 wfilter = wi < lowerb | wi > upperb;
 

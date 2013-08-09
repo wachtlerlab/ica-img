@@ -38,7 +38,7 @@ for idx=1:M
     
     pos(idx, :) = [x0 x1 y0 y1];
     
-    c = mean(reshape(A.rgb(:,idx), 3, 7*7), 2)';
+    c = mean(reshape(A.rgb(:,idx), 3, A.ps*A.ps), 2)';
     psize = 1.0*log10(n*25);
 
     set(0,'CurrentFigure',figA)

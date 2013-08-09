@@ -6,14 +6,8 @@ basepath = '~/Coding/ICA/'; %FIXME load from config file
 dataType = cfg.type;
 fprintf('Data Type: %s', dataType);
 
-if strcmp(cfg.type, 'hs_images')
-    db_prefix = 'hyperspectral';
-else
-    db_prefix = cfg.type;
-end
-
 % compat hack
-dataDir = fullfile (basepath, 'images', db_prefix, source.database);
+dataDir = fullfile (basepath, 'images', source.database);
 
 if iscell(source.images)
     nimages = length(source.images);

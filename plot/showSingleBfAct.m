@@ -16,7 +16,7 @@ nrows  = nrows + isfield(Act, 'epp');
 
 ncols = nimg;
 
-bfact_fig = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1200, 400]);
+bfact_fig = figure('Name', ['Chrom: ', Model.id(1:7)], 'Position', [0, 0, 1200, 400], 'Color', 'w');
 
 load('colormaps_ck')
 

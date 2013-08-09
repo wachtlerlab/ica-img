@@ -10,6 +10,18 @@ filter.name = 'SML';
 filter.function = @SMLFilterImage;
 filter.log = log;
 
+if ~isfield(cfg, 'drift_corr')
+  filter.drift_corr = 0;
+else
+  filter.drift_corr = cfg.drift_corr;
+end
+
+if ~isfield(cfg, 'crop')
+  filter.crop = 0;
+else
+  filter.crop = cfg.crop;
+end
+
 basepath = '~/Coding/ICA/matlab/filter/';
 
 SMHIJL = load([ basepath 'sml/SMHIJL.dat']);
@@ -21,7 +33,14 @@ end
 
 function [img] = SMLFilterImage (this, img)
 
-[~, T] = size (img.hs_data);
+hs_data = img.hs_data;
+
+if this.drift_corr
+    fprintf('Correcting image drift\n');
+    hs_data = correctDriftHS(hs_data);
+end
+
+[~, T] = size (hs_data);
 edgeN = sqrt (T);
 
 if edgeN ~= round (edgeN)
@@ -29,7 +48,7 @@ if edgeN ~= round (edgeN)
 end
 
 img.edgeN = edgeN;
-smlflat = this.SMLmx*img.hs_data;
+smlflat = this.SMLmx*hs_data;
 
 if this.log
   % offset not necessary - value 0 should not occur after SML trafo
@@ -37,6 +56,11 @@ if this.log
 end
 
 img.data  = reshape (smlflat, 3, edgeN, edgeN); %(c,x,y) [f,c,r]
+
+if this.crop
+    img.data = img.data(:, 1:this.crop, 1:this.crop);
+end
+
 img.sml = permute (img.data, [3 2 1]); % compat (y,x,c) [f, c, r]
 
 end

@@ -50,6 +50,13 @@ kernFactoryFunc = [cfg.kernel.type 'Kernel'];
 filter.kernel = feval(kernFactoryFunc, cfg.kernel);
 
 smlcfg.log = 0;
+if isfield(cfg, 'drift_corr')
+  smlcfg.drift_corr = cfg.drift_corr;
+end
+if isfield(cfg, 'crop')
+  smlcfg.crop = cfg.crop;
+end
+
 filter.sml = SML(smlcfg);
 
 filter.channels = mapChannel (cfg.center, filter.rectify);
