@@ -22,7 +22,7 @@ Result.priorS = [];
 nick = Model.id(1:7);
 cfgid = Model.cfg.id(1:7);
 
-stateDir = fullfile ('..', 'state', nick);
+stateDir = fullfile (Model.cfg.basepath, 'state', nick);
 if exist (stateDir, 'dir') ~= 7
   mkdir (stateDir);
 end
