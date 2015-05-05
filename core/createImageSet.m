@@ -7,7 +7,7 @@ dataType = cfg.type;
 fprintf('Data Type: %s', dataType);
 
 % compat hack
-dataDir = fullfile (basepath, 'images', source.database);
+dataDir = fullfile (basepath, 'images');
 
 if iscell(source.images)
     nimages = length(source.images);
@@ -17,12 +17,6 @@ end
 
 images = cell(nimages, 1);
 
-if isfield (source, 'type')
-    imageType = source.type;
-else
-    imageType = 'rad';
-end
-
 for n=1:nimages
   if iscell(source.images)
       filename = source.images{n};
@@ -30,7 +24,7 @@ for n=1:nimages
       filename = source.images(n,:);
   end
   
-  images{n} = loadImage (filename, dataDir, imageType);  
+  images{n} = loadImage (filename, dataDir, source);  
 end
 
 imageset.database = source.database;

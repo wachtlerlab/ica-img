@@ -1,6 +1,16 @@
-function [ Img ] = loadImage (filename, dataDir, imageType)
+function [ Img ] = loadImage (filename, basepath, source)
 
-if strncmp(imageType, 'noref', 5)
+if isfield (source, 'type')
+    imageType = source.type;
+else
+    imageType = 'rad';
+end
+
+dataDir = fullfile (basepath, source.database);
+
+if strcmp(source.database, 'foster')
+    Img = loadImgFoster(filename, basepath, source);
+elseif strncmp(imageType, 'noref', 5)
     imageType = imageType(7:end);
     Img = loadImgNoRef(filename, dataDir, imageType);
 else
