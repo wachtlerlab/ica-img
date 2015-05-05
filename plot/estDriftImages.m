@@ -9,14 +9,18 @@ max_shifts = zeros(2, nshifts, nimages);
 for k=1:nimages
    img = imageset.images{k};
    %xdata = gpuArray(img.hs_data);
+   
    xdata = img.hs_data;
-   data = reshape(xdata, 31, 256, 256);
+   [~, MN] = size(img.hs_data);
+   M = sqrt(MN);
+   
+   data = reshape(xdata, 31, M, M);
   
    for p = planes(1:end-1)
        XC = xcorr2(squeeze(data(p,:,:)), squeeze(data(p+1,:,:)));
        [~, idx] = max(abs(XC(:)));
        [i, j] = ind2sub(size(XC), idx);
-       shift = [i - 256, j - 256];
+       shift = [i - M, j - M];
        max_shifts(:, p, k) = shift;
    end
    fprintf('image: %d \n', k);
