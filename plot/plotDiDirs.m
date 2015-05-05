@@ -1,14 +1,14 @@
-function [ pcs ] = plotDiDirs(A)
+function [ pcs ] = plotDiDirs(model)
 
-chmap{1} = 'S+';
-chmap{2} = 'S-';
-chmap{3} = 'M+';
-chmap{4} = 'M-';
+A = model.A;
+
+chmap = arrayfun(@(x) chan2str(x), mapChannel (model.cfg.data.filter.center, 1), 'UniformOutput', 0);
+ps = model.cfg.data.patchsize;
 
 N = 4;
 A = sortAbf(A);
 [~, n] = size (A);
-B = reshape (A, N, 7*7, n);
+B = reshape (A, N, ps^2, n);
 
 pcs = zeros (N, N, n);
 lts = zeros (N, n);
@@ -23,7 +23,7 @@ end
 
 mpc = squeeze (pcs(:,1,:))';
 
-X = reshape(A, 4, 7*7 * n);
+X = reshape(A, 4, ps^2 * n);
 combs = combnk(1:N,2);
 fig = figure();
 
@@ -39,7 +39,8 @@ for c = 1:size (combs, 1)
   x = X(combs(c, 1), :);
   y = X(combs(c, 2), :);
   
-  scatter (x, y, 'k.')
+  
+  scatter (x, y, 10, 'k+');
   hold on;
   
   xlabel(chmap{combs(c, 1)})
@@ -74,7 +75,7 @@ r = [1.0, 1.0] * len;
 
 set (gcf, 'CurrentAxes', ax);
 hold on;
-line (x, y, 'Color', color)
+line (x, y, 'Color', color);
 xlim ([-1, 1])
 ylim ([-1, 1])
 

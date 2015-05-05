@@ -32,10 +32,13 @@ for c = 1:length(combs)
   x = X(combs(c, 1), :);
   y = X(combs(c, 2), :);
   z = X(combs(c, 3), :);
-  scatter3(x, y, z, 'k.');
+  scatter3(x, y, z, 50*lts(k), '.k');
   xlabel([chmap{combs(c, 1)} ' (x)'])
   ylabel([chmap{combs(c, 2)} ' (y)'])
   zlabel([chmap{combs(c, 3)} ' (z)'])
+  xlim([-0.5 0.5])
+  ylim([-0.5 0.5])
+  zlim([-0.5 0.5])
 end
 
 ncluster = 6;

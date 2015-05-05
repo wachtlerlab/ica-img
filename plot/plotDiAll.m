@@ -1,6 +1,6 @@
 function plotDiAll(model)
 
-plotDiDirs(model.A);
+plotDiDirs(model);
 plotDiDirs3D(model.A);
 plotDiActivations(model.A);
 
