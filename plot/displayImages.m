@@ -34,8 +34,11 @@ for idx=1:nx
   d = img(:);
   fprintf ('min: %.5f max: %.5f std: %.5f\n', ...
     min (d), max (d), std (d));
-  refkoos = images{idx}.refkoos;
-  
+
+  if isfield(images{idx}, 'refkoos')
+      refkoos = images{idx}.refkoos;
+  end
+
   for n = 1:(ny - 2)
       
     cur_plot = (idx - 1) * ny + n;
@@ -46,8 +49,12 @@ for idx=1:nx
     fi = imagesc(chan');
     axis image;
     axis off;
-    fk = plot (refkoos(refxs), refkoos(refys), 'r-');
-  
+    
+    if exist('refkoos', 'var')
+        fk = plot (refkoos(refxs), refkoos(refys), 'r-');
+    end
+    
+    
     n_img = n;
     
     fprintf ('\t [%s] min: %.5f max: %.5f std: %.5f\n', ...
@@ -56,7 +63,10 @@ for idx=1:nx
     
     text (5, 15, chan2str (n_img, chanMap), 'Color', 'r');
     rotate (fi, [0 0 1], 180);
-    rotate (fk, [0 0 1], 180);
+    if exist('refkoos', 'var')
+        rotate (fk, [0 0 1], 180);
+    end
+    
   end
   
   if dataDim == 6
