@@ -1,7 +1,11 @@
 function [ cfg ] = icaConfigLoad(cfg)
 
 if (ischar (cfg))
-  cfg = loadConfig (cfg, getDefaults('ica.configdir'));
+    basepath = getDefaults('ica.basedir');
+    cfgpath = fullfile(basepath, 'config');
+    cfg = loadConfig (cfg, cfgpath);
+    cfg.basepath = basepath;
+    cfg.data.basepath = fullfile(basepath, 'images');
 end
 
 end

@@ -16,6 +16,9 @@ if isfield (cfg, 'ctime')
   cfg = rmfield (cfg, 'ctime');
 end
 
+if isfield (cfg, 'basepath')
+  cfg = rmfield (cfg, 'basepath');
+end
 
 %canonicalize the (textual) config
 txt = savejson('', cfg);

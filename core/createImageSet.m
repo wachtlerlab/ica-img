@@ -1,13 +1,12 @@
 function [ imageset, filter ] = createImageSet (cfg)
 
 source = cfg.source;
-basepath = '~/Coding/ICA/'; %FIXME load from config file
 
 dataType = cfg.type;
 fprintf('Data Type: %s', dataType);
 
 % compat hack
-dataDir = fullfile (basepath, 'images');
+dataDir = cfg.basepath;
 
 if iscell(source.images)
     nimages = length(source.images);
