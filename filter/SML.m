@@ -28,9 +28,10 @@ else
   filter.scale = cfg.scale;
 end
 
-basepath = '~/Coding/ICA/matlab/filter/';
+basepath = fileparts(mfilename('fullpath'));
+%basepath = '~/Science/ICA/matlab/filter/';
 
-SMHIJL = load([ basepath 'sml/SMHIJL.dat']);
+SMHIJL = load(fullfile(basepath, 'sml', 'SMHIJL.dat'));
 filter.SMLmx = SMHIJL([1 2 6],:);
 
 filter.channels = [str2chan('S') str2chan('M') str2chan('L')];
