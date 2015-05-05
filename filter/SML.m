@@ -22,6 +22,12 @@ else
   filter.crop = cfg.crop;
 end
 
+if ~isfield(cfg, 'scale')
+  filter.scale = 0;
+else
+  filter.scale = cfg.scale;
+end
+
 basepath = '~/Coding/ICA/matlab/filter/';
 
 SMHIJL = load([ basepath 'sml/SMHIJL.dat']);
@@ -60,6 +66,14 @@ img.data  = reshape (smlflat, 3, edgeN, edgeN); %(c,x,y) [f,c,r]
 if this.crop
     img.data = img.data(:, 1:this.crop, 1:this.crop);
 end
+
+if this.scale > 1
+   data = permute(img.data, [3 2 1]);
+   data = imgscaledown(data, this.scale);
+   img.data = permute(data, [3 2 1]);
+end
+
+
 
 img.sml = permute (img.data, [3 2 1]); % compat (y,x,c) [f, c, r]
 

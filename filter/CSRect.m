@@ -56,6 +56,9 @@ end
 if isfield(cfg, 'crop')
   smlcfg.crop = cfg.crop;
 end
+if isfield(cfg, 'scale')
+  smlcfg.scale = cfg.scale;
+end
 
 filter.sml = SML(smlcfg);
 
@@ -243,10 +246,13 @@ if this.log && this.lomode == 5
 end
 
 %adjust the refcoos
-rk = img.refkoos;
-rk([1,3]) = rk([1,3]) - sb(1);
-rk([2,4]) = rk([2,4]) - sb(1);
-img.refkoos = rk;
+if isfield(img, 'refkoos')
+    rk = img.refkoos;
+    rk([1,3]) = rk([1,3]) - sb(1);
+    rk([2,4]) = rk([2,4]) - sb(1);
+    img.refkoos = rk;
+end
+
 
 % (f,r,c) -> (f,c,r) [c <-> x, r <-> y]
 img.data = permute (data, [1 3 2]);
